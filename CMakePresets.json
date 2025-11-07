@@ -1,0 +1,19 @@
+{
+  "version": 4,
+  "configurePresets": [
+    {
+      "name": "engine",
+      "displayName": "Engine",
+      "description": "Preset for Engine",
+      "binaryDir": "${sourceDir}/build",
+      "cacheVariables": {
+        "CMAKE_CXX_STANDARD": "23",
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
+        "GLFW_BUILD_WAYLAND": "OFF",
+        "BUILD_SHARED_LIBS": "ON",
+        "GLFW_INSTALL": "ON",
+        "CMAKE_BUILD_TYPE": "Debug"
+      }
+    }
+  ]
+}
