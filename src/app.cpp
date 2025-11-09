@@ -1,16 +1,14 @@
 #include "app.hpp"
+
 #include "event_manager.hpp"
-#include "events.hpp"
 
 App::App()
     : window(config.getWidth(), config.getHeight(), config.getName()),
       renderer(config.getWidth(), config.getHeight()) {
   core::EventManager::getInstance().subscribe(
-      core::BasicEventType::WINDOW_CLOSE_EVENT,
-      std::make_unique<core::EventHandle>(App::windowCloseCallback));
+      core::BasicEventType::WINDOW_CLOSE_EVENT, App::windowCloseCallback);
   core::EventManager::getInstance().subscribe(
-      core::BasicEventType::WINDOW_RESIZE_EVENT,
-      std::make_unique<core::EventHandle>(App::windowResizeCallback));
+      core::BasicEventType::WINDOW_RESIZE_EVENT, App::windowResizeCallback);
 }
 
 void App::windowCloseCallback(core::BasicEvent &event) {

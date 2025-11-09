@@ -20,9 +20,8 @@ namespace gl {
                glm::vec3(0.0f, 1.0f, 0.0f)) {
     this->registry.addComponent<CameraTransform>(this->registry.createEntity(),
                                                  camera.getCameraTransform());
-    core::EventManager::getInstance().subscribe(
-        core::BasicEventType::KEY_EVENT,
-        std::make_unique<core::EventHandle>(Renderer::keyCallback));
+    core::EventManager::getInstance().subscribe(core::BasicEventType::KEY_EVENT,
+                                                Renderer::keyCallback);
     for (int i = 0; i < 10; i++) {
       transforms.emplace_back(registry.createEntity(), registry);
       this->registry.addComponent<Transform>(this->registry.createEntity(),

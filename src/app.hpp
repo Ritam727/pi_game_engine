@@ -5,10 +5,6 @@
 
 #include "app_config.hpp"
 
-#include "event_manager.hpp"
-
-#include <thread>
-
 class App {
 private:
   gl::Window   window;
