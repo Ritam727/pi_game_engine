@@ -9,9 +9,7 @@
 
 namespace gl {
   Renderer::Renderer(int &width, int &height)
-      : width(width),
-        height(height),
-        vertexArray(vertices, indices),
+      : width(width), height(height), vertexArray(vertices, indices),
         shader(ENGINE_PATH "/res/shaders/shader.vert",
                ENGINE_PATH "/res/shaders/shader.frag"),
         texture({ENGINE_PATH "/res/textures/container.jpg",

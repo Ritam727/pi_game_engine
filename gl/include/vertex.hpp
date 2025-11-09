@@ -37,9 +37,9 @@ namespace gl {
   public:
     glm::vec3 position;
     glm::vec3 color;
-    glm::vec2 textureCoordinate;
+    glm::vec2 textureCoordinates;
 
-    Vertex(glm::vec3 position, glm::vec3 color, glm::vec2 textureCoordinate);
+    Vertex(glm::vec3 position, glm::vec3 color, glm::vec2 textureCoordinates);
 
     void setPosition(glm::vec3 position);
     void setColor(glm::vec3 color);

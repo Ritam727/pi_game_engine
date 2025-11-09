@@ -3,11 +3,8 @@
 namespace gl {
   VertexAttributeElement::VertexAttributeElement(unsigned int type,
                                                  unsigned int count,
-                                                 unsigned int normalized) {
-    this->type = type;
-    this->count = count;
-    this->normalized = normalized;
-  }
+                                                 unsigned int normalized)
+      : type(type), count(count), normalized(normalized) {}
 
   unsigned int VertexAttributeElement::getType() const {
     return this->type;
@@ -65,11 +62,9 @@ namespace gl {
 
 namespace gl {
   Vertex::Vertex(glm::vec3 position, glm::vec3 color,
-                 glm::vec2 textureCoordinate) {
-    this->position = position;
-    this->color = color;
-    this->textureCoordinate = textureCoordinate;
-  }
+                 glm::vec2 textureCoordinates)
+      : position(position), color(color),
+        textureCoordinates(textureCoordinates) {}
 
   void Vertex::setPosition(glm::vec3 position) {
     this->position = position;
@@ -79,8 +74,8 @@ namespace gl {
     this->color = color;
   }
 
-  void Vertex::setTextureCoordinate(glm::vec2 textureCoordinate) {
-    this->textureCoordinate = textureCoordinate;
+  void Vertex::setTextureCoordinate(glm::vec2 textureCoordinates) {
+    this->textureCoordinates = textureCoordinates;
   }
 
   glm::vec3 Vertex::getPosition() const {
@@ -92,7 +87,7 @@ namespace gl {
   }
 
   glm::vec2 Vertex::getTextureCoordinate() const {
-    return this->textureCoordinate;
+    return this->textureCoordinates;
   }
 
   VertexAttribute Vertex::getAttribute() {

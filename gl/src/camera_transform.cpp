@@ -6,10 +6,7 @@ namespace gl {
   CameraTransform::CameraTransform(ecs::Entity    entityId,
                                    ecs::Registry &registryRef,
                                    glm::vec3 position, glm::vec3 up)
-      : BaseComponent(registryRef),
-        position(position),
-        target(0),
-        up(up),
+      : BaseComponent(registryRef), position(position), target(0), up(up),
         right(glm::normalize(
             glm::cross(glm::normalize(this->position - this->target),
                        glm::normalize(this->up)))) {}

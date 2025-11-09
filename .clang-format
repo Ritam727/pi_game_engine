@@ -7,7 +7,7 @@ AllowAllParametersOfDeclarationOnNextLine: false
 BinPackParameters: true
 SpaceAfterCStyleCast: true
 AlignOperands: AlignAfterOperator
-PackConstructorInitializers: NextLine
+PackConstructorInitializers: BinPack
 IndentWrappedFunctionNames: true
 AllowShortFunctionsOnASingleLine: Empty
 FixNamespaceComments: false
