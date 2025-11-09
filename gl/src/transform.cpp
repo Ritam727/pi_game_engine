@@ -1,9 +1,15 @@
 #include "transform.hpp"
 
-namespace core {
+#include "glm/gtc/matrix_transform.hpp"
+
+namespace gl {
   Transform::Transform(ecs::Entity entityId, ecs::Registry &registryRef)
-      : BaseComponent(registryRef), position(0), scale(1), axisX(1, 0, 0),
-        axisY(0, 1, 0), axisZ(0, 0, 1),
+      : BaseComponent(registryRef),
+        position(0),
+        scale(1),
+        axisX(1, 0, 0),
+        axisY(0, 1, 0),
+        axisZ(0, 0, 1),
         rotation(glm::radians(glm::vec3(0.0f))) {}
 
   glm::mat4 Transform::getTranslationMatrix() const {

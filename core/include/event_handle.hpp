@@ -1,21 +1,20 @@
 #pragma once
 
-#include "event.hpp"
+#include "events.hpp"
 
 #include <functional>
-#include <memory>
 
-namespace events {
+namespace core {
   class EventHandle {
   private:
-    std::function<void(std::unique_ptr<BaseEvent> &)> call;
+    std::function<void(BasicEvent &)> call;
 
   public:
-    EventHandle(std::function<void(std::unique_ptr<BaseEvent> &)> call) {
+    EventHandle(std::function<void(BasicEvent &)> call) {
       this->call = call;
     }
 
-    void execute(std::unique_ptr<BaseEvent> &e) {
+    void execute(BasicEvent &e) {
       this->call(std::ref(e));
     }
   };

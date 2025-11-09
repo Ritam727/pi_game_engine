@@ -5,28 +5,35 @@
 App::App()
     : window(config.getWidth(), config.getHeight(), config.getName()),
       renderer(config.getWidth(), config.getHeight()) {
-  events::EventManager::getInstance().subscribe<core::WindowCloseEvent>(
-      std::make_unique<events::EventHandle>(App::windowCloseCallback));
-  events::EventManager::getInstance().subscribe<core::WindowResizeEvent>(
-      std::make_unique<events::EventHandle>(App::windowResizeCallback));
+  core::EventManager::getInstance().subscribe(
+      core::BasicEventType::WINDOW_CLOSE_EVENT,
+      std::make_unique<core::EventHandle>(App::windowCloseCallback));
+  core::EventManager::getInstance().subscribe(
+      core::BasicEventType::WINDOW_RESIZE_EVENT,
+      std::make_unique<core::EventHandle>(App::windowResizeCallback));
 }
 
-void App::windowCloseCallback(std::unique_ptr<events::BaseEvent> &event) {
+void App::windowCloseCallback(core::BasicEvent &event) {
+  core::logger::info("Shutting down application");
   App::running = false;
 }
 
-void App::windowResizeCallback(std::unique_ptr<events::BaseEvent> &event) {
-  core::WindowResizeEvent *windowResizeEvent =
-      (core::WindowResizeEvent *) event.get();
-  App::config.setWidth(windowResizeEvent->getWidth());
-  App::config.setHeight(windowResizeEvent->getHeight());
+void App::windowResizeCallback(core::BasicEvent &event) {
+  core::WindowResizeEvent windowResizeEvent =
+      std::get<core::WindowResizeEvent>(event.getData());
+  core::logger::info("Resizing window from ({}, {}) to ({}, {})",
+                     App::config.getWidth(), App::config.getHeight(),
+                     windowResizeEvent.getWidth(),
+                     windowResizeEvent.getHeight());
+  App::config.setWidth(windowResizeEvent.getWidth());
+  App::config.setHeight(windowResizeEvent.getHeight());
 }
 
 void App::run() {
   std::thread eventThread(App::eventThreadExecutor);
 
   while (App::running) {
-    core::Renderer::clear();
+    gl::Renderer::clear();
     renderer.render();
     window.processGlfwFrame();
   }
@@ -36,7 +43,7 @@ void App::run() {
 
 void App::eventThreadExecutor() {
   while (App::running) {
-    events::EventManager::getInstance().executeEvents();
+    core::EventManager::getInstance().executeEvents();
   }
 }
 

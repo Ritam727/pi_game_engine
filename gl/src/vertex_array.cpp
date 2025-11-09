@@ -1,8 +1,8 @@
 #include "vertex_array.hpp"
-#include "vertex.hpp"
 #include "utils.hpp"
+#include "vertex.hpp"
 
-namespace core {
+namespace gl {
   VertexArray::VertexArray(std::vector<Vertex>       vertices,
                            std::vector<unsigned int> indices) {
     GL_CALL(glGenVertexArrays(1, &this->vertexArrayIndex));

@@ -2,10 +2,10 @@
 #include "glm/gtc/type_ptr.hpp"
 #include "utils.hpp"
 
-namespace core {
+namespace gl {
   Shader::Shader(char const *vertexFilePath, char const *fragmentFilePath) {
-    std::string vertexShaderCode = core::readFromFile(vertexFilePath);
-    std::string fragmentShaderCode = core::readFromFile(fragmentFilePath);
+    std::string vertexShaderCode = gl::readFromFile(vertexFilePath);
+    std::string fragmentShaderCode = gl::readFromFile(fragmentFilePath);
 
     unsigned int vertexShader =
         createShader(vertexShaderCode.c_str(), GL_VERTEX_SHADER);

@@ -1,11 +1,10 @@
 #pragma once
 
 #include "glad/glad.h"
-#include "glm/glm.hpp"
 
 #include <string>
 
-namespace core {
+namespace gl {
   class Shader {
   private:
     unsigned int program;

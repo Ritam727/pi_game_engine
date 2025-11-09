@@ -2,7 +2,7 @@
 
 #include "vertex.hpp"
 
-namespace core {
+namespace gl {
   class VertexArray {
   private:
     unsigned int vertexArrayIndex;

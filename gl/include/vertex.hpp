@@ -3,7 +3,7 @@
 #include "glad/glad.h"
 #include "glm/glm.hpp"
 
-namespace core {
+namespace gl {
   class VertexAttributeElement {
     unsigned int type;
     unsigned int count;
@@ -36,10 +36,10 @@ namespace core {
   private:
   public:
     glm::vec3 position;
-    // glm::vec3 color;
+    glm::vec3 color;
     glm::vec2 textureCoordinate;
 
-    Vertex(glm::vec3 position, glm::vec2 textureCoordinate);
+    Vertex(glm::vec3 position, glm::vec3 color, glm::vec2 textureCoordinate);
 
     void setPosition(glm::vec3 position);
     void setColor(glm::vec3 color);

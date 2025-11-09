@@ -1,0 +1,20 @@
+---
+BraceWrapping:
+  AfterNamespace: true
+NamespaceIndentation: All
+AllowAllArgumentsOnNextLine: false
+AllowAllParametersOfDeclarationOnNextLine: false
+BinPackParameters: true
+SpaceAfterCStyleCast: true
+AlignOperands: AlignAfterOperator
+PackConstructorInitializers: NextLine
+IndentWrappedFunctionNames: true
+AllowShortFunctionsOnASingleLine: Empty
+FixNamespaceComments: false
+BreakTemplateDeclarations: MultiLine
+SpaceAfterTemplateKeyword: true
+BinPackArguments: true
+BreakFunctionDefinitionParameters: false
+AlignConsecutiveDeclarations:
+  Enabled: true
+SortIncludes: Never

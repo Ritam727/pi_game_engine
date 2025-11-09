@@ -1,15 +1,10 @@
 #pragma once
 
-#include "event_manager.hpp"
 #include "glad/glad.h"
 #include "GLFW/glfw3.h"
-#include "event_manager.hpp"
-#include "events.hpp"
 #include "logger.hpp"
 
-#include <stdexcept>
-
-namespace core {
+namespace gl {
   class Window {
   private:
     GLFWwindow *window;

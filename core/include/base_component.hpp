@@ -2,7 +2,7 @@
 
 #include "registry.hpp"
 
-namespace core {
+namespace gl {
   class BaseComponent {
   private:
     ecs::Registry &registryRef;

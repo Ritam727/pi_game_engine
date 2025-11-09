@@ -2,11 +2,10 @@
 
 #include "base_component.hpp"
 #include "glm/glm.hpp"
-#include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtc/quaternion.hpp"
 #include "sparse_set.hpp"
 
-namespace core {
+namespace gl {
   class Transform : public BaseComponent {
   private:
     glm::vec3 position;

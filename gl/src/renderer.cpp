@@ -1,13 +1,17 @@
 #include "renderer.hpp"
 #include "utils.hpp"
 
+#include "event_manager.hpp"
+
 #ifndef ENGINE_PATH
 #define ENGINE_PATH "/"
 #endif
 
-namespace core {
+namespace gl {
   Renderer::Renderer(int &width, int &height)
-      : width(width), height(height), vertexArray(vertices, indices),
+      : width(width),
+        height(height),
+        vertexArray(vertices, indices),
         shader(ENGINE_PATH "/res/shaders/shader.vert",
                ENGINE_PATH "/res/shaders/shader.frag"),
         texture({ENGINE_PATH "/res/textures/container.jpg",
@@ -16,8 +20,9 @@ namespace core {
                glm::vec3(0.0f, 1.0f, 0.0f)) {
     this->registry.addComponent<CameraTransform>(this->registry.createEntity(),
                                                  camera.getCameraTransform());
-    events::EventManager::getInstance().subscribe<KeyEvent>(
-        std::make_unique<events::EventHandle>(Renderer::keyCallback));
+    core::EventManager::getInstance().subscribe(
+        core::BasicEventType::KEY_EVENT,
+        std::make_unique<core::EventHandle>(Renderer::keyCallback));
     for (int i = 0; i < 10; i++) {
       transforms.emplace_back(registry.createEntity(), registry);
       this->registry.addComponent<Transform>(this->registry.createEntity(),
@@ -80,8 +85,9 @@ namespace core {
     this->frameCount = (this->frameCount + 1) % 360;
   }
 
-  void Renderer::keyCallback(std::unique_ptr<events::BaseEvent> &event) {
-    KeyEvent *keyEvent = (KeyEvent *) event.get();
-    logger::info("{} key is pressed", static_cast<int>(keyEvent->getType()));
+  void Renderer::keyCallback(core::BasicEvent &event) {
+    core::KeyEvent keyEvent = std::get<core::KeyEvent>(event.getData());
+    core::logger::info("{} key is pressed",
+                       static_cast<int>(keyEvent.getType()));
   }
 }

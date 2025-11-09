@@ -2,13 +2,13 @@
 
 #include "glad/glad.h"
 
-#include "stb_image.hpp"
 #include "logger.hpp"
+#include "stb_image.hpp"
 
 #include <string>
 #include <vector>
 
-namespace core {
+namespace gl {
   class Texture {
   private:
     std::vector<unsigned int> textures;

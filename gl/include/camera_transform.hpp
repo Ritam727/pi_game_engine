@@ -2,9 +2,8 @@
 
 #include "base_component.hpp"
 #include "glm/glm.hpp"
-#include "glm/gtc/matrix_transform.hpp"
 
-namespace core {
+namespace gl {
   class CameraTransform : public BaseComponent {
   private:
     glm::vec3 position;

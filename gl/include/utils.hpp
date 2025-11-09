@@ -1,7 +1,7 @@
 #pragma once
 
-#include "logger.hpp"
 #include "glad/glad.h"
+#include "logger.hpp"
 
 #include <fstream>
 #include <string>
@@ -16,8 +16,8 @@
   statusFunc(shader, en, &UNIQUE_NAME(success));                               \
   if (UNIQUE_NAME(success) == 0) {                                             \
     GL_CALL(logFunc(shader, 512, nullptr, UNIQUE_NAME(infoLog)));              \
-    logger::error("Shader compilation failure for {}, details: {}", #shader,   \
-                  UNIQUE_NAME(infoLog));                                       \
+    core::logger::error("Shader compilation failure for {}, details: {}",      \
+                        #shader, UNIQUE_NAME(infoLog));                        \
   }
 
 #include <signal.h>
@@ -29,23 +29,23 @@
 
 #ifndef NDEBUG
 #define GL_CALL(x)                                                             \
-  core::glClearError();                                                        \
+  gl::glClearError();                                                          \
   x;                                                                           \
-  ASSERT(core::glLogCall(__FILE__, #x, __LINE__))
+  ASSERT(gl::glLogCall(__FILE__, #x, __LINE__))
 #else
 #define GL_CALL(x) x;
 #endif
 
 #ifndef NDEBUG
 #define GL_CALL_WITH_ASSIGNMENT(x, var)                                        \
-  core::glClearError();                                                        \
+  gl::glClearError();                                                          \
   var = x;                                                                     \
-  ASSERT(core::glLogCall(__FILE__, #x, __LINE__))
+  ASSERT(gl::glLogCall(__FILE__, #x, __LINE__))
 #else
 #define GL_CALL_WITH_ASSIGNMENT(x, var) var = x;
 #endif
 
-namespace core {
+namespace gl {
   inline void glClearError() {
     while (glGetError() != GL_NO_ERROR)
       ;
@@ -54,7 +54,7 @@ namespace core {
   inline bool glLogCall(const char *file, const char *function, int line) {
     bool value = true;
     while (GLenum error = glGetError()) {
-      logger::error(
+      core::logger::error(
           "[OpenGL Error] ({0}) in file {1}, at function {2}, on line {3}",
           error, file, function, line);
       value = false;
@@ -63,6 +63,7 @@ namespace core {
   }
 
   inline std::string readFromFile(char const *filePath) {
+    core::logger::info("Reading from file {}", filePath);
     std::ifstream file;
     file.exceptions(std::ifstream::badbit | std::ifstream::failbit);
     try {
@@ -72,7 +73,8 @@ namespace core {
       file.close();
       return fileStream.str();
     } catch (std::ifstream::failure exp) {
-      logger::error("Failed to read from file due to {}", exp.what());
+      core::logger::error("Failed to read from file {} due to {}", filePath,
+                          exp.what());
       throw exp;
     }
   }

@@ -3,9 +3,8 @@
 #include "base_object.hpp"
 #include "camera_transform.hpp"
 #include "glm/glm.hpp"
-#include "glm/gtc/matrix_transform.hpp"
 
-namespace core {
+namespace gl {
   class Camera : public BaseObject {
   private:
     CameraTransform transform;

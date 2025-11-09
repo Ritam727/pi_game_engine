@@ -11,8 +11,8 @@
 
 class App {
 private:
-  core::Window   window;
-  core::Renderer renderer;
+  gl::Window   window;
+  gl::Renderer renderer;
 
   static AppConfig config;
   static bool      running;
@@ -22,7 +22,7 @@ public:
 
   void run();
 
-  static void windowCloseCallback(std::unique_ptr<events::BaseEvent> &event);
-  static void windowResizeCallback(std::unique_ptr<events::BaseEvent> &event);
+  static void windowCloseCallback(core::BasicEvent &event);
+  static void windowResizeCallback(core::BasicEvent &event);
   static void eventThreadExecutor();
 };

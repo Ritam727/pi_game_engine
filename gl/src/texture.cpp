@@ -1,7 +1,7 @@
 #include "texture.hpp"
 #include "utils.hpp"
 
-namespace core {
+namespace gl {
   Texture::Texture(const std::vector<std::string> filePaths)
       : textures(filePaths.size(), 0) {
     for (unsigned int i = 0; i < filePaths.size(); i++) {
@@ -40,7 +40,7 @@ namespace core {
                            data));
       GL_CALL(glGenerateMipmap(GL_TEXTURE_2D));
     } else {
-      logger::error("Cannot load texture file {}", filePath);
+      core::logger::error("Cannot load texture file {}", filePath);
     }
 
     stbi_image_free(data);

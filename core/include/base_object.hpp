@@ -3,7 +3,7 @@
 #include "registry.hpp"
 #include "sparse_set.hpp"
 
-namespace core {
+namespace gl {
   class BaseObject {
   private:
     ecs::Registry &registryRef;

@@ -1,6 +1,6 @@
 #include "vertex.hpp"
 
-namespace core {
+namespace gl {
   VertexAttributeElement::VertexAttributeElement(unsigned int type,
                                                  unsigned int count,
                                                  unsigned int normalized) {
@@ -32,7 +32,7 @@ namespace core {
   }
 }
 
-namespace core {
+namespace gl {
   const std::vector<VertexAttributeElement>
       VertexAttribute::getElements() const {
     return this->elements;
@@ -63,10 +63,11 @@ namespace core {
   }
 }
 
-namespace core {
-  Vertex::Vertex(glm::vec3 position, glm::vec2 textureCoordinate) {
+namespace gl {
+  Vertex::Vertex(glm::vec3 position, glm::vec3 color,
+                 glm::vec2 textureCoordinate) {
     this->position = position;
-    // this->color = color;
+    this->color = color;
     this->textureCoordinate = textureCoordinate;
   }
 
@@ -74,9 +75,9 @@ namespace core {
     this->position = position;
   }
 
-  // void Vertex::setColor(glm::vec3 color) {
-  //   this->color = color;
-  // }
+  void Vertex::setColor(glm::vec3 color) {
+    this->color = color;
+  }
 
   void Vertex::setTextureCoordinate(glm::vec2 textureCoordinate) {
     this->textureCoordinate = textureCoordinate;
@@ -86,9 +87,9 @@ namespace core {
     return this->position;
   }
 
-  // glm::vec3 Vertex::getColor() const {
-  //   return this->color;
-  // }
+  glm::vec3 Vertex::getColor() const {
+    return this->color;
+  }
 
   glm::vec2 Vertex::getTextureCoordinate() const {
     return this->textureCoordinate;
@@ -96,7 +97,7 @@ namespace core {
 
   VertexAttribute Vertex::getAttribute() {
     VertexAttribute vertexAttribute;
-    vertexAttribute.push<glm::vec3>(1);
+    vertexAttribute.push<glm::vec3>(2);
     vertexAttribute.push<glm::vec2>(1);
     return vertexAttribute;
   }

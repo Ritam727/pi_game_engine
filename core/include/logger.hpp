@@ -2,4 +2,6 @@
 
 #include "spdlog/spdlog.h"
 
-namespace logger = spdlog;
+namespace core {
+  namespace logger = spdlog;
+}
