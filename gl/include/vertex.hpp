@@ -29,16 +29,16 @@ namespace core {
     const std::vector<VertexAttributeElement> getElements() const;
     const unsigned int                        getStride() const;
 
-    template <typename T> inline void push(unsigned int count) {}
+    template <typename T> inline void push(unsigned int count);
   };
 
   class Vertex {
   private:
+  public:
     glm::vec3 position;
     // glm::vec3 color;
     glm::vec2 textureCoordinate;
 
-  public:
     Vertex(glm::vec3 position, glm::vec2 textureCoordinate);
 
     void setPosition(glm::vec3 position);

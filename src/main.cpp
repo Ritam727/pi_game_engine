@@ -1,6 +1,6 @@
 #include "app.hpp"
 
 int main() {
-  core::App app;
+  App app;
   app.run();
 }

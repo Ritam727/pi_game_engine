@@ -13,10 +13,11 @@ namespace core {
     void arrangeVertexLayout();
 
   public:
-    VertexArray(std::vector<Vertex>       &vertices,
-                std::vector<unsigned int> &indices);
+    VertexArray(std::vector<Vertex>       vertices,
+                std::vector<unsigned int> indices);
     ~VertexArray();
 
     void bind();
+    void unbind();
   };
 }

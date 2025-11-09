@@ -24,11 +24,5 @@ target_link_directories(core
 
 target_link_libraries(core
   PUBLIC
-    glfw
-    glad
     spdlog
-    glm
-    stb_image
-    ecs
-    events
 )

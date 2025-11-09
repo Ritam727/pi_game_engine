@@ -1,5 +1,6 @@
 #pragma once
 
+#include "utils.hpp"
 #include "logger.hpp"
 #include "camera.hpp"
 #include "shader.hpp"
@@ -12,17 +13,19 @@
 
 #include "event_manager.hpp"
 
-#include <memory>
-
-#define GLM_ENABLE_EXPERIMENTAL
 #include "glm/gtc/quaternion.hpp"
+#define GLM_ENABLE_EXPERIMENTAL
 #include "glm/gtx/string_cast.hpp"
+
+#include <memory>
 
 namespace core {
   enum class DrawMode { TRIANGLES, ELEMENTS };
 
   class Renderer {
   private:
+    int                      &width;
+    int                      &height;
     std::vector<Vertex>       vertices = {{{-0.5f, -0.5f, -0.5f}, {0.0f, 0.0f}},
                                           {{0.5f, -0.5f, -0.5f}, {1.0f, 0.0f}},
                                           {{0.5f, 0.5f, -0.5f}, {1.0f, 1.0f}},
@@ -72,25 +75,22 @@ namespace core {
     std::vector<Transform> transforms;
     Camera                 camera;
 
-    glm::mat4 view;
-    glm::mat4 projection;
-
     VertexArray vertexArray;
     Shader      shader;
     Texture     texture;
 
     unsigned int frameCount = 0;
-    DrawMode     drawMode;
+    DrawMode     drawMode = DrawMode::TRIANGLES;
 
     void draw();
 
   public:
-    Renderer();
+    Renderer(int &width, int &height);
     ~Renderer();
 
     static inline void clear() {
-      glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-      glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+      GL_CALL(glClearColor(0.2f, 0.3f, 0.3f, 1.0f));
+      GL_CALL(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
     }
 
     void render();

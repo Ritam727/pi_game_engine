@@ -1,17 +1,17 @@
 #include "renderer.hpp"
+#include "utils.hpp"
 
 #ifndef ENGINE_PATH
 #define ENGINE_PATH "/"
 #endif
 
 namespace core {
-  Renderer::Renderer()
-      : vertexArray(vertices, indices),
+  Renderer::Renderer(int &width, int &height)
+      : width(width), height(height), vertexArray(vertices, indices),
         shader(ENGINE_PATH "/res/shaders/shader.vert",
                ENGINE_PATH "/res/shaders/shader.frag"),
         texture({ENGINE_PATH "/res/textures/container.jpg",
                  ENGINE_PATH "/res/textures/awesomeface.png"}),
-        view(1.0f), projection(1.0f),
         camera(registry, glm::vec3(0.0f, 0.0f, 3.0f),
                glm::vec3(0.0f, 1.0f, 0.0f)) {
     this->registry.addComponent<CameraTransform>(this->registry.createEntity(),
@@ -36,10 +36,10 @@ namespace core {
   void Renderer::draw() {
     switch (drawMode) {
     case DrawMode::TRIANGLES:
-      glDrawArrays(GL_TRIANGLES, 0, vertices.size());
+      GL_CALL(glDrawArrays(GL_TRIANGLES, 0, vertices.size()));
       break;
     case DrawMode::ELEMENTS:
-      glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
+      GL_CALL(glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0));
       break;
     }
   }
@@ -48,6 +48,7 @@ namespace core {
 
   void Renderer::render() {
     this->shader.use();
+    this->texture.bind();
     for (unsigned int i = 0; i < this->texture.getNumTextures(); i++) {
       const std::string textureName = "ourTexture" + std::to_string(i + 1);
       this->shader.set<int>(textureName, i);
@@ -59,14 +60,14 @@ namespace core {
     cameraTransform.setPosition(
         glm::vec3(radius * glm::sin(glm::radians((float) frameCount)), 0.0f,
                   radius * glm::cos(glm::radians((float) frameCount))));
-    view = cameraTransform.getViewMatrix();
+    glm::mat4 view = cameraTransform.getViewMatrix();
     this->shader.set<glm::mat4>("view", view);
 
-    projection =
-        glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
+    glm::mat4 projection = glm::perspective(
+        glm::radians(45.0f), (float) this->width / (float) this->height, 0.1f,
+        100.0f);
     this->shader.set<glm::mat4>("projection", projection);
 
-    this->texture.bind();
     this->vertexArray.bind();
 
     ecs::SparseSet<Transform> &transformPool = registry.getPool<Transform>();

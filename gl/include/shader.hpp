@@ -20,6 +20,6 @@ namespace core {
 
     void use();
 
-    template <typename T> void set(const std::string &name, T value) const {}
+    template <typename T> void set(const std::string &name, T value) const;
   };
 }

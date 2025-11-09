@@ -10,7 +10,7 @@ target_sources(engine
 target_link_libraries(engine
   PRIVATE
     # glad
-    core
+    gl
     # glfw
     dl
     pthread

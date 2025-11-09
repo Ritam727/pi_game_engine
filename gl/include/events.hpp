@@ -6,7 +6,21 @@
 namespace core {
   class WindowEvent : public events::BaseEvent {
   public:
-    bool equals(std::unique_ptr<BaseEvent> &event) override;
+    virtual bool equals(std::unique_ptr<BaseEvent> &event) override;
+  };
+
+  class WindowResizeEvent : public WindowEvent {
+  private:
+    int width;
+    int height;
+
+  public:
+    WindowResizeEvent(int width, int height);
+
+    int getWidth() const;
+    int getHeight() const;
+
+    virtual bool equals(std::unique_ptr<BaseEvent> &event) override;
   };
 
   class WindowCloseEvent : public WindowEvent {};

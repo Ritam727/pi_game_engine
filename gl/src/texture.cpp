@@ -1,5 +1,5 @@
 #include "texture.hpp"
-#include "shader.hpp"
+#include "utils.hpp"
 
 namespace core {
   Texture::Texture(const std::vector<std::string> filePaths)
@@ -12,18 +12,19 @@ namespace core {
   }
 
   Texture::~Texture() {
-    for (unsigned int i = 0; i < this->textures.size(); i++)
-      glDeleteTextures(1, &this->textures[i]);
+    for (unsigned int i = 0; i < this->textures.size(); i++) {
+      GL_CALL(glDeleteTextures(1, &this->textures[i]));
+    }
   }
 
   void Texture::createBindAndConfigureTexture(unsigned int index) {
-    glGenTextures(1, &this->textures[index]);
-    glActiveTexture(GL_TEXTURE0 + index);
-    glBindTexture(GL_TEXTURE_2D, this->textures[index]);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    GL_CALL(glGenTextures(1, &this->textures[index]));
+    GL_CALL(glActiveTexture(GL_TEXTURE0 + index));
+    GL_CALL(glBindTexture(GL_TEXTURE_2D, this->textures[index]));
+    GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT));
+    GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT));
+    GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
+    GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
   }
 
   void Texture::loadImage(const std::string &filePath) {
@@ -34,9 +35,10 @@ namespace core {
         stbi_load(filePath.c_str(), &width, &height, &channels, 0);
 
     if (data) {
-      glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0,
-                   (channels == 3) ? GL_RGB : GL_RGBA, GL_UNSIGNED_BYTE, data);
-      glGenerateMipmap(GL_TEXTURE_2D);
+      GL_CALL(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0,
+                           (channels == 3) ? GL_RGB : GL_RGBA, GL_UNSIGNED_BYTE,
+                           data));
+      GL_CALL(glGenerateMipmap(GL_TEXTURE_2D));
     } else {
       logger::error("Cannot load texture file {}", filePath);
     }
@@ -46,8 +48,8 @@ namespace core {
 
   void Texture::bind() {
     for (unsigned int i = 0; i < this->textures.size(); i++) {
-      glActiveTexture(GL_TEXTURE0 + i);
-      glBindTexture(GL_TEXTURE_2D, this->textures[i]);
+      GL_CALL(glActiveTexture(GL_TEXTURE0 + i));
+      GL_CALL(glBindTexture(GL_TEXTURE_2D, this->textures[i]));
     }
   }
 

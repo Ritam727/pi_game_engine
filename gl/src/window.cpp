@@ -4,14 +4,14 @@
 #include "events.hpp"
 
 namespace core {
-  Window::Window(int width, int height, char const *windowName) {
+  Window::Window(int width, int height, const std::string &name) {
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 
-    window = glfwCreateWindow(width, height, windowName, nullptr, nullptr);
+    window = glfwCreateWindow(width, height, name.c_str(), nullptr, nullptr);
 
     if (window == nullptr) {
       logger::error("Failed to create window");
@@ -41,6 +41,8 @@ namespace core {
 
   void Window::framebufferResizeCallback(GLFWwindow *window, int width,
                                          int height) {
+    events::EventManager::getInstance().enqueue<WindowResizeEvent>(
+        std::make_unique<WindowResizeEvent>(width, height));
     glViewport(0, 0, width, height);
   }
 

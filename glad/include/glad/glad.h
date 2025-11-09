@@ -2134,13 +2134,13 @@ GLAPI PFNGLNEWLISTPROC glad_glNewList;
 typedef void(APIENTRYP PFNGLENDLISTPROC)(void);
 GLAPI PFNGLENDLISTPROC glad_glEndList;
 #define glEndList glad_glEndList
-typedef void(APIENTRYP PFNGLCALLLISTPROC)(GLuint list);
-GLAPI PFNGLCALLLISTPROC glad_glCallList;
-#define glCallList glad_glCallList
-typedef void(APIENTRYP PFNGLCALLLISTSPROC)(GLsizei n, GLenum type,
-                                           const void *lists);
-GLAPI PFNGLCALLLISTSPROC glad_glCallLists;
-#define glCallLists glad_glCallLists
+typedef void(APIENTRYP PFNGL_CALLLISTPROC)(GLuint list);
+GLAPI PFNGL_CALLLISTPROC glad_GL_CALLList;
+#define GL_CALLList glad_GL_CALLList
+typedef void(APIENTRYP PFNGL_CALLLISTSPROC)(GLsizei n, GLenum type,
+                                            const void *lists);
+GLAPI PFNGL_CALLLISTSPROC glad_GL_CALLLists;
+#define GL_CALLLists glad_GL_CALLLists
 typedef void(APIENTRYP PFNGLDELETELISTSPROC)(GLuint list, GLsizei range);
 GLAPI PFNGLDELETELISTSPROC glad_glDeleteLists;
 #define glDeleteLists glad_glDeleteLists

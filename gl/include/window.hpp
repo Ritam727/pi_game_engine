@@ -6,7 +6,7 @@
 #include "event_manager.hpp"
 #include "events.hpp"
 #include "logger.hpp"
-#include <memory>
+
 #include <stdexcept>
 
 namespace core {
@@ -21,7 +21,7 @@ namespace core {
     static void closeCallback(GLFWwindow *window);
 
   public:
-    Window(int width, int height, char const *windowName);
+    Window(int width, int height, const std::string &name);
     ~Window();
 
     void processGlfwFrame();

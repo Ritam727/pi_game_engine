@@ -7,7 +7,7 @@ namespace core {
       : BaseComponent(registryRef), position(position), target(0), up(up),
         right(glm::normalize(
             glm::cross(glm::normalize(this->position - this->target),
-                       glm::normalize(up)))) {}
+                       glm::normalize(this->up)))) {}
 
   void CameraTransform::setPosition(glm::vec3 position) {
     this->position = position;
