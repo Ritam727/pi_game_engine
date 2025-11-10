@@ -25,4 +25,5 @@ target_link_directories(core
 target_link_libraries(core
   PUBLIC
     spdlog
+    glm
 )

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "glm/glm.hpp"
+
 #include <variant>
 #include <vector>
 
@@ -25,36 +27,79 @@ namespace core {
 }
 
 namespace core {
+  enum class InputAction { NONE, PRESS, HOLD, RELEASE };
+}
+
+namespace core {
   class KeyEvent {
-  public:
-    enum class Type { KEY_ENTER };
-
   private:
-    Type type;
+    int         key;
+    InputAction type;
 
   public:
-    KeyEvent(Type type);
+    KeyEvent(int key, InputAction type);
     ~KeyEvent();
 
-    Type getType() const;
+    int         getKey() const;
+    InputAction getType() const;
 
     bool operator==(const KeyEvent &event) const;
   };
 }
 
 namespace core {
-  class MouseEvent {
+  class MouseButtonEvent {
+  private:
+    int         button;
+    InputAction type;
+
   public:
-    bool operator==(const MouseEvent &event) const;
+    MouseButtonEvent(int button, InputAction type);
+
+    int         getButton() const;
+    InputAction getType() const;
+
+    bool operator==(const MouseButtonEvent &event) const;
+  };
+
+  class MouseMovementEvent {
+  private:
+    double x;
+    double y;
+
+  public:
+    MouseMovementEvent(double x, double y);
+
+    double getX() const;
+    double getY() const;
+
+    bool operator==(const MouseMovementEvent &event) const;
+  };
+
+  class MouseScrollEvent {
+  private:
+    double x;
+    double y;
+
+  public:
+    MouseScrollEvent(double x, double y);
+
+    double getX() const;
+    double getY() const;
+
+    bool operator==(const MouseScrollEvent &event) const;
   };
 }
 
 namespace core {
   using Event =
-      std::variant<MouseEvent, KeyEvent, WindowResizeEvent, WindowCloseEvent>;
+      std::variant<MouseMovementEvent, MouseButtonEvent, MouseScrollEvent,
+                   KeyEvent, WindowResizeEvent, WindowCloseEvent>;
 
   enum class InputEventType {
-    MOUSE_EVENT,
+    MOUSE_MOVEMENT_EVENT,
+    MOUSE_BUTTON_EVENT,
+    MOUSE_SCROLL_EVENT,
     KEY_EVENT,
     WINDOW_RESIZE_EVENT,
     WINDOW_CLOSE_EVENT
@@ -67,9 +112,11 @@ namespace core {
 
   public:
     InputEvent(KeyEvent data);
-    InputEvent(MouseEvent data);
+    InputEvent(MouseButtonEvent data);
     InputEvent(WindowResizeEvent data);
     InputEvent(WindowCloseEvent data);
+    InputEvent(MouseMovementEvent data);
+    InputEvent(MouseScrollEvent data);
 
     InputEventType getType();
 

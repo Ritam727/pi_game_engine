@@ -30,6 +30,9 @@ namespace gl {
     glfwSetFramebufferSizeCallback(window, Window::framebufferResizeCallback);
     glfwSetKeyCallback(window, Window::keyCallback);
     glfwSetWindowCloseCallback(window, Window::closeCallback);
+    glfwSetCursorPosCallback(window, Window::mouseMovementCallback);
+    glfwSetMouseButtonCallback(window, Window::mouseButtonCallback);
+    glfwSetScrollCallback(window, Window::mouseScrollCallback);
   }
 
   Window::~Window() {
@@ -51,7 +54,7 @@ namespace gl {
   void Window::keyCallback(GLFWwindow *window, int key, int scanCode,
                            int action, int mods) {
     core::EventManager::getInstance().enqueue(core::InputEvent(
-        core::KeyEvent(static_cast<core::KeyEvent::Type>(key))));
+        core::KeyEvent(key, static_cast<core::InputAction>(action))));
     if (key == GLFW_KEY_ESCAPE) {
       core::EventManager::getInstance().enqueue(
           core::InputEvent(core::WindowCloseEvent()));
@@ -61,5 +64,22 @@ namespace gl {
   void Window::closeCallback(GLFWwindow *window) {
     core::EventManager::getInstance().enqueue(
         core::InputEvent(core::WindowCloseEvent()));
+  }
+
+  void Window::mouseMovementCallback(GLFWwindow *window, double x, double y) {
+    core::EventManager::getInstance().enqueue(
+        core::InputEvent(core::MouseMovementEvent(x, y)));
+  }
+
+  void Window::mouseButtonCallback(GLFWwindow *window, int button, int action,
+                                   int mods) {
+    core::EventManager::getInstance().enqueue(
+        core::InputEvent(core::MouseButtonEvent(
+            button, static_cast<core::InputAction>(action))));
+  }
+
+  void Window::mouseScrollCallback(GLFWwindow *window, double x, double y) {
+    core::EventManager::getInstance().enqueue(
+        core::InputEvent(core::MouseScrollEvent(x, y)));
   }
 }

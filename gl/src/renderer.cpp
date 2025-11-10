@@ -82,7 +82,7 @@ namespace gl {
 
   void Renderer::keyCallback(core::InputEvent &event) {
     core::KeyEvent keyEvent = std::get<core::KeyEvent>(event.getData());
-    core::logger::info("{} key is pressed",
+    core::logger::info("Received key press event: {} {}", keyEvent.getKey(),
                        static_cast<int>(keyEvent.getType()));
   }
 }

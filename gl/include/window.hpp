@@ -14,6 +14,10 @@ namespace gl {
     static void keyCallback(GLFWwindow *window, int key, int scanCode,
                             int action, int mods);
     static void closeCallback(GLFWwindow *window);
+    static void mouseMovementCallback(GLFWwindow *window, double x, double y);
+    static void mouseButtonCallback(GLFWwindow *window, int button, int action,
+                                    int mods);
+    static void mouseScrollCallback(GLFWwindow *window, double x, double y);
 
   public:
     Window(int width, int height, const std::string &name);
