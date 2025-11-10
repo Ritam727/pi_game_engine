@@ -14,7 +14,7 @@ namespace core {
   }
 
   void EventManager::enqueue(BasicEvent event) {
-    std::lock_guard<std::mutex> lock = std::lock_guard(this->writeMutex);
+    std::lock_guard<std::mutex> lock = std::lock_guard(this->queueMutex);
     unsigned long idx = static_cast<unsigned long>(event.getType());
     for (BasicEvent &prevEvent : this->topics[idx][this->write]) {
       if (prevEvent == event) {
@@ -27,7 +27,7 @@ namespace core {
 
   void EventManager::executeEvents() {
     {
-      std::lock_guard<std::mutex> lock = std::lock_guard(this->swapMutex);
+      std::lock_guard<std::mutex> lock = std::lock_guard(this->queueMutex);
       this->read = (this->read + 1) % 2;
       this->write = (this->write + 1) % 2;
     }

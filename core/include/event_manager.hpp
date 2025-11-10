@@ -13,9 +13,8 @@ namespace core {
     std::vector<std::vector<std::function<void(BasicEvent &)>>> subscribers;
     std::vector<std::array<std::vector<BasicEvent>, 2>>         topics;
 
-    std::mutex swapMutex;
     std::mutex subscriberMutex;
-    std::mutex writeMutex;
+    std::mutex queueMutex;
 
     int read = 0;
     int write = 1;
