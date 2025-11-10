@@ -49,33 +49,34 @@ namespace core {
   };
 }
 
-#define BASIC_EVENTS KeyEvent, MouseEvent, WindowResizeEvent, WindowCloseEvent
-
 namespace core {
-  enum class BasicEventType {
-    KEY_EVENT,
+  using Event =
+      std::variant<MouseEvent, KeyEvent, WindowResizeEvent, WindowCloseEvent>;
+
+  enum class InputEventType {
     MOUSE_EVENT,
+    KEY_EVENT,
     WINDOW_RESIZE_EVENT,
     WINDOW_CLOSE_EVENT
   };
 
-  class BasicEvent {
+  class InputEvent {
   private:
-    BasicEventType             type;
-    std::variant<BASIC_EVENTS> data;
+    InputEventType type;
+    Event          data;
 
   public:
-    BasicEvent(KeyEvent data);
-    BasicEvent(MouseEvent data);
-    BasicEvent(WindowResizeEvent data);
-    BasicEvent(WindowCloseEvent data);
+    InputEvent(KeyEvent data);
+    InputEvent(MouseEvent data);
+    InputEvent(WindowResizeEvent data);
+    InputEvent(WindowCloseEvent data);
 
-    BasicEventType getType();
+    InputEventType getType();
 
-    const std::variant<BASIC_EVENTS> &getData() const;
+    const Event &getData() const;
 
-    bool operator==(BasicEvent &event);
+    bool operator==(InputEvent &event);
 
-    static const std::vector<BasicEventType> &getEventTypes();
+    static const std::vector<InputEventType> &getEventTypes();
   };
 }

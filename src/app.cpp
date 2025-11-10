@@ -6,17 +6,17 @@ App::App()
     : window(config.getWidth(), config.getHeight(), config.getName()),
       renderer(config.getWidth(), config.getHeight()) {
   core::EventManager::getInstance().subscribe(
-      core::BasicEventType::WINDOW_CLOSE_EVENT, App::windowCloseCallback);
+      core::InputEventType::WINDOW_CLOSE_EVENT, App::windowCloseCallback);
   core::EventManager::getInstance().subscribe(
-      core::BasicEventType::WINDOW_RESIZE_EVENT, App::windowResizeCallback);
+      core::InputEventType::WINDOW_RESIZE_EVENT, App::windowResizeCallback);
 }
 
-void App::windowCloseCallback(core::BasicEvent &event) {
+void App::windowCloseCallback(core::InputEvent &event) {
   core::logger::info("Shutting down application");
   App::running = false;
 }
 
-void App::windowResizeCallback(core::BasicEvent &event) {
+void App::windowResizeCallback(core::InputEvent &event) {
   core::WindowResizeEvent windowResizeEvent =
       std::get<core::WindowResizeEvent>(event.getData());
   core::logger::info("Resizing window from ({}, {}) to ({}, {})",

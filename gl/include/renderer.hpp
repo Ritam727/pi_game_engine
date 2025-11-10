@@ -82,7 +82,6 @@ namespace gl {
 
   public:
     Renderer(int &width, int &height);
-    ~Renderer();
 
     static inline void clear() {
       GL_CALL(glClearColor(0.2f, 0.3f, 0.3f, 1.0f));
@@ -91,7 +90,7 @@ namespace gl {
 
     void render();
 
-    static void keyCallback(core::BasicEvent &event);
+    static void keyCallback(core::InputEvent &event);
   };
 
 }

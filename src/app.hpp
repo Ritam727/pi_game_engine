@@ -18,7 +18,7 @@ public:
 
   void run();
 
-  static void windowCloseCallback(core::BasicEvent &event);
-  static void windowResizeCallback(core::BasicEvent &event);
+  static void windowCloseCallback(core::InputEvent &event);
+  static void windowResizeCallback(core::InputEvent &event);
   static void eventThreadExecutor();
 };

@@ -10,8 +10,8 @@
 namespace core {
   class EventManager {
   private:
-    std::vector<std::vector<std::function<void(BasicEvent &)>>> subscribers;
-    std::vector<std::array<std::vector<BasicEvent>, 2>>         topics;
+    std::vector<std::vector<std::function<void(InputEvent &)>>> subscribers;
+    std::vector<std::array<std::vector<InputEvent>, 2>>         topics;
 
     std::mutex subscriberMutex;
     std::mutex queueMutex;
@@ -25,8 +25,8 @@ namespace core {
     static EventManager &getInstance();
 
     void executeEvents();
-    void subscribe(BasicEventType                    type,
-                   std::function<void(BasicEvent &)> handle);
-    void enqueue(BasicEvent event);
+    void subscribe(InputEventType                    type,
+                   std::function<void(InputEvent &)> handle);
+    void enqueue(InputEvent event);
   };
 }

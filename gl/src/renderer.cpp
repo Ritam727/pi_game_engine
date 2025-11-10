@@ -18,7 +18,7 @@ namespace gl {
                glm::vec3(0.0f, 1.0f, 0.0f)) {
     this->registry.addComponent<CameraTransform>(this->registry.createEntity(),
                                                  camera.getCameraTransform());
-    core::EventManager::getInstance().subscribe(core::BasicEventType::KEY_EVENT,
+    core::EventManager::getInstance().subscribe(core::InputEventType::KEY_EVENT,
                                                 Renderer::keyCallback);
     for (int i = 0; i < 10; i++) {
       transforms.emplace_back(registry.createEntity(), registry);
@@ -45,8 +45,6 @@ namespace gl {
       break;
     }
   }
-
-  Renderer::~Renderer() {}
 
   void Renderer::render() {
     this->shader.use();
@@ -82,7 +80,7 @@ namespace gl {
     this->frameCount = (this->frameCount + 1) % 360;
   }
 
-  void Renderer::keyCallback(core::BasicEvent &event) {
+  void Renderer::keyCallback(core::InputEvent &event) {
     core::KeyEvent keyEvent = std::get<core::KeyEvent>(event.getData());
     core::logger::info("{} key is pressed",
                        static_cast<int>(keyEvent.getType()));

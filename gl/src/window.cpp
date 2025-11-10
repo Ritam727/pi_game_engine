@@ -44,22 +44,22 @@ namespace gl {
   void Window::framebufferResizeCallback(GLFWwindow *window, int width,
                                          int height) {
     core::EventManager::getInstance().enqueue(
-        core::BasicEvent(core::WindowResizeEvent(width, height)));
+        core::InputEvent(core::WindowResizeEvent(width, height)));
     glViewport(0, 0, width, height);
   }
 
   void Window::keyCallback(GLFWwindow *window, int key, int scanCode,
                            int action, int mods) {
-    core::EventManager::getInstance().enqueue(core::BasicEvent(
+    core::EventManager::getInstance().enqueue(core::InputEvent(
         core::KeyEvent(static_cast<core::KeyEvent::Type>(key))));
     if (key == GLFW_KEY_ESCAPE) {
       core::EventManager::getInstance().enqueue(
-          core::BasicEvent(core::WindowCloseEvent()));
+          core::InputEvent(core::WindowCloseEvent()));
     }
   }
 
   void Window::closeCallback(GLFWwindow *window) {
     core::EventManager::getInstance().enqueue(
-        core::BasicEvent(core::WindowCloseEvent()));
+        core::InputEvent(core::WindowCloseEvent()));
   }
 }

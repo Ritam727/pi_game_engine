@@ -47,35 +47,35 @@ namespace core {
 }
 
 namespace core {
-  BasicEvent::BasicEvent(KeyEvent data)
-      : type(BasicEventType::KEY_EVENT), data(data) {}
+  InputEvent::InputEvent(KeyEvent data)
+      : type(InputEventType::KEY_EVENT), data(data) {}
 
-  BasicEvent::BasicEvent(MouseEvent data)
-      : type(BasicEventType::MOUSE_EVENT), data(data) {}
+  InputEvent::InputEvent(MouseEvent data)
+      : type(InputEventType::MOUSE_EVENT), data(data) {}
 
-  BasicEvent::BasicEvent(WindowResizeEvent data)
-      : type(BasicEventType::WINDOW_RESIZE_EVENT), data(data) {}
+  InputEvent::InputEvent(WindowResizeEvent data)
+      : type(InputEventType::WINDOW_RESIZE_EVENT), data(data) {}
 
-  BasicEvent::BasicEvent(WindowCloseEvent data)
-      : type(BasicEventType::WINDOW_CLOSE_EVENT), data(data) {}
+  InputEvent::InputEvent(WindowCloseEvent data)
+      : type(InputEventType::WINDOW_CLOSE_EVENT), data(data) {}
 
-  BasicEventType BasicEvent::getType() {
+  InputEventType InputEvent::getType() {
     return this->type;
   }
 
-  const std::variant<BASIC_EVENTS> &BasicEvent::getData() const {
+  const Event &InputEvent::getData() const {
     return this->data;
   }
 
-  bool BasicEvent::operator==(BasicEvent &event) {
+  bool InputEvent::operator==(InputEvent &event) {
     return this->type == event.getType() && this->data == event.getData();
   }
 
-  const std::vector<BasicEventType> &BasicEvent::getEventTypes() {
-    static std::vector<BasicEventType> eventTypes{
-        BasicEventType::KEY_EVENT, BasicEventType::MOUSE_EVENT,
-        BasicEventType::WINDOW_RESIZE_EVENT,
-        BasicEventType::WINDOW_CLOSE_EVENT};
+  const std::vector<InputEventType> &InputEvent::getEventTypes() {
+    static std::vector<InputEventType> eventTypes{
+        InputEventType::KEY_EVENT, InputEventType::MOUSE_EVENT,
+        InputEventType::WINDOW_RESIZE_EVENT,
+        InputEventType::WINDOW_CLOSE_EVENT};
     return eventTypes;
   }
 }
