@@ -73,7 +73,7 @@ namespace core {
 
   const std::vector<InputEventType> &InputEvent::getEventTypes() {
     static std::vector<InputEventType> eventTypes{
-        InputEventType::KEY_EVENT, InputEventType::MOUSE_EVENT,
+        InputEventType::MOUSE_EVENT, InputEventType::KEY_EVENT,
         InputEventType::WINDOW_RESIZE_EVENT,
         InputEventType::WINDOW_CLOSE_EVENT};
     return eventTypes;
