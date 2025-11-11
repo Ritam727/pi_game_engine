@@ -50,7 +50,8 @@ namespace gl {
     }
   }
 
-  void Renderer::render() {
+  void Renderer::onUpdate(float ts) {
+    this->clear();
     this->shader.use();
     this->texture.bind();
     for (unsigned int i = 0; i < this->texture.getNumTextures(); i++) {
@@ -61,9 +62,9 @@ namespace gl {
     CameraTransform &cameraTransform =
         registry.getPool<CameraTransform>().get(0);
     float radius = 10.0f;
-    cameraTransform.setPosition(
-        glm::vec3(radius * glm::sin(glm::radians((float) frameCount)), 0.0f,
-                  radius * glm::cos(glm::radians((float) frameCount))));
+    cameraTransform.setPosition(glm::vec3(
+        radius * glm::sin(glm::radians((float) this->cameraAngle)), 0.0f,
+        radius * glm::cos(glm::radians((float) this->cameraAngle))));
     glm::mat4 view = cameraTransform.getViewMatrix();
     this->shader.set<glm::mat4>("view", view);
 
@@ -73,14 +74,16 @@ namespace gl {
     this->shader.set<glm::mat4>("projection", projection);
 
     this->vertexArray.bind();
+    float                      angle = ts * ((float) 60 / (float) 1000);
     ecs::SparseSet<Transform> &transformPool = registry.getPool<Transform>();
     for (Transform &transform : transformPool.getComponents()) {
-      transform.updateRotation(glm::vec3(1.0f, 1.0f, 1.0f));
+      transform.updateRotation(glm::vec3(angle));
       glm::mat4 model = transform.getModelMatrix();
       this->shader.set<glm::mat4>("model", model);
       this->draw();
     }
-    this->frameCount = (this->frameCount + 1) % 360;
+    this->frameCount = (this->frameCount + 1) % 36000;
+    this->cameraAngle += angle;
   }
 
   void Renderer::keyCallback(core::InputEvent &event) {

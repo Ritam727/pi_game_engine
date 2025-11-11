@@ -2,6 +2,7 @@
 
 #include "camera.hpp"
 #include "events.hpp"
+#include "layer.hpp"
 #include "logger.hpp"
 #include "shader.hpp"
 #include "texture.hpp"
@@ -17,7 +18,7 @@
 namespace gl {
   enum class DrawMode { TRIANGLES, ELEMENTS };
 
-  class Renderer {
+  class Renderer : public core::Layer {
   private:
     int                &width;
     int                &height;
@@ -76,6 +77,7 @@ namespace gl {
     Texture     texture;
 
     unsigned int frameCount = 0;
+    float        cameraAngle = 0;
     DrawMode     drawMode = DrawMode::TRIANGLES;
 
     void draw();
@@ -83,12 +85,12 @@ namespace gl {
   public:
     Renderer(int &width, int &height);
 
-    static inline void clear() {
+    inline void clear() {
       GL_CALL(glClearColor(0.2f, 0.3f, 0.3f, 1.0f));
       GL_CALL(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
     }
 
-    void render();
+    void onUpdate(float ts) override;
 
     static void keyCallback(core::InputEvent &event);
     static void windowResizeCallback(core::InputEvent &event);

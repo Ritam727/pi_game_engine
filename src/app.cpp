@@ -1,11 +1,13 @@
 #include "app.hpp"
 
+#include "GLFW/glfw3.h"
 #include "event_manager.hpp"
 #include "events.hpp"
+#include "renderer.hpp"
 
-App::App()
-    : window(config.getWidth(), config.getHeight(), config.getName()),
-      renderer(config.getWidth(), config.getHeight()) {
+App::App() : window(config.getWidth(), config.getHeight(), config.getName()) {
+  layers.emplace_back(
+      std::make_unique<gl::Renderer>(config.getWidth(), config.getHeight()));
   core::InputEventManager::getInstance().subscribe(
       core::InputEventType::WINDOW_CLOSE_EVENT, App::windowCloseHandler);
   core::InputEventManager::getInstance().subscribe(
@@ -57,10 +59,12 @@ void App::windowResizeHandler(core::InputEvent &event) {
 }
 
 void App::run() {
+  float currentTimestamp = glfwGetTime();
   while (App::running) {
     core::InputEventManager::getInstance().executeEvents();
-    gl::Renderer::clear();
-    renderer.render();
+    for (std::unique_ptr<core::Layer> &layer : layers)
+      layer->onUpdate((glfwGetTime() - currentTimestamp) * 1000);
+    currentTimestamp = glfwGetTime();
     window.processGlfwFrame();
   }
 }

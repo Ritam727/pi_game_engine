@@ -1,6 +1,7 @@
 #pragma once
 
-#include "renderer.hpp"
+#include "events.hpp"
+#include "layer.hpp"
 #include "window.hpp"
 
 #include "app_config.hpp"
@@ -8,7 +9,8 @@
 class App {
 private:
   core::Window window;
-  gl::Renderer renderer;
+
+  std::vector<std::unique_ptr<core::Layer>> layers;
 
   static AppConfig config;
   static bool      running;
