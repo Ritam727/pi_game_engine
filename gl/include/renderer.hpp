@@ -91,6 +91,7 @@ namespace gl {
     void render();
 
     static void keyCallback(core::InputEvent &event);
+    static void windowResizeCallback(core::InputEvent &event);
   };
 
 }

@@ -6,15 +6,15 @@
 App::App()
     : window(config.getWidth(), config.getHeight(), config.getName()),
       renderer(config.getWidth(), config.getHeight()) {
-  core::EventManager::getInstance().subscribe(
+  core::InputEventManager::getInstance().subscribe(
       core::InputEventType::WINDOW_CLOSE_EVENT, App::windowCloseHandler);
-  core::EventManager::getInstance().subscribe(
+  core::InputEventManager::getInstance().subscribe(
       core::InputEventType::WINDOW_RESIZE_EVENT, App::windowResizeHandler);
-  core::EventManager::getInstance().subscribe(
+  core::InputEventManager::getInstance().subscribe(
       core::InputEventType::MOUSE_BUTTON_EVENT, App::mouseButtonHandler);
-  core::EventManager::getInstance().subscribe(
+  core::InputEventManager::getInstance().subscribe(
       core::InputEventType::MOUSE_MOVEMENT_EVENT, App::mouseMovementHandler);
-  core::EventManager::getInstance().subscribe(
+  core::InputEventManager::getInstance().subscribe(
       core::InputEventType::MOUSE_SCROLL_EVENT, App::mouseScrollHandler);
 }
 
@@ -57,20 +57,11 @@ void App::windowResizeHandler(core::InputEvent &event) {
 }
 
 void App::run() {
-  std::thread eventThread(App::eventThreadExecutor);
-
   while (App::running) {
+    core::InputEventManager::getInstance().executeEvents();
     gl::Renderer::clear();
     renderer.render();
     window.processGlfwFrame();
-  }
-
-  eventThread.join();
-}
-
-void App::eventThreadExecutor() {
-  while (App::running) {
-    core::EventManager::getInstance().executeEvents();
   }
 }
 

@@ -26,4 +26,6 @@ target_link_libraries(core
   PUBLIC
     spdlog
     glm
+    glad
+    glfw
 )

@@ -1,4 +1,5 @@
 #include "renderer.hpp"
+#include "events.hpp"
 #include "utils.hpp"
 
 #include "event_manager.hpp"
@@ -18,8 +19,11 @@ namespace gl {
                glm::vec3(0.0f, 1.0f, 0.0f)) {
     this->registry.addComponent<CameraTransform>(this->registry.createEntity(),
                                                  camera.getCameraTransform());
-    core::EventManager::getInstance().subscribe(core::InputEventType::KEY_EVENT,
-                                                Renderer::keyCallback);
+    core::InputEventManager::getInstance().subscribe(
+        core::InputEventType::KEY_EVENT, Renderer::keyCallback);
+    core::InputEventManager::getInstance().subscribe(
+        core::InputEventType::WINDOW_RESIZE_EVENT,
+        Renderer::windowResizeCallback);
     for (int i = 0; i < 10; i++) {
       transforms.emplace_back(registry.createEntity(), registry);
       this->registry.addComponent<Transform>(this->registry.createEntity(),
@@ -69,7 +73,6 @@ namespace gl {
     this->shader.set<glm::mat4>("projection", projection);
 
     this->vertexArray.bind();
-
     ecs::SparseSet<Transform> &transformPool = registry.getPool<Transform>();
     for (Transform &transform : transformPool.getComponents()) {
       transform.updateRotation(glm::vec3(1.0f, 1.0f, 1.0f));
@@ -84,5 +87,12 @@ namespace gl {
     core::KeyEvent keyEvent = std::get<core::KeyEvent>(event.getData());
     core::logger::info("Received key press event: {} {}", keyEvent.getKey(),
                        static_cast<int>(keyEvent.getType()));
+  }
+
+  void Renderer::windowResizeCallback(core::InputEvent &event) {
+    core::WindowResizeEvent windowResizeEvent =
+        std::get<core::WindowResizeEvent>(event.getData());
+    glViewport(0, 0, windowResizeEvent.getWidth(),
+               windowResizeEvent.getHeight());
   }
 }

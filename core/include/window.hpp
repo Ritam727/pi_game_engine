@@ -4,7 +4,7 @@
 #include "GLFW/glfw3.h"
 #include "logger.hpp"
 
-namespace gl {
+namespace core {
   class Window {
   private:
     GLFWwindow *window;

@@ -7,7 +7,7 @@
 
 class App {
 private:
-  gl::Window   window;
+  core::Window window;
   gl::Renderer renderer;
 
   static AppConfig config;
@@ -23,5 +23,4 @@ public:
   static void mouseMovementHandler(core::InputEvent &event);
   static void mouseButtonHandler(core::InputEvent &event);
   static void mouseScrollHandler(core::InputEvent &event);
-  static void eventThreadExecutor();
 };

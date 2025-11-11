@@ -8,21 +8,18 @@
 #include <mutex>
 
 namespace core {
-  class EventManager {
+  class InputEventManager {
   private:
     std::vector<std::vector<std::function<void(InputEvent &)>>> subscribers;
     std::vector<std::array<std::vector<InputEvent>, 2>>         topics;
 
-    std::mutex subscriberMutex;
-    std::mutex queueMutex;
-
     int read = 0;
     int write = 1;
 
-    EventManager();
+    InputEventManager();
 
   public:
-    static EventManager &getInstance();
+    static InputEventManager &getInstance();
 
     void executeEvents();
     void subscribe(InputEventType                    type,
