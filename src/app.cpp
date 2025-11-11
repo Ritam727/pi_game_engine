@@ -59,12 +59,13 @@ void App::windowResizeHandler(core::InputEvent &event) {
 }
 
 void App::run() {
-  float currentTimestamp = glfwGetTime();
+  float previousFrame = glfwGetTime();
   while (App::running) {
     core::InputEventManager::getInstance().executeEvents();
+    float currentFrame = glfwGetTime();
     for (std::unique_ptr<core::Layer> &layer : layers)
-      layer->onUpdate((glfwGetTime() - currentTimestamp) * 1000);
-    currentTimestamp = glfwGetTime();
+      layer->onUpdate((currentFrame - previousFrame) * 1000);
+    previousFrame = currentFrame;
     window.processGlfwFrame();
   }
 }
