@@ -20,7 +20,7 @@ namespace ecs {
     Entity getLastEntity();
     Entity createEntity();
 
-    template <typename T> void addComponent(Entity entity, T &component) {
+    template <typename T> void addComponent(Entity entity, T component) {
       std::type_index poolIndex = std::type_index(typeid(T));
       if (!this->pools.contains(poolIndex)) {
         this->pools[poolIndex] = std::make_unique<SparseSet<T>>();

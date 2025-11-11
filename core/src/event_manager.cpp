@@ -31,11 +31,9 @@ namespace core {
       std::vector<InputEvent> &events = this->topics[idx][this->read];
       std::vector<std::function<void(InputEvent &)>> &handles =
           this->subscribers[idx];
-      for (int i = 0; i < events.size(); i++) {
-        for (std::function<void(InputEvent &)> &handle : handles) {
+      for (int i = 0; i < events.size(); i++)
+        for (std::function<void(InputEvent &)> &handle : handles)
           handle(events[i]);
-        }
-      }
       events.clear();
     }
   }

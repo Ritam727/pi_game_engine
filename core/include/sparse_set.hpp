@@ -27,7 +27,7 @@ namespace ecs {
       this->components.reserve(size);
     }
 
-    void addElem(Entity entity, T &component) {
+    void addElem(Entity entity, T component) {
       if (this->contains(entity))
         return;
       this->entities.emplace_back(entity);

@@ -25,9 +25,9 @@ namespace gl {
         core::InputEventType::WINDOW_RESIZE_EVENT,
         Renderer::windowResizeCallback);
     for (int i = 0; i < 10; i++) {
-      transforms.emplace_back(registry.createEntity(), registry);
-      this->registry.addComponent<Transform>(this->registry.createEntity(),
-                                             transforms.back());
+      this->registry.addComponent<Transform>(
+          this->registry.createEntity(),
+          Transform(this->registry.getLastEntity(), this->registry));
       registry.getPool<Transform>()
           .get(registry.getLastEntity())
           .setPosition(cubePositions[i]);
