@@ -1,6 +1,6 @@
 #include "camera.hpp"
 
-namespace gl {
+namespace core {
   Camera::Camera(ecs::Registry &registryRef, glm::vec3 position, glm::vec3 up)
       : BaseObject(registryRef),
         transform(this->getEntityId(), registryRef, position, up) {}

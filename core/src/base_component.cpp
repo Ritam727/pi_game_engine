@@ -1,6 +1,6 @@
 #include "base_component.hpp"
 
-namespace gl {
+namespace core {
   BaseComponent::BaseComponent(ecs::Registry &registryRef)
       : registryRef(registryRef) {}
 

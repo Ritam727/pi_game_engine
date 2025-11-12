@@ -1,6 +1,6 @@
 #include "base_object.hpp"
 
-namespace gl {
+namespace core {
   BaseObject::BaseObject(ecs::Registry &registryRef)
       : registryRef(registryRef) {
     this->entityId = registryRef.createEntity();

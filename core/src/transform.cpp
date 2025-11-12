@@ -2,7 +2,7 @@
 
 #include "glm/gtc/matrix_transform.hpp"
 
-namespace gl {
+namespace core {
   Transform::Transform(ecs::Entity entityId, ecs::Registry &registryRef)
       : BaseComponent(registryRef), position(0), scale(1), axisX(1, 0, 0),
         axisY(0, 1, 0), axisZ(0, 0, 1),

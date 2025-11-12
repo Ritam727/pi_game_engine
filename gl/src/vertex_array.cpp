@@ -3,12 +3,13 @@
 #include "vertex.hpp"
 
 namespace gl {
-  VertexArray::VertexArray(std::vector<Vertex>       vertices,
+  VertexArray::VertexArray(std::vector<core::Vertex> vertices,
                            std::vector<unsigned int> indices) {
     GL_CALL(glGenVertexArrays(1, &this->vertexArrayIndex));
     GL_CALL(glBindVertexArray(this->vertexArrayIndex));
     this->generateAndAttachBuffer(this->vertexBufferIndex, GL_ARRAY_BUFFER);
-    GL_CALL(glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * vertices.size(),
+    GL_CALL(glBufferData(GL_ARRAY_BUFFER,
+                         sizeof(core::Vertex) * vertices.size(),
                          vertices.data(), GL_STATIC_DRAW));
     this->generateAndAttachBuffer(this->elementBufferIndex,
                                   GL_ELEMENT_ARRAY_BUFFER);
@@ -25,9 +26,9 @@ namespace gl {
   }
 
   void VertexArray::arrangeVertexLayout() {
-    unsigned int    offset = 0;
-    VertexAttribute vertexAttribute = Vertex::getAttribute();
-    const std::vector<VertexAttributeElement> vertexAttributeElements =
+    unsigned int          offset = 0;
+    core::VertexAttribute vertexAttribute = core::Vertex::getAttribute();
+    const std::vector<core::VertexAttributeElement> vertexAttributeElements =
         vertexAttribute.getElements();
     for (int i = 0; i < vertexAttributeElements.size(); i++) {
       GL_CALL(glVertexAttribPointer(i, vertexAttributeElements[i].getCount(),

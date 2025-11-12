@@ -17,18 +17,18 @@ namespace gl {
                  ENGINE_PATH "/res/textures/awesomeface.png"}),
         camera(registry, glm::vec3(0.0f, 0.0f, 3.0f),
                glm::vec3(0.0f, 1.0f, 0.0f)) {
-    this->registry.addComponent<CameraTransform>(this->registry.createEntity(),
-                                                 camera.getCameraTransform());
+    this->registry.addComponent<core::CameraTransform>(
+        this->registry.createEntity(), camera.getCameraTransform());
     core::InputEventManager::getInstance().subscribe(
         core::InputEventType::KEY_EVENT, Renderer::keyCallback);
     core::InputEventManager::getInstance().subscribe(
         core::InputEventType::WINDOW_RESIZE_EVENT,
         Renderer::windowResizeCallback);
     for (int i = 0; i < 10; i++) {
-      this->registry.addComponent<Transform>(
+      this->registry.addComponent<core::Transform>(
           this->registry.createEntity(),
-          Transform(this->registry.getLastEntity(), this->registry));
-      registry.getPool<Transform>()
+          core::Transform(this->registry.getLastEntity(), this->registry));
+      registry.getPool<core::Transform>()
           .get(registry.getLastEntity())
           .setPosition(cubePositions[i]);
     }
@@ -59,8 +59,8 @@ namespace gl {
       this->shader.set<int>(textureName, i);
     }
 
-    CameraTransform &cameraTransform =
-        registry.getPool<CameraTransform>().get(0);
+    core::CameraTransform &cameraTransform =
+        registry.getPool<core::CameraTransform>().get(0);
     float radius = 10.0f;
     cameraTransform.setPosition(glm::vec3(
         radius * glm::sin(glm::radians((float) this->cameraAngle)), 0.0f,
@@ -74,9 +74,10 @@ namespace gl {
     this->shader.set<glm::mat4>("projection", projection);
 
     this->vertexArray.bind();
-    float                      angle = ts * ((float) 60 / (float) 1000);
-    ecs::SparseSet<Transform> &transformPool = registry.getPool<Transform>();
-    for (Transform &transform : transformPool.getComponents()) {
+    float                            angle = ts * ((float) 60 / (float) 1000);
+    ecs::SparseSet<core::Transform> &transformPool =
+        registry.getPool<core::Transform>();
+    for (core::Transform &transform : transformPool.getComponents()) {
       transform.updateRotation(glm::vec3(angle));
       glm::mat4 model = transform.getModelMatrix();
       this->shader.set<glm::mat4>("model", model);
@@ -95,7 +96,7 @@ namespace gl {
   void Renderer::windowResizeCallback(core::InputEvent &event) {
     core::WindowResizeEvent windowResizeEvent =
         std::get<core::WindowResizeEvent>(event.getData());
-    glViewport(0, 0, windowResizeEvent.getWidth(),
-               windowResizeEvent.getHeight());
+    GL_CALL(glViewport(0, 0, windowResizeEvent.getWidth(),
+                       windowResizeEvent.getHeight()));
   }
 }

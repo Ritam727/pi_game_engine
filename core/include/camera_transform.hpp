@@ -3,7 +3,7 @@
 #include "base_component.hpp"
 #include "glm/glm.hpp"
 
-namespace gl {
+namespace core {
   class CameraTransform : public BaseComponent {
   private:
     glm::vec3 position;

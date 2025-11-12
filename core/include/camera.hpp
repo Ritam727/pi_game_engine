@@ -4,7 +4,7 @@
 #include "camera_transform.hpp"
 #include "glm/glm.hpp"
 
-namespace gl {
+namespace core {
   class Camera : public BaseObject {
   private:
     CameraTransform transform;

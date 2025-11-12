@@ -2,7 +2,7 @@
 
 #include "glm/gtc/matrix_transform.hpp"
 
-namespace gl {
+namespace core {
   CameraTransform::CameraTransform(ecs::Entity    entityId,
                                    ecs::Registry &registryRef,
                                    glm::vec3 position, glm::vec3 up)

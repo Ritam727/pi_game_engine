@@ -20,9 +20,9 @@ namespace gl {
 
   class Renderer : public core::Layer {
   private:
-    int                &width;
-    int                &height;
-    std::vector<Vertex> vertices = {
+    int                      &width;
+    int                      &height;
+    std::vector<core::Vertex> vertices = {
         {{-0.5f, -0.5f, -0.5f}, {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f}},
         {{0.5f, -0.5f, -0.5f}, {1.0f, 1.0f, 1.0f}, {1.0f, 0.0f}},
         {{0.5f, 0.5f, -0.5f}, {1.0f, 1.0f, 1.0f}, {1.0f, 1.0f}},
@@ -69,8 +69,8 @@ namespace gl {
 
     ecs::Registry registry;
 
-    std::vector<Transform> transforms;
-    Camera                 camera;
+    std::vector<core::Transform> transforms;
+    core::Camera                 camera;
 
     VertexArray vertexArray;
     Shader      shader;

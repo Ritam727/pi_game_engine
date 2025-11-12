@@ -1,6 +1,6 @@
 #include "vertex.hpp"
 
-namespace gl {
+namespace core {
   VertexAttributeElement::VertexAttributeElement(unsigned int type,
                                                  unsigned int count,
                                                  unsigned int normalized)
@@ -29,7 +29,7 @@ namespace gl {
   }
 }
 
-namespace gl {
+namespace core {
   const std::vector<VertexAttributeElement>
       VertexAttribute::getElements() const {
     return this->elements;
@@ -60,7 +60,7 @@ namespace gl {
   }
 }
 
-namespace gl {
+namespace core {
   Vertex::Vertex(glm::vec3 position, glm::vec3 color,
                  glm::vec2 textureCoordinates)
       : position(position), color(color),

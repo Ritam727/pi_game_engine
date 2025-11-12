@@ -5,7 +5,7 @@
 #include "glm/gtc/quaternion.hpp"
 #include "sparse_set.hpp"
 
-namespace gl {
+namespace core {
   class Transform : public BaseComponent {
   private:
     glm::vec3 position;
