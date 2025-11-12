@@ -6,7 +6,7 @@
 #include <unordered_map>
 #include <memory>
 
-namespace ecs {
+namespace core {
   class Registry {
   private:
     std::unordered_map<std::type_index, std::unique_ptr<ISparseSet>> pools;

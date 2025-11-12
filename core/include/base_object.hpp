@@ -6,12 +6,12 @@
 namespace core {
   class BaseObject {
   private:
-    ecs::Registry &registryRef;
-    ecs::Entity    entityId;
+    core::Registry &registryRef;
+    core::Entity    entityId;
 
   public:
-    BaseObject(ecs::Registry &registryRef);
+    BaseObject(core::Registry &registryRef);
 
-    ecs::Entity getEntityId();
+    core::Entity getEntityId();
   };
 }

@@ -10,7 +10,7 @@ namespace core {
     CameraTransform transform;
 
   public:
-    Camera(ecs::Registry &registryRef, glm::vec3 position, glm::vec3 up);
+    Camera(core::Registry &registryRef, glm::vec3 position, glm::vec3 up);
 
     CameraTransform &getCameraTransform();
   };

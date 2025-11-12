@@ -17,4 +17,5 @@ target_link_libraries(engine
     GL
     X11
     Xrandr
+    inputs
 )

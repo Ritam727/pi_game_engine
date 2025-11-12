@@ -12,6 +12,7 @@ add_subdirectory(spdlog)
 add_subdirectory(glm)
 add_subdirectory(stb_image)
 add_subdirectory(core)
+add_subdirectory(inputs)
 
 file(COPY "res" DESTINATION "${CMAKE_BINARY_DIR}")
 

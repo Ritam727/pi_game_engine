@@ -20,7 +20,7 @@ namespace core {
     glm::mat4 getScaleMatrix() const;
 
   public:
-    Transform(ecs::Entity entityId, ecs::Registry &registryRef);
+    Transform(core::Entity entityId, core::Registry &registryRef);
 
     void setPosition(glm::vec3 position);
     void setRotation(glm::vec3 rotation);

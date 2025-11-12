@@ -27,6 +27,8 @@ namespace core {
       core::logger::error("Failed to initialize GLAD");
       throw std::runtime_error("Failed to initialize GLAD");
     }
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
     glfwSetFramebufferSizeCallback(window, Window::framebufferResizeCallback);
     glfwSetKeyCallback(window, Window::keyCallback);
     glfwSetWindowCloseCallback(window, Window::closeCallback);
@@ -41,7 +43,10 @@ namespace core {
 
   void Window::processGlfwFrame() {
     glfwSwapBuffers(window);
-    glfwPollEvents();
+  }
+
+  void Window::pollEvents() {
+    glfwWaitEventsTimeout(0.001);
   }
 
   void Window::framebufferResizeCallback(GLFWwindow *window, int width,

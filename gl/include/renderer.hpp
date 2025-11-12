@@ -67,10 +67,9 @@ namespace gl {
         glm::vec3(1.3f, -2.0f, -2.5f),  glm::vec3(1.5f, 2.0f, -2.5f),
         glm::vec3(1.5f, 0.2f, -1.5f),   glm::vec3(-1.3f, 1.0f, -1.5f)};
 
-    ecs::Registry registry;
+    core::Registry &registry;
 
     std::vector<core::Transform> transforms;
-    core::Camera                 camera;
 
     VertexArray vertexArray;
     Shader      shader;
@@ -83,7 +82,7 @@ namespace gl {
     void draw();
 
   public:
-    Renderer(int &width, int &height);
+    Renderer(int &width, int &height, core::Registry &registry);
 
     inline void clear() {
       GL_CALL(glClearColor(0.2f, 0.3f, 0.3f, 1.0f));
@@ -92,7 +91,6 @@ namespace gl {
 
     void onUpdate(float ts) override;
 
-    static void keyCallback(core::InputEvent &event);
     static void windowResizeCallback(core::InputEvent &event);
   };
 

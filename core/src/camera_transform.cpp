@@ -3,19 +3,58 @@
 #include "glm/gtc/matrix_transform.hpp"
 
 namespace core {
-  CameraTransform::CameraTransform(ecs::Entity    entityId,
-                                   ecs::Registry &registryRef,
+  CameraTransform::CameraTransform(core::Entity    entityId,
+                                   core::Registry &registryRef,
                                    glm::vec3 position, glm::vec3 up)
-      : BaseComponent(registryRef), position(position), target(0), up(up),
-        right(glm::normalize(
-            glm::cross(glm::normalize(this->position - this->target),
-                       glm::normalize(this->up)))) {}
+      : BaseComponent(registryRef), yaw(-90.0f), pitch(0), position(position),
+        front(glm::normalize(
+            glm::vec3(cos(glm::radians(yaw)) * cos(glm::radians(pitch)),
+                      sin(glm::radians(pitch)),
+                      sin(glm::radians(yaw)) * cos(glm::radians(pitch))))),
+        up(up), right(glm::normalize(glm::cross(glm::normalize(this->front),
+                                                glm::normalize(this->up)))),
+        cameraActive(false) {}
 
   void CameraTransform::setPosition(glm::vec3 position) {
     this->position = position;
   }
 
+  void CameraTransform::updatePosition(glm::vec3 delta) {
+    this->position += delta;
+  }
+
+  void CameraTransform::setCameraActive(bool cameraActive) {
+    this->cameraActive = cameraActive;
+  }
+
+  void CameraTransform::updateRotation(glm::vec2 delta) {
+    this->yaw += delta.x;
+    this->pitch += delta.y;
+    if (this->pitch > 89.0f)
+      this->pitch = 89.0f;
+    if (this->pitch < -89.0f)
+      this->pitch = -89.0f;
+
+    this->front = glm::normalize(
+        glm::vec3(cos(glm::radians(yaw)) * cos(glm::radians(pitch)),
+                  sin(glm::radians(pitch)),
+                  sin(glm::radians(yaw)) * cos(glm::radians(pitch))));
+    this->right = glm::normalize(glm::cross(this->front, this->up));
+  }
+
+  bool CameraTransform::isCameraActive() const {
+    return this->cameraActive;
+  }
+
+  glm::vec3 CameraTransform::getForwardDirection() const {
+    return this->front;
+  }
+
+  glm::vec3 CameraTransform::getRightDirection() const {
+    return this->right;
+  }
+
   glm::mat4 CameraTransform::getViewMatrix() const {
-    return glm::lookAt(this->position, this->target, this->up);
+    return glm::lookAt(this->position, this->position + this->front, this->up);
   }
 }

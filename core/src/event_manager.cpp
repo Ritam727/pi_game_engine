@@ -1,4 +1,5 @@
 #include "event_manager.hpp"
+
 #include <utility>
 
 namespace core {

@@ -9,6 +9,8 @@
       "cacheVariables": {
         "CMAKE_CXX_STANDARD": "23",
         "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
+        "GLFW_BUILD_WAYLAND": "OFF",
+        "GLFW_BUILD_X11": "ON",
         "BUILD_SHARED_LIBS": "ON",
         "CMAKE_BUILD_TYPE": "Debug"
       }
@@ -21,6 +23,8 @@
       "cacheVariables": {
         "CMAKE_CXX_STANDARD": "23",
         "CMAKE_EXPORT_COMPILE_COMMANDS": "OFF",
+        "GLFW_BUILD_WAYLAND": "OFF",
+        "GLFW_BUILD_X11": "ON",
         "BUILD_SHARED_LIBS": "OFF",
         "CMAKE_BUILD_TYPE": "Release"
       }

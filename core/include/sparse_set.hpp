@@ -2,7 +2,7 @@
 
 #include <vector>
 
-namespace ecs {
+namespace core {
   typedef unsigned int Entity;
 
   class ISparseSet {

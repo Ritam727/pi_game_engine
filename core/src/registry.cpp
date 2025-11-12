@@ -1,6 +1,6 @@
 #include "registry.hpp"
 
-namespace ecs {
+namespace core {
   Registry::Registry() {}
 
   void Registry::addEntity() {

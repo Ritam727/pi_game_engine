@@ -24,5 +24,6 @@ namespace core {
     ~Window();
 
     void processGlfwFrame();
+    void pollEvents();
   };
 }

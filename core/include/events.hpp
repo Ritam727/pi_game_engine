@@ -27,7 +27,7 @@ namespace core {
 }
 
 namespace core {
-  enum class InputAction { NONE, PRESS, HOLD, RELEASE };
+  enum class InputAction { RELEASE, PRESS, HOLD };
 }
 
 namespace core {

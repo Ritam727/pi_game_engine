@@ -1,21 +1,28 @@
 #include "app.hpp"
 
 #include "GLFW/glfw3.h"
+#include "camera_transform.hpp"
 #include "event_manager.hpp"
 #include "events.hpp"
+#include "inputs.hpp"
 #include "renderer.hpp"
 
-App::App() : window(config.getWidth(), config.getHeight(), config.getName()) {
-  layers.emplace_back(
-      std::make_unique<gl::Renderer>(config.getWidth(), config.getHeight()));
+App::App()
+    : window(config.getWidth(), config.getHeight(), config.getName()),
+      camera(registry, glm::vec3(0.0f, 0.0f, 3.0f),
+             glm::vec3(0.0f, 1.0f, 0.0f)) {
+  this->registry.addComponent<core::CameraTransform>(
+      this->registry.createEntity(), camera.getCameraTransform());
+  this->registry.getPool<core::CameraTransform>().get(0).setCameraActive(true);
+  layers.emplace_back(std::make_unique<inputs::Inputs>(this->registry));
+  layers.emplace_back(std::make_unique<gl::Renderer>(
+      config.getWidth(), config.getHeight(), this->registry));
   core::InputEventManager::getInstance().subscribe(
       core::InputEventType::WINDOW_CLOSE_EVENT, App::windowCloseHandler);
   core::InputEventManager::getInstance().subscribe(
       core::InputEventType::WINDOW_RESIZE_EVENT, App::windowResizeHandler);
   core::InputEventManager::getInstance().subscribe(
       core::InputEventType::MOUSE_BUTTON_EVENT, App::mouseButtonHandler);
-  core::InputEventManager::getInstance().subscribe(
-      core::InputEventType::MOUSE_MOVEMENT_EVENT, App::mouseMovementHandler);
   core::InputEventManager::getInstance().subscribe(
       core::InputEventType::MOUSE_SCROLL_EVENT, App::mouseScrollHandler);
 }
@@ -31,13 +38,6 @@ void App::mouseButtonHandler(core::InputEvent &event) {
   core::logger::info("Received mouse button event: {}, {}",
                      mouseButtonEvent.getButton(),
                      static_cast<int>(mouseButtonEvent.getType()));
-}
-
-void App::mouseMovementHandler(core::InputEvent &event) {
-  core::MouseMovementEvent mouseMovementEvent =
-      std::get<core::MouseMovementEvent>(event.getData());
-  core::logger::info("Received mouse movement event: {}, {}",
-                     mouseMovementEvent.getX(), mouseMovementEvent.getY());
 }
 
 void App::mouseScrollHandler(core::InputEvent &event) {
@@ -59,8 +59,11 @@ void App::windowResizeHandler(core::InputEvent &event) {
 }
 
 void App::run() {
+  int backend = glfwGetPlatform();
+  core::logger::info("backend: {} {}", backend, GLFW_PLATFORM_X11);
   float previousFrame = glfwGetTime();
   while (App::running) {
+    window.pollEvents();
     core::InputEventManager::getInstance().executeEvents();
     float currentFrame = glfwGetTime();
     for (std::unique_ptr<core::Layer> &layer : layers)

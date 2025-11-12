@@ -5,11 +5,11 @@
 namespace core {
   class BaseComponent {
   private:
-    ecs::Registry &registryRef;
+    core::Registry &registryRef;
 
   public:
-    BaseComponent(ecs::Registry &registryRef);
+    BaseComponent(core::Registry &registryRef);
 
-    ecs::Registry &getRegistryRef();
+    core::Registry &getRegistryRef();
   };
 }

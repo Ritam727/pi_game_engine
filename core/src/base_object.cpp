@@ -1,12 +1,12 @@
 #include "base_object.hpp"
 
 namespace core {
-  BaseObject::BaseObject(ecs::Registry &registryRef)
+  BaseObject::BaseObject(core::Registry &registryRef)
       : registryRef(registryRef) {
     this->entityId = registryRef.createEntity();
   }
 
-  ecs::Entity BaseObject::getEntityId() {
+  core::Entity BaseObject::getEntityId() {
     return this->entityId;
   }
 }
