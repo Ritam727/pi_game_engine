@@ -55,8 +55,8 @@ namespace gl {
     bool value = true;
     while (GLenum error = glGetError()) {
       core::logger::error(
-          "[OpenGL Error] ({0}) in file {1}, at function {2}, on line {3}",
-          error, file, function, line);
+          "[OpenGL Error] ({}) in file {}, at function {}, on line {}", error,
+          file, function, line);
       value = false;
     }
     return value;
