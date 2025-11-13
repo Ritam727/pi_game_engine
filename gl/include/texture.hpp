@@ -9,22 +9,11 @@
 #include <vector>
 
 namespace gl {
-  class Image {
-  private:
+  struct Image {
     int            width;
     int            height;
     int            channels;
     unsigned char *data;
-
-  public:
-    Image() = default;
-    Image(int width, int height, int channels, unsigned char *);
-
-    int getWidth();
-    int getHeight();
-    int getChannels();
-
-    unsigned char *getData();
   };
 }
 

@@ -8,6 +8,11 @@
 
 #include "app_config.hpp"
 
+struct ScreenSize {
+  int width;
+  int height;
+};
+
 class App {
 private:
   core::Window   window;
@@ -17,16 +22,15 @@ private:
 
   std::vector<std::unique_ptr<core::Layer>> layers;
 
-  static AppConfig config;
-  static bool      running;
-
 public:
   App();
 
   void run();
 
   static void windowCloseHandler(core::InputEvent &event);
-  static void windowResizeHandler(core::InputEvent &event);
   static void mouseButtonHandler(core::InputEvent &event);
-  static void mouseScrollHandler(core::InputEvent &event);
+  static void windowResizeHandler(core::InputEvent &event);
+
+  static bool       &isRunning();
+  static ScreenSize &getScreenSize();
 };

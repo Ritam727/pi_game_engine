@@ -25,5 +25,6 @@ namespace core {
 
     void processGlfwFrame();
     void pollEvents();
+    void setCursorVisibility(bool visibility);
   };
 }

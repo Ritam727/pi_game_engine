@@ -10,8 +10,9 @@
 #endif
 
 namespace gl {
-  Renderer::Renderer(int &width, int &height, core::Registry &registry)
-      : width(width), height(height), vertexArray(vertices, indices),
+  Renderer::Renderer(int &width, int &height, float &fov,
+                     core::Registry &registry)
+      : width(width), height(height), fov(fov), vertexArray(vertices, indices),
         shader(ENGINE_PATH "/res/shaders/shader.vert",
                ENGINE_PATH "/res/shaders/shader.frag"),
         texture({ENGINE_PATH "/res/textures/container.jpg",
@@ -64,8 +65,8 @@ namespace gl {
     }
 
     glm::mat4 projection = glm::perspective(
-        glm::radians(45.0f), (float) this->width / (float) this->height, 0.1f,
-        100.0f);
+        glm::radians(this->fov), (float) this->width / (float) this->height,
+        0.1f, 100.0f);
     this->shader.set<glm::mat4>("projection", projection);
 
     this->vertexArray.bind();

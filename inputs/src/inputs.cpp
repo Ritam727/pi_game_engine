@@ -9,12 +9,15 @@
 #include "glm/gtx/string_cast.hpp"
 
 namespace inputs {
-  Inputs::Inputs(core::Registry &registry) : registry(registry) {
+  Inputs::Inputs(core::Window &window, core::Registry &registry)
+      : window(window), registry(registry) {
     core::InputEventManager::getInstance().subscribe(
-        core::InputEventType::KEY_EVENT, Inputs::keyPressCallback);
+        core::InputEventType::KEY_EVENT, Inputs::keyPressHandler);
     core::InputEventManager::getInstance().subscribe(
         core::InputEventType::MOUSE_MOVEMENT_EVENT,
-        Inputs::mouseMovementCallback);
+        Inputs::mouseMovementHandler);
+    core::InputEventManager::getInstance().subscribe(
+        core::InputEventType::MOUSE_SCROLL_EVENT, Inputs::mouseScrollHandler);
   }
 
   std::vector<int> &Inputs::getKeyPressStates() {
@@ -27,16 +30,22 @@ namespace inputs {
     return mouseButtonStates;
   }
 
-  std::tuple<glm::vec2, glm::vec2, float> &Inputs::getMousePositions() {
-    static glm::vec2                               mousePosition(0);
-    static glm::vec2                               prevMousePosition(0);
-    static std::tuple<glm::vec2, glm::vec2, float> mousePositions = {
-        mousePosition, prevMousePosition, 0};
+  MouseState &Inputs::getMousePositions() {
+    static glm::vec2  mousePosition(0);
+    static glm::vec2  prevMousePosition(0);
+    static MouseState mousePositions{mousePosition, prevMousePosition, 0};
     return mousePositions;
   }
 
-  void Inputs::keyPressCallback(core::InputEvent &event) {
+  ScreenFov &Inputs::getScreenFov() {
+    static ScreenFov fov{45.0f, 0.0f};
+    return fov;
+  }
+
+  void Inputs::keyPressHandler(core::InputEvent &event) {
     core::KeyEvent keyEvent = std::get<core::KeyEvent>(event.getData());
+    core::logger::info("{} {}", keyEvent.getKey(),
+                       (unsigned int) keyEvent.getType());
     if (keyEvent.getType() != core::InputAction::RELEASE) {
       Inputs::getKeyPressStates()[keyEvent.getKey()] = 1;
     } else {
@@ -44,30 +53,60 @@ namespace inputs {
     }
   }
 
-  void Inputs::mouseMovementCallback(core::InputEvent &event) {
+  void Inputs::mouseMovementHandler(core::InputEvent &event) {
     core::MouseMovementEvent mouseMovementEvent =
         std::get<core::MouseMovementEvent>(event.getData());
-    std::tuple<glm::vec2, glm::vec2, float> &mouseInfo =
-        Inputs::getMousePositions();
-    if (std::get<2>(mouseInfo) == 0) {
-      std::get<2>(mouseInfo) = 1;
-      std::get<1>(mouseInfo).x = mouseMovementEvent.getX();
-      std::get<1>(mouseInfo).y = mouseMovementEvent.getY();
+    MouseState &mouseState = Inputs::getMousePositions();
+    if (!mouseState.initialised) {
+      mouseState.initialised = 1;
+      mouseState.previousPosition.x = mouseMovementEvent.getX();
+      mouseState.previousPosition.y = mouseMovementEvent.getY();
     }
-    std::get<0>(mouseInfo).x = mouseMovementEvent.getX();
-    std::get<0>(mouseInfo).y = mouseMovementEvent.getY();
+    mouseState.currentPosition.x = mouseMovementEvent.getX();
+    mouseState.currentPosition.y = mouseMovementEvent.getY();
+  }
+
+  void Inputs::mouseScrollHandler(core::InputEvent &event) {
+    core::MouseScrollEvent mouseScrollEvent =
+        std::get<core::MouseScrollEvent>(event.getData());
+    ScreenFov &screenFov = Inputs::getScreenFov();
+    screenFov.delta = mouseScrollEvent.getY();
   }
 
   void Inputs::onUpdate(float ts) {
+    this->toggleCursorVisibility();
+    this->updateFov(ts);
     this->updateCamera(ts);
+  }
+
+  void Inputs::updateFov(float ts) {
+    Inputs::getScreenFov().fov +=
+        Inputs::getScreenFov().delta * ts * core::Constants::SPEED_SCALAR;
+  }
+
+  void Inputs::toggleCursorVisibility() {
+    std::vector<int> &keyStates = Inputs::getKeyPressStates();
+    core::logger::info("{} {} {} {}", keyStates[GLFW_KEY_LEFT_CONTROL],
+                       keyStates[GLFW_KEY_RIGHT_CONTROL],
+                       keyStates[GLFW_KEY_LEFT_SHIFT],
+                       keyStates[GLFW_KEY_RIGHT_SHIFT]);
+    if ((keyStates[GLFW_KEY_LEFT_CONTROL] ||
+         keyStates[GLFW_KEY_RIGHT_CONTROL]) &&
+        (keyStates[GLFW_KEY_LEFT_SHIFT] || keyStates[GLFW_KEY_RIGHT_SHIFT])) {
+      this->window.setCursorVisibility(false);
+    } else {
+      this->window.setCursorVisibility(true);
+    }
   }
 
   void Inputs::updateCamera(float ts) {
     for (core::CameraTransform &cameraTransform :
          this->registry.getPool<core::CameraTransform>().getComponents()) {
       if (cameraTransform.isCameraActive()) {
-        glm::vec2 &currentPosition = std::get<0>(Inputs::getMousePositions());
-        glm::vec2 &previousPosition = std::get<1>(Inputs::getMousePositions());
+        glm::vec2 &currentPosition =
+            Inputs::getMousePositions().currentPosition;
+        glm::vec2 &previousPosition =
+            Inputs::getMousePositions().previousPosition;
 
         float xOffset = (currentPosition.x - previousPosition.x) * ts *
                         core::Constants::SPEED_SCALAR;

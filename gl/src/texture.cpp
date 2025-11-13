@@ -5,27 +5,6 @@
 #include <thread>
 
 namespace gl {
-  Image::Image(int width, int height, int channels, unsigned char *data)
-      : width(width), height(height), channels(channels), data(data) {}
-
-  int Image::getWidth() {
-    return this->width;
-  }
-
-  int Image::getHeight() {
-    return this->height;
-  }
-
-  int Image::getChannels() {
-    return this->channels;
-  }
-
-  unsigned char *Image::getData() {
-    return this->data;
-  }
-}
-
-namespace gl {
   Texture::Texture(const std::vector<std::string> filePaths)
       : textures(filePaths.size(), 0) {
     std::vector<Image>       images(filePaths.size());
@@ -42,7 +21,7 @@ namespace gl {
     for (unsigned int i = 0; i < images.size(); i++) {
       this->createBindAndConfigureTexture(i);
       this->sendImageToTexture(images[i]);
-      stbi_image_free(images[i].getData());
+      stbi_image_free(images[i].data);
     }
   }
 
@@ -85,10 +64,9 @@ namespace gl {
   }
 
   void Texture::sendImageToTexture(Image &image) {
-    GL_CALL(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, image.getWidth(),
-                         image.getHeight(), 0,
-                         (image.getChannels() == 3) ? GL_RGB : GL_RGBA,
-                         GL_UNSIGNED_BYTE, image.getData()));
+    GL_CALL(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, image.width, image.height, 0,
+                         (image.channels == 3) ? GL_RGB : GL_RGBA,
+                         GL_UNSIGNED_BYTE, image.data));
     GL_CALL(glGenerateMipmap(GL_TEXTURE_2D));
   }
 

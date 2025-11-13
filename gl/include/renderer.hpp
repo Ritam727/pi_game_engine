@@ -22,6 +22,7 @@ namespace gl {
   private:
     int                      &width;
     int                      &height;
+    float                    &fov;
     std::vector<core::Vertex> vertices = {
         {{-0.5f, -0.5f, -0.5f}, {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f}},
         {{0.5f, -0.5f, -0.5f}, {1.0f, 1.0f, 1.0f}, {1.0f, 0.0f}},
@@ -82,7 +83,7 @@ namespace gl {
     void draw();
 
   public:
-    Renderer(int &width, int &height, core::Registry &registry);
+    Renderer(int &width, int &height, float &fov, core::Registry &registry);
 
     inline void clear() {
       GL_CALL(glClearColor(0.2f, 0.3f, 0.3f, 1.0f));

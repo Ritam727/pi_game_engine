@@ -8,28 +8,29 @@
 #include "renderer.hpp"
 
 App::App()
-    : window(config.getWidth(), config.getHeight(), config.getName()),
+    : window(App::getScreenSize().width, App::getScreenSize().height,
+             AppConfig::NAME),
       camera(registry, glm::vec3(0.0f, 0.0f, 3.0f),
              glm::vec3(0.0f, 1.0f, 0.0f)) {
   this->registry.addComponent<core::CameraTransform>(
       this->registry.createEntity(), camera.getCameraTransform());
   this->registry.getPool<core::CameraTransform>().get(0).setCameraActive(true);
-  layers.emplace_back(std::make_unique<inputs::Inputs>(this->registry));
+  layers.emplace_back(
+      std::make_unique<inputs::Inputs>(this->window, this->registry));
   layers.emplace_back(std::make_unique<gl::Renderer>(
-      config.getWidth(), config.getHeight(), this->registry));
+      App::getScreenSize().width, App::getScreenSize().height,
+      inputs::Inputs::getScreenFov().fov, this->registry));
   core::InputEventManager::getInstance().subscribe(
       core::InputEventType::WINDOW_CLOSE_EVENT, App::windowCloseHandler);
   core::InputEventManager::getInstance().subscribe(
-      core::InputEventType::WINDOW_RESIZE_EVENT, App::windowResizeHandler);
-  core::InputEventManager::getInstance().subscribe(
       core::InputEventType::MOUSE_BUTTON_EVENT, App::mouseButtonHandler);
   core::InputEventManager::getInstance().subscribe(
-      core::InputEventType::MOUSE_SCROLL_EVENT, App::mouseScrollHandler);
+      core::InputEventType::WINDOW_RESIZE_EVENT, App::windowResizeHandler);
 }
 
 void App::windowCloseHandler(core::InputEvent &event) {
   core::logger::info("Shutting down application");
-  App::running = false;
+  App::isRunning() = false;
 }
 
 void App::mouseButtonHandler(core::InputEvent &event) {
@@ -40,29 +41,28 @@ void App::mouseButtonHandler(core::InputEvent &event) {
                      static_cast<int>(mouseButtonEvent.getType()));
 }
 
-void App::mouseScrollHandler(core::InputEvent &event) {
-  core::MouseScrollEvent mouseScrollEvent =
-      std::get<core::MouseScrollEvent>(event.getData());
-  core::logger::info("Received mouse scroll event: {}, {}",
-                     mouseScrollEvent.getX(), mouseScrollEvent.getY());
-}
-
 void App::windowResizeHandler(core::InputEvent &event) {
   core::WindowResizeEvent windowResizeEvent =
       std::get<core::WindowResizeEvent>(event.getData());
-  core::logger::info("Resizing window from ({}, {}) to ({}, {})",
-                     App::config.getWidth(), App::config.getHeight(),
-                     windowResizeEvent.getWidth(),
-                     windowResizeEvent.getHeight());
-  App::config.setWidth(windowResizeEvent.getWidth());
-  App::config.setHeight(windowResizeEvent.getHeight());
+  App::getScreenSize().width = windowResizeEvent.getWidth();
+  App::getScreenSize().height = windowResizeEvent.getHeight();
+}
+
+bool &App::isRunning() {
+  static bool running = true;
+  return running;
+}
+
+ScreenSize &App::getScreenSize() {
+  static ScreenSize screenSize{800, 600};
+  return screenSize;
 }
 
 void App::run() {
   int backend = glfwGetPlatform();
   core::logger::info("backend: {} {}", backend, GLFW_PLATFORM_X11);
   float previousFrame = glfwGetTime();
-  while (App::running) {
+  while (App::isRunning()) {
     window.pollEvents();
     core::InputEventManager::getInstance().executeEvents();
     float currentFrame = glfwGetTime();
@@ -72,6 +72,3 @@ void App::run() {
     window.processGlfwFrame();
   }
 }
-
-bool      App::running = true;
-AppConfig App::config;
