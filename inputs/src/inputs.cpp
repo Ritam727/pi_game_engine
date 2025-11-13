@@ -44,8 +44,6 @@ namespace inputs {
 
   void Inputs::keyPressHandler(core::InputEvent &event) {
     core::KeyEvent keyEvent = std::get<core::KeyEvent>(event.getData());
-    core::logger::info("{} {}", keyEvent.getKey(),
-                       (unsigned int) keyEvent.getType());
     if (keyEvent.getType() != core::InputAction::RELEASE) {
       Inputs::getKeyPressStates()[keyEvent.getKey()] = 1;
     } else {
@@ -86,10 +84,6 @@ namespace inputs {
 
   void Inputs::toggleCursorVisibility() {
     std::vector<int> &keyStates = Inputs::getKeyPressStates();
-    core::logger::info("{} {} {} {}", keyStates[GLFW_KEY_LEFT_CONTROL],
-                       keyStates[GLFW_KEY_RIGHT_CONTROL],
-                       keyStates[GLFW_KEY_LEFT_SHIFT],
-                       keyStates[GLFW_KEY_RIGHT_SHIFT]);
     if ((keyStates[GLFW_KEY_LEFT_CONTROL] ||
          keyStates[GLFW_KEY_RIGHT_CONTROL]) &&
         (keyStates[GLFW_KEY_LEFT_SHIFT] || keyStates[GLFW_KEY_RIGHT_SHIFT])) {
