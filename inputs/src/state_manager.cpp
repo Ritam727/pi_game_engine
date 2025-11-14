@@ -1,10 +1,8 @@
 #include "state_manager.hpp"
 
-#include "GLFW/glfw3.h"
 #include "nlohmann/json.hpp"
 #include "states.hpp"
 #include <fstream>
-#include <iostream>
 #include <string>
 
 #ifndef ENGINE_PATH
@@ -13,39 +11,18 @@
 
 namespace inputs {
   StateManager::StateManager() : state({CameraState::DEFAULT}) {
-    nlohmann::json keyboardShortcuts = nlohmann::json::object();
-    std::string    st =
-        std::to_string(static_cast<unsigned int>(StateType::CAMERA_STATE));
-    keyboardShortcuts[st] = nlohmann::json::object();
-    for (CameraState &cameraState : enumValues(CameraState)) {
-      std::string val = std::to_string(static_cast<unsigned int>(cameraState));
-      if (cameraState == CameraState::CAMERA_PAN_MODE) {
-        keyboardShortcuts[st][val] =
-            this->inputStateMap[StateType::CAMERA_STATE]
-                               [static_cast<unsigned int>(
-                                   CameraState::CAMERA_PAN_MODE)] = {
-                {GLFW_KEY_LEFT_CONTROL, GLFW_KEY_RIGHT_CONTROL},
-                {GLFW_KEY_LEFT_SHIFT, GLFW_KEY_RIGHT_SHIFT}};
-      } else if (cameraState == CameraState::CAMERA_FLY_MODE) {
-        keyboardShortcuts[st][val] =
-            this->inputStateMap[StateType::CAMERA_STATE]
-                               [static_cast<unsigned int>(
-                                   CameraState::CAMERA_FLY_MODE)] = {
-                {GLFW_KEY_LEFT_CONTROL, GLFW_KEY_RIGHT_CONTROL},
-                {GLFW_KEY_LEFT_ALT, GLFW_KEY_RIGHT_ALT}};
-      } else if (cameraState == CameraState::CAMERA_RESET_MODE) {
-        keyboardShortcuts[st][val] =
-            this->inputStateMap[StateType::CAMERA_STATE]
-                               [static_cast<unsigned int>(
-                                   CameraState::CAMERA_RESET_MODE)] = {
-                {GLFW_KEY_LEFT_CONTROL, GLFW_KEY_RIGHT_CONTROL},
-                {GLFW_KEY_C},
-                {GLFW_KEY_R}};
+    std::ifstream  inputFile(ENGINE_PATH "/res/inputs/keyboard_shortcuts.json");
+    nlohmann::json loadedKeyboardShortcuts = nlohmann::json::parse(inputFile);
+    for (nlohmann::json::iterator it = loadedKeyboardShortcuts.begin();
+         it != loadedKeyboardShortcuts.end(); it++) {
+      unsigned int stateKey = std::stoi(it.key());
+      StateType    type = static_cast<StateType>(stateKey);
+      for (nlohmann::json::iterator jt = it->begin(); jt != it->end(); jt++) {
+        std::vector<std::vector<unsigned int>> keyCombination(jt.value());
+        unsigned int shortcutKey = std::stoi(jt.key());
+        this->inputStateMap[type][shortcutKey] = keyCombination;
       }
     }
-    std::cout << std::setw(2) << keyboardShortcuts;
-    std::ofstream outputFile(ENGINE_PATH "/res/inputs/keyboard_shortcuts.json");
-    outputFile << std::setw(2) << keyboardShortcuts;
   }
 
   State &StateManager::getState() {
