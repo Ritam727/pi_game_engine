@@ -1,7 +1,6 @@
 #include "renderer.hpp"
 #include "constants.hpp"
 #include "events.hpp"
-#include "utils.hpp"
 
 #include "event_manager.hpp"
 
@@ -85,8 +84,8 @@ namespace gl {
 
   void Renderer::windowResizeCallback(core::InputEvent &event) {
     core::WindowResizeEvent windowResizeEvent =
-        std::get<core::WindowResizeEvent>(event.getData());
-    GL_CALL(glViewport(0, 0, windowResizeEvent.getWidth(),
-                       windowResizeEvent.getHeight()));
+        std::get<core::WindowResizeEvent>(event.data);
+    GL_CALL(
+        glViewport(0, 0, windowResizeEvent.width, windowResizeEvent.height));
   }
 }

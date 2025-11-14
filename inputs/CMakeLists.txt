@@ -24,6 +24,7 @@ target_link_directories(inputs
 
 target_link_libraries(inputs
   PUBLIC
+    nlohmann_json
     core
     glfw
 )

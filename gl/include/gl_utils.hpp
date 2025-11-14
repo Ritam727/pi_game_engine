@@ -3,9 +3,6 @@
 #include "glad/glad.h"
 #include "logger.hpp"
 
-#include <fstream>
-#include <string>
-
 #define CONCAT(a, b) CONCAT_INNER(a, b)
 #define CONCAT_INNER(a, b) a##b
 #define UNIQUE_NAME(base) CONCAT(base, __LINE__)
@@ -60,22 +57,5 @@ namespace gl {
       value = false;
     }
     return value;
-  }
-
-  inline std::string readFromFile(char const *filePath) {
-    core::logger::info("Reading from file {}", filePath);
-    std::ifstream file;
-    file.exceptions(std::ifstream::badbit | std::ifstream::failbit);
-    try {
-      file.open(filePath);
-      std::stringstream fileStream;
-      fileStream << file.rdbuf();
-      file.close();
-      return fileStream.str();
-    } catch (std::ifstream::failure exp) {
-      core::logger::error("Failed to read from file {} due to {}", filePath,
-                          exp.what());
-      throw exp;
-    }
   }
 }

@@ -4,13 +4,15 @@
 #include "event_manager.hpp"
 #include "events.hpp"
 #include "constants.hpp"
+#include "states.hpp"
 
 #define GLM_ENABLE_EXPERIMENTAL
 #include "glm/gtx/string_cast.hpp"
 
 namespace inputs {
-  Inputs::Inputs(core::Window &window, core::Registry &registry)
-      : window(window), registry(registry) {
+  Inputs::Inputs(core::Window &window, core::Registry &registry,
+                 StateManager &stateManager)
+      : window(window), registry(registry), stateManager(stateManager) {
     core::InputEventManager::getInstance().subscribe(
         core::InputEventType::KEY_EVENT, Inputs::keyPressHandler);
     core::InputEventManager::getInstance().subscribe(
@@ -38,43 +40,71 @@ namespace inputs {
   }
 
   ScreenFov &Inputs::getScreenFov() {
-    static ScreenFov fov{45.0f, 0.0f};
-    return fov;
+    static ScreenFov screenFov{45.0f, 0.0f};
+    return screenFov;
   }
 
   void Inputs::keyPressHandler(core::InputEvent &event) {
-    core::KeyEvent keyEvent = std::get<core::KeyEvent>(event.getData());
-    if (keyEvent.getType() != core::InputAction::RELEASE) {
-      Inputs::getKeyPressStates()[keyEvent.getKey()] = 1;
+    core::KeyEvent keyEvent = std::get<core::KeyEvent>(event.data);
+    if (keyEvent.type != core::InputAction::RELEASE) {
+      Inputs::getKeyPressStates()[keyEvent.key] = 1;
     } else {
-      Inputs::getKeyPressStates()[keyEvent.getKey()] = 0;
+      Inputs::getKeyPressStates()[keyEvent.key] = 0;
     }
   }
 
   void Inputs::mouseMovementHandler(core::InputEvent &event) {
     core::MouseMovementEvent mouseMovementEvent =
-        std::get<core::MouseMovementEvent>(event.getData());
+        std::get<core::MouseMovementEvent>(event.data);
     MouseState &mouseState = Inputs::getMousePositions();
     if (!mouseState.initialised) {
       mouseState.initialised = 1;
-      mouseState.previousPosition.x = mouseMovementEvent.getX();
-      mouseState.previousPosition.y = mouseMovementEvent.getY();
+      mouseState.previousPosition.x = mouseMovementEvent.x;
+      mouseState.previousPosition.y = mouseMovementEvent.y;
     }
-    mouseState.currentPosition.x = mouseMovementEvent.getX();
-    mouseState.currentPosition.y = mouseMovementEvent.getY();
+    mouseState.currentPosition.x = mouseMovementEvent.x;
+    mouseState.currentPosition.y = mouseMovementEvent.y;
   }
 
   void Inputs::mouseScrollHandler(core::InputEvent &event) {
     core::MouseScrollEvent mouseScrollEvent =
-        std::get<core::MouseScrollEvent>(event.getData());
+        std::get<core::MouseScrollEvent>(event.data);
     ScreenFov &screenFov = Inputs::getScreenFov();
-    screenFov.delta = mouseScrollEvent.getY();
+    screenFov.delta = mouseScrollEvent.y;
+  }
+
+  bool Inputs::areKeysPressed(std::vector<std::vector<unsigned int>> &keys) {
+    bool isCombination = true;
+    for (std::vector<unsigned int> &currentCombination : keys) {
+      bool keysPressed = false;
+      for (unsigned int &key : currentCombination) {
+        keysPressed |= Inputs::getKeyPressStates()[key];
+      }
+      isCombination &= keysPressed;
+    }
+    return isCombination;
   }
 
   void Inputs::onUpdate(float ts) {
+    this->handleCameraStates();
     this->toggleCursorVisibility();
     this->updateFov(ts);
     this->updateCamera(ts);
+  }
+
+  void Inputs::handleCameraStates() {
+    StateType type = StateType::CAMERA_STATE;
+    State    &currentState = this->stateManager.getState();
+    std::unordered_map<unsigned int, std::vector<std::vector<unsigned int>>>
+        &inputMap = this->stateManager.getInputMap(type);
+    for (std::pair<const unsigned int, std::vector<std::vector<unsigned int>>>
+             &p : inputMap) {
+      if (Inputs::areKeysPressed(p.second)) {
+        currentState.cameraState = static_cast<CameraState>(p.first);
+        return;
+      }
+    }
+    currentState.cameraState = CameraState::DEFAULT;
   }
 
   void Inputs::updateFov(float ts) {
@@ -84,12 +114,13 @@ namespace inputs {
 
   void Inputs::toggleCursorVisibility() {
     std::vector<int> &keyStates = Inputs::getKeyPressStates();
-    if ((keyStates[GLFW_KEY_LEFT_CONTROL] ||
-         keyStates[GLFW_KEY_RIGHT_CONTROL]) &&
-        (keyStates[GLFW_KEY_LEFT_SHIFT] || keyStates[GLFW_KEY_RIGHT_SHIFT])) {
+    CameraState       cameraState = this->stateManager.getState().cameraState;
+    if (cameraState == CameraState::CAMERA_FLY_MODE ||
+        cameraState == CameraState::CAMERA_PAN_MODE) {
       this->window.setCursorVisibility(false);
     } else {
       this->window.setCursorVisibility(true);
+      Inputs::getMousePositions().initialised = 0;
     }
   }
 
@@ -97,8 +128,12 @@ namespace inputs {
     for (core::CameraTransform &cameraTransform :
          this->registry.getPool<core::CameraTransform>().getComponents()) {
       if (cameraTransform.isCameraActive()) {
-        glm::vec2 &currentPosition =
-            Inputs::getMousePositions().currentPosition;
+        if (this->stateManager.getState().cameraState ==
+            CameraState::CAMERA_RESET_MODE) {
+          cameraTransform.resetCameraTransform();
+          break;
+        }
+        glm::vec2 currentPosition = Inputs::getMousePositions().currentPosition;
         glm::vec2 &previousPosition =
             Inputs::getMousePositions().previousPosition;
 
@@ -106,30 +141,22 @@ namespace inputs {
                         core::Constants::SPEED_SCALAR;
         float yOffset = (previousPosition.y - currentPosition.y) * ts *
                         core::Constants::SPEED_SCALAR;
-
-        cameraTransform.updateRotation({xOffset, yOffset});
         previousPosition = currentPosition;
 
-        glm::vec3 direction(0);
-        float     speed = 0.0f;
-        if (Inputs::getKeyPressStates()[GLFW_KEY_W]) {
-          direction += cameraTransform.getForwardDirection();
-          speed = core::Constants::SPEED_SCALAR * 0.1;
-        }
-        if (Inputs::getKeyPressStates()[GLFW_KEY_S]) {
-          direction -= cameraTransform.getForwardDirection();
-          speed = core::Constants::SPEED_SCALAR * 0.1;
-        }
-        if (Inputs::getKeyPressStates()[GLFW_KEY_A]) {
-          direction -= cameraTransform.getRightDirection();
-          speed = core::Constants::SPEED_SCALAR * 0.1;
-        }
-        if (Inputs::getKeyPressStates()[GLFW_KEY_D]) {
-          direction += cameraTransform.getRightDirection();
-          speed = core::Constants::SPEED_SCALAR * 0.1;
-        }
+        CameraState cameraState = this->stateManager.getState().cameraState;
+        glm::vec3   direction(0);
+        float       speed = 0.0f;
 
-        cameraTransform.updatePosition(direction * ts * speed);
+        if (cameraState == CameraState::CAMERA_PAN_MODE) {
+          cameraTransform.updateRotation({xOffset, yOffset});
+        } else if (cameraState == CameraState::CAMERA_FLY_MODE) {
+          glm::vec3 front = cameraTransform.getForwardDirection();
+          glm::vec3 right = cameraTransform.getRightDirection();
+          glm::vec3 up = glm::normalize(glm::cross(right, front));
+          direction = xOffset * right + yOffset * up;
+          speed = core::Constants::SPEED_SCALAR * 0.1;
+          cameraTransform.updatePosition(direction * ts * speed);
+        }
       }
     }
   }

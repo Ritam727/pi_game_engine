@@ -25,6 +25,7 @@ namespace core {
     void updatePosition(glm::vec3 delta);
     void setCameraActive(bool cameraActive);
     void updateRotation(glm::vec2 delta);
+    void resetCameraTransform();
 
     bool isCameraActive() const;
 

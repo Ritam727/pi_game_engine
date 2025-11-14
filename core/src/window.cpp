@@ -21,7 +21,7 @@ namespace core {
       throw std::runtime_error("Failed to create GLFW window");
     }
     glfwMakeContextCurrent(window);
-    glfwSwapInterval(0);
+    glfwSwapInterval(1);
 
     if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress)) {
       core::logger::error("Failed to initialize GLAD");
@@ -56,38 +56,43 @@ namespace core {
   void Window::framebufferResizeCallback(GLFWwindow *window, int width,
                                          int height) {
     core::InputEventManager::getInstance().enqueue(
-        core::InputEvent(core::WindowResizeEvent(width, height)));
+        core::InputEvent(core::InputEventType::WINDOW_RESIZE_EVENT,
+                         core::WindowResizeEvent(width, height)));
   }
 
   void Window::keyCallback(GLFWwindow *window, int key, int scanCode,
                            int action, int mods) {
     core::InputEventManager::getInstance().enqueue(core::InputEvent(
+        core::InputEventType::KEY_EVENT,
         core::KeyEvent(key, static_cast<core::InputAction>(action))));
     if (key == GLFW_KEY_ESCAPE) {
-      core::InputEventManager::getInstance().enqueue(
-          core::InputEvent(core::WindowCloseEvent()));
+      core::InputEventManager::getInstance().enqueue(core::InputEvent(
+          core::InputEventType::WINDOW_CLOSE_EVENT, core::WindowCloseEvent()));
     }
   }
 
   void Window::closeCallback(GLFWwindow *window) {
-    core::InputEventManager::getInstance().enqueue(
-        core::InputEvent(core::WindowCloseEvent()));
+    core::InputEventManager::getInstance().enqueue(core::InputEvent(
+        core::InputEventType::WINDOW_CLOSE_EVENT, core::WindowCloseEvent()));
   }
 
   void Window::mouseMovementCallback(GLFWwindow *window, double x, double y) {
     core::InputEventManager::getInstance().enqueue(
-        core::InputEvent(core::MouseMovementEvent(x, y)));
+        core::InputEvent(core::InputEventType::MOUSE_MOVEMENT_EVENT,
+                         core::MouseMovementEvent(x, y)));
   }
 
   void Window::mouseButtonCallback(GLFWwindow *window, int button, int action,
                                    int mods) {
     core::InputEventManager::getInstance().enqueue(
-        core::InputEvent(core::MouseButtonEvent(
-            button, static_cast<core::InputAction>(action))));
+        core::InputEvent(core::InputEventType::MOUSE_BUTTON_EVENT,
+                         core::MouseButtonEvent(
+                             button, static_cast<core::InputAction>(action))));
   }
 
   void Window::mouseScrollCallback(GLFWwindow *window, double x, double y) {
     core::InputEventManager::getInstance().enqueue(
-        core::InputEvent(core::MouseScrollEvent(x, y)));
+        core::InputEvent(core::InputEventType::MOUSE_SCROLL_EVENT,
+                         core::MouseScrollEvent(x, y)));
   }
 }

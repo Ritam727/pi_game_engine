@@ -1,5 +1,5 @@
 #include "vertex_array.hpp"
-#include "utils.hpp"
+#include "gl_utils.hpp"
 #include "vertex.hpp"
 
 namespace gl {

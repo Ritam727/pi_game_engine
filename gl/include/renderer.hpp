@@ -7,7 +7,7 @@
 #include "shader.hpp"
 #include "texture.hpp"
 #include "transform.hpp"
-#include "utils.hpp"
+#include "gl_utils.hpp"
 #include "vertex_array.hpp"
 
 #include "registry.hpp"

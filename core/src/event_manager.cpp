@@ -1,11 +1,12 @@
 #include "event_manager.hpp"
+#include "utils.hpp"
 
 #include <utility>
 
 namespace core {
   InputEventManager::InputEventManager()
-      : subscribers(InputEvent::getEventTypes().size()),
-        topics(InputEvent::getEventTypes().size()) {}
+      : subscribers(enumValues(InputEventType).size()),
+        topics(enumValues(InputEventType).size()) {}
 
   void InputEventManager::subscribe(InputEventType                    type,
                                     std::function<void(InputEvent &)> handle) {
@@ -14,20 +15,20 @@ namespace core {
   }
 
   void InputEventManager::enqueue(InputEvent event) {
-    unsigned long idx = static_cast<unsigned long>(event.getType());
+    unsigned long idx = static_cast<unsigned long>(event.type);
     for (InputEvent &prevEvent : this->topics[idx][this->write]) {
       if (prevEvent == event) {
         return;
       }
     }
-    this->topics[static_cast<unsigned long>(event.getType())][this->write]
+    this->topics[static_cast<unsigned long>(event.type)][this->write]
         .emplace_back(std::move(event));
   }
 
   void InputEventManager::executeEvents() {
     this->read = (this->read + 1) % 2;
     this->write = (this->write + 1) % 2;
-    for (InputEventType type : InputEvent::getEventTypes()) {
+    for (InputEventType &type : enumValues(InputEventType)) {
       unsigned long            idx = static_cast<unsigned long>(type);
       std::vector<InputEvent> &events = this->topics[idx][this->read];
       std::vector<std::function<void(InputEvent &)>> &handles =

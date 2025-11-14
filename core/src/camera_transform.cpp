@@ -42,6 +42,18 @@ namespace core {
     this->right = glm::normalize(glm::cross(this->front, this->up));
   }
 
+  void CameraTransform::resetCameraTransform() {
+    this->yaw = -90.0f;
+    this->pitch = 0.0f;
+    this->position = glm::vec3(0.0f, 0.0f, 3.0f);
+    this->front = glm::vec3(cos(glm::radians(yaw)) * cos(glm::radians(pitch)),
+                            sin(glm::radians(pitch)),
+                            sin(glm::radians(yaw)) * cos(glm::radians(pitch)));
+    this->up = glm::vec3(0.0f, 1.0f, 0.0f);
+    this->right = glm::normalize(
+        glm::cross(glm::normalize(this->front), glm::normalize(this->up)));
+  }
+
   bool CameraTransform::isCameraActive() const {
     return this->cameraActive;
   }

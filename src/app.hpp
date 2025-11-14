@@ -5,6 +5,7 @@
 #include "layer.hpp"
 #include "registry.hpp"
 #include "window.hpp"
+#include "state_manager.hpp"
 
 #include "app_config.hpp"
 
@@ -15,11 +16,10 @@ struct ScreenSize {
 
 class App {
 private:
-  core::Window   window;
-  core::Registry registry;
-
-  core::Camera camera;
-
+  core::Window                              window;
+  core::Registry                            registry;
+  core::Camera                              camera;
+  inputs::StateManager                      stateManager;
   std::vector<std::unique_ptr<core::Layer>> layers;
 
 public:

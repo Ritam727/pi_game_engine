@@ -1,5 +1,5 @@
 #include "texture.hpp"
-#include "utils.hpp"
+#include "gl_utils.hpp"
 
 #include <mutex>
 #include <thread>

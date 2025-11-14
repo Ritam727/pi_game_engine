@@ -1,28 +1,25 @@
 #pragma once
 
 #include "glm/glm.hpp"
+#include "utils.hpp"
 
 #include <variant>
 #include <vector>
 
 namespace core {
-  class WindowResizeEvent {
-  private:
+  struct WindowResizeEvent {
     int width;
     int height;
 
-  public:
-    WindowResizeEvent(int width, int height);
-
-    int getWidth() const;
-    int getHeight() const;
-
-    bool operator==(const WindowResizeEvent &event) const;
+    bool operator==(const WindowResizeEvent &event) const {
+      return (this->width == event.width && this->height == event.height);
+    }
   };
 
-  class WindowCloseEvent {
-  public:
-    bool operator==(const WindowCloseEvent &event) const;
+  struct WindowCloseEvent {
+    bool operator==(const WindowCloseEvent &event) const {
+      return false;
+    }
   };
 }
 
@@ -31,63 +28,42 @@ namespace core {
 }
 
 namespace core {
-  class KeyEvent {
-  private:
+  struct KeyEvent {
     int         key;
     InputAction type;
 
-  public:
-    KeyEvent(int key, InputAction type);
-    ~KeyEvent();
-
-    int         getKey() const;
-    InputAction getType() const;
-
-    bool operator==(const KeyEvent &event) const;
+    bool operator==(const KeyEvent &event) const {
+      return this->key == event.key && this->type == event.type;
+    }
   };
 }
 
 namespace core {
-  class MouseButtonEvent {
-  private:
+  struct MouseButtonEvent {
     int         button;
     InputAction type;
 
-  public:
-    MouseButtonEvent(int button, InputAction type);
-
-    int         getButton() const;
-    InputAction getType() const;
-
-    bool operator==(const MouseButtonEvent &event) const;
+    bool operator==(const MouseButtonEvent &event) const {
+      return this->button == event.button && this->type == event.type;
+    }
   };
 
-  class MouseMovementEvent {
-  private:
+  struct MouseMovementEvent {
     double x;
     double y;
 
-  public:
-    MouseMovementEvent(double x, double y);
-
-    double getX() const;
-    double getY() const;
-
-    bool operator==(const MouseMovementEvent &event) const;
+    bool operator==(const MouseMovementEvent &event) const {
+      return this->x == event.x && this->y == event.y;
+    }
   };
 
-  class MouseScrollEvent {
-  private:
+  struct MouseScrollEvent {
     double x;
     double y;
 
-  public:
-    MouseScrollEvent(double x, double y);
-
-    double getX() const;
-    double getY() const;
-
-    bool operator==(const MouseScrollEvent &event) const;
+    bool operator==(const MouseScrollEvent &event) const {
+      return this->x == event.x && this->y == event.y;
+    }
   };
 }
 
@@ -96,34 +72,18 @@ namespace core {
       std::variant<MouseMovementEvent, MouseButtonEvent, MouseScrollEvent,
                    KeyEvent, WindowResizeEvent, WindowCloseEvent>;
 
-  enum class InputEventType {
-    MOUSE_MOVEMENT_EVENT,
-    MOUSE_BUTTON_EVENT,
-    MOUSE_SCROLL_EVENT,
-    KEY_EVENT,
-    WINDOW_RESIZE_EVENT,
-    WINDOW_CLOSE_EVENT
-  };
+  iterableEnum(InputEventType, MOUSE_MOVEMENT_EVENT, MOUSE_BUTTON_EVENT,
+               MOUSE_SCROLL_EVENT, KEY_EVENT, WINDOW_RESIZE_EVENT,
+               WINDOW_CLOSE_EVENT);
+}
 
-  class InputEvent {
-  private:
+namespace core {
+  struct InputEvent {
     InputEventType type;
     Event          data;
 
-  public:
-    InputEvent(KeyEvent data);
-    InputEvent(MouseButtonEvent data);
-    InputEvent(WindowResizeEvent data);
-    InputEvent(WindowCloseEvent data);
-    InputEvent(MouseMovementEvent data);
-    InputEvent(MouseScrollEvent data);
-
-    InputEventType getType();
-
-    const Event &getData() const;
-
-    bool operator==(InputEvent &event);
-
-    static const std::vector<InputEventType> &getEventTypes();
+    bool operator==(InputEvent &event) {
+      return this->type == event.type && this->data == event.data;
+    }
   };
 }

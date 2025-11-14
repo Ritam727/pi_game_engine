@@ -15,8 +15,8 @@ App::App()
   this->registry.addComponent<core::CameraTransform>(
       this->registry.createEntity(), camera.getCameraTransform());
   this->registry.getPool<core::CameraTransform>().get(0).setCameraActive(true);
-  layers.emplace_back(
-      std::make_unique<inputs::Inputs>(this->window, this->registry));
+  layers.emplace_back(std::make_unique<inputs::Inputs>(
+      this->window, this->registry, this->stateManager));
   layers.emplace_back(std::make_unique<gl::Renderer>(
       App::getScreenSize().width, App::getScreenSize().height,
       inputs::Inputs::getScreenFov().fov, this->registry));
@@ -35,17 +35,17 @@ void App::windowCloseHandler(core::InputEvent &event) {
 
 void App::mouseButtonHandler(core::InputEvent &event) {
   core::MouseButtonEvent mouseButtonEvent =
-      std::get<core::MouseButtonEvent>(event.getData());
+      std::get<core::MouseButtonEvent>(event.data);
   core::logger::info("Received mouse button event: {}, {}",
-                     mouseButtonEvent.getButton(),
-                     static_cast<int>(mouseButtonEvent.getType()));
+                     mouseButtonEvent.button,
+                     static_cast<int>(mouseButtonEvent.type));
 }
 
 void App::windowResizeHandler(core::InputEvent &event) {
   core::WindowResizeEvent windowResizeEvent =
-      std::get<core::WindowResizeEvent>(event.getData());
-  App::getScreenSize().width = windowResizeEvent.getWidth();
-  App::getScreenSize().height = windowResizeEvent.getHeight();
+      std::get<core::WindowResizeEvent>(event.data);
+  App::getScreenSize().width = windowResizeEvent.width;
+  App::getScreenSize().height = windowResizeEvent.height;
 }
 
 bool &App::isRunning() {
