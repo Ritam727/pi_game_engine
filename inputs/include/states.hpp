@@ -7,7 +7,8 @@
 namespace inputs {
   iterableEnum(CameraState, DEFAULT, CAMERA_PAN_MODE, CAMERA_FLY_MODE,
                CAMERA_RESET_MODE);
-  iterableEnum(StateType, CAMERA_STATE);
+  iterableEnum(FovState, NORMAL, NOT_NORMAL);
+  iterableEnum(StateType, CAMERA_STATE, FOV_STATE);
 
   enum class MousePositionReset { NONE, INIT, DONE };
 }
@@ -19,6 +20,7 @@ namespace inputs {
     std::vector<core::InputAction> mousebuttonState{3,
                                                     core::InputAction::RELEASE};
     CameraState                    cameraState{CameraState::DEFAULT};
+    FovState                       fovState{FovState::NORMAL};
     glm::vec2                      mousePosition{0.0f, 0.0f};
     float                          scrollDelta{0.0f};
 

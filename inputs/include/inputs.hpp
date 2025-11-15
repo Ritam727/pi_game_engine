@@ -19,6 +19,7 @@ namespace inputs {
 
     void onUpdate(float ts) override;
     void updateCamera(float ts);
+    void handleFovChange(float ts);
     void toggleCursorVisibility();
     void handleCameraStates();
   };

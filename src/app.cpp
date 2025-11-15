@@ -56,9 +56,17 @@ ScreenSize &App::getScreenSize() {
   return screenSize;
 }
 
+void App::eventManagerThread() {
+  while (App::isRunning()) {
+    core::EventManager::getInstance().executeEvents();
+  }
+}
+
 void App::run() {
-  int   backend = glfwGetPlatform();
-  float previousFrame = glfwGetTime();
+  int         backend = glfwGetPlatform();
+  float       previousFrame = glfwGetTime();
+  std::thread eventThread(App::eventManagerThread);
+
   while (App::isRunning()) {
     window.pollEvents();
     core::InputEventManager::getInstance().executeEvents();
@@ -68,4 +76,6 @@ void App::run() {
     previousFrame = currentFrame;
     window.processGlfwFrame();
   }
+
+  eventThread.join();
 }

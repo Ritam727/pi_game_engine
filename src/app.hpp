@@ -31,6 +31,8 @@ public:
   static void mouseButtonHandler(core::InputEvent &event);
   static void windowResizeHandler(core::InputEvent &event);
 
+  static void eventManagerThread();
+
   static bool       &isRunning();
   static ScreenSize &getScreenSize();
 };

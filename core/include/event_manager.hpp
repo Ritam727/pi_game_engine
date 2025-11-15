@@ -55,20 +55,26 @@ namespace core {
     void enqueue(std::unique_ptr<T> event) {
       std::type_index idx = std::type_index(typeid(T));
       if (!this->topicMutexes.contains(idx)) {
-        this->topicMutexes.emplace(idx, std::mutex{});
+        this->topicMutexes.try_emplace(idx);
       }
       std::lock_guard<std::mutex> lock(this->topicMutexes[idx]);
-      this->topics[idx].emplace_back(std::move(event));
+      for (std::unique_ptr<BaseEvent> &queuedEvent : this->topics[idx]) {
+        if (static_cast<T>(*event.get()) ==
+            *(static_cast<T *>(queuedEvent.get()))) {
+          return;
+        }
+      }
+      this->topics[idx].push_back(std::move(event));
     }
 
     template <IsSubclassOf<BaseEvent> T>
-    void subscribe(std::function<void(std::unique_ptr<T> &)> handle) {
+    void subscribe(std::function<void(std::unique_ptr<BaseEvent> &)> handle) {
       std::type_index idx = std::type_index(typeid(T));
       if (!this->subscriberMutexes.contains(idx)) {
-        this->subscriberMutexes.emplace(idx, std::mutex{});
+        this->subscriberMutexes.try_emplace(idx);
       }
       std::lock_guard<std::mutex> lock(this->subscriberMutexes[idx]);
-      this->subscribers[idx].emplace_back(handle);
+      this->subscribers[idx].push_back(std::move(handle));
     }
   };
 }

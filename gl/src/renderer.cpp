@@ -18,6 +18,12 @@ namespace gl {
     renderState.height = windowResizeEvent.height;
     renderState.windowResized = true;
   }
+
+  static void fovChangeCallback(std::unique_ptr<core::BaseEvent> &event) {
+    core::FovChangeEvent *fovChangeEvent =
+        static_cast<core::FovChangeEvent *>(event.get());
+    renderState.fov = fovChangeEvent->fov;
+  }
 }
 
 namespace gl {
@@ -30,6 +36,8 @@ namespace gl {
         registry(registry) {
     core::InputEventManager::getInstance().subscribe(
         core::InputEventType::WINDOW_RESIZE_EVENT, windowResizeCallback);
+    core::EventManager::getInstance().subscribe<core::FovChangeEvent>(
+        fovChangeCallback);
 
     for (int i = 0; i < 10; i++) {
       this->registry.addComponent<core::Transform>(

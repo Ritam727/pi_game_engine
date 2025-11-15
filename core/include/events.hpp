@@ -95,5 +95,9 @@ namespace core {
 
   struct FovChangeEvent : public BaseEvent {
     float fov;
+
+    bool operator==(const FovChangeEvent &event) const {
+      return this->fov == event.fov;
+    }
   };
 }

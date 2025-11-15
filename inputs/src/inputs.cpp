@@ -59,9 +59,29 @@ namespace inputs {
   }
 
   void Inputs::onUpdate(float ts) {
+    this->handleFovChange(ts);
     this->handleCameraStates();
     this->toggleCursorVisibility();
     this->updateCamera(ts);
+  }
+
+  void Inputs::handleFovChange(float ts) {
+    StateType type = StateType::FOV_STATE;
+    std::unordered_map<unsigned int, std::vector<std::vector<unsigned int>>>
+        &inputMap = this->stateManager.getInputMap(type);
+    for (std::pair<const unsigned int, std::vector<std::vector<unsigned int>>>
+             &p : inputMap) {
+      if (areKeysPressed(p.second)) {
+        inputState.fovState = static_cast<FovState>(p.first);
+        std::unique_ptr<core::FovChangeEvent> fovChangeEvent =
+            std::make_unique<core::FovChangeEvent>();
+        fovChangeEvent->fov = 60.0f;
+        core::EventManager::getInstance().enqueue<core::FovChangeEvent>(
+            std::move(fovChangeEvent));
+        return;
+      }
+    }
+    inputState.fovState = FovState::NORMAL;
   }
 
   void Inputs::handleCameraStates() {
