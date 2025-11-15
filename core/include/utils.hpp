@@ -13,7 +13,7 @@ namespace core {
   concept HasNoneValue = requires { T::END; };
 
   template <typename T>
-  concept IsIterable = std::is_enum_v<T> && HasNoneValue<T>;
+  concept IsIterableEnum = std::is_enum_v<T> && HasNoneValue<T>;
 }
 
 namespace core {
@@ -34,8 +34,8 @@ namespace core {
     }
   }
 
-  template <IsIterable T> static inline std::vector<T> &getEnumIterator() {
-    static std::vector<T> vec(static_cast<unsigned int>(T::END), T::END);
+  template <IsIterableEnum T> inline std::vector<T> getEnumIterator() {
+    std::vector<T> vec(static_cast<unsigned int>(T::END), T::END);
     for (unsigned int i = 0; i < static_cast<unsigned int>(T::END); i++) {
       vec[i] = static_cast<T>(i);
     }

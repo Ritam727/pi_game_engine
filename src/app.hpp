@@ -19,7 +19,7 @@ private:
   core::Window                              window;
   core::Registry                            registry;
   core::Camera                              camera;
-  inputs::StateManager                      stateManager;
+  inputs::StateKeyMap                       stateManager;
   std::vector<std::unique_ptr<core::Layer>> layers;
 
 public:

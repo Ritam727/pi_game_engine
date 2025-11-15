@@ -5,11 +5,11 @@
 
 #include <array>
 #include <functional>
-#include <mutex>
 
 namespace core {
   class InputEventManager {
   private:
+    std::vector<InputEventType>                                 inputEventTypes;
     std::vector<std::vector<std::function<void(InputEvent &)>>> subscribers;
     std::vector<std::array<std::vector<InputEvent>, 2>>         topics;
 

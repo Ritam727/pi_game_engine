@@ -3,18 +3,15 @@
 #include "states.hpp"
 
 namespace inputs {
-  class StateManager {
+  class StateKeyMap {
   private:
-    State state;
     std::unordered_map<
         StateType, std::unordered_map<unsigned int,
                                       std::vector<std::vector<unsigned int>>>>
-        inputStateMap;
+        stateKeyMap;
 
   public:
-    StateManager();
-
-    State &getState();
+    StateKeyMap();
 
     std::unordered_map<unsigned int, std::vector<std::vector<unsigned int>>> &
         getInputMap(StateType type);

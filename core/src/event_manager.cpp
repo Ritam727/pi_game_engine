@@ -5,8 +5,8 @@
 
 namespace core {
   InputEventManager::InputEventManager()
-      : subscribers(enumValues(InputEventType).size()),
-        topics(enumValues(InputEventType).size()) {}
+      : inputEventTypes(enumValues(InputEventType)),
+        subscribers(inputEventTypes.size()), topics(inputEventTypes.size()) {}
 
   void InputEventManager::subscribe(InputEventType                    type,
                                     std::function<void(InputEvent &)> handle) {
@@ -28,7 +28,7 @@ namespace core {
   void InputEventManager::executeEvents() {
     this->read = (this->read + 1) % 2;
     this->write = (this->write + 1) % 2;
-    for (InputEventType &type : enumValues(InputEventType)) {
+    for (InputEventType &type : this->inputEventTypes) {
       unsigned long            idx = static_cast<unsigned long>(type);
       std::vector<InputEvent> &events = this->topics[idx][this->read];
       std::vector<std::function<void(InputEvent &)>> &handles =

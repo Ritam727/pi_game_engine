@@ -1,7 +1,5 @@
 #pragma once
 
-#include "camera.hpp"
-#include "events.hpp"
 #include "layer.hpp"
 #include "logger.hpp"
 #include "shader.hpp"
@@ -16,13 +14,20 @@
 #include "glm/gtx/string_cast.hpp"
 
 namespace gl {
+  struct RenderState {
+    int   width{800};
+    int   height{600};
+    float fov{45.0f};
+
+    bool windowResized{false};
+  };
+}
+
+namespace gl {
   enum class DrawMode { TRIANGLES, ELEMENTS };
 
   class Renderer : public core::Layer {
   private:
-    int                      &width;
-    int                      &height;
-    float                    &fov;
     std::vector<core::Vertex> vertices = {
         {{-0.5f, -0.5f, -0.5f}, {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f}},
         {{0.5f, -0.5f, -0.5f}, {1.0f, 1.0f, 1.0f}, {1.0f, 0.0f}},
@@ -83,7 +88,7 @@ namespace gl {
     void draw();
 
   public:
-    Renderer(int &width, int &height, float &fov, core::Registry &registry);
+    Renderer(core::Registry &registry);
 
     inline void clear() {
       GL_CALL(glClearColor(0.2f, 0.3f, 0.3f, 1.0f));
@@ -91,8 +96,6 @@ namespace gl {
     }
 
     void onUpdate(float ts) override;
-
-    static void windowResizeCallback(core::InputEvent &event);
   };
 
 }

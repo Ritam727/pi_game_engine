@@ -1,7 +1,7 @@
 #include "renderer.hpp"
-#include "constants.hpp"
-#include "events.hpp"
 
+#include "camera_transform.hpp"
+#include "constants.hpp"
 #include "event_manager.hpp"
 
 #ifndef ENGINE_PATH
@@ -9,17 +9,28 @@
 #endif
 
 namespace gl {
-  Renderer::Renderer(int &width, int &height, float &fov,
-                     core::Registry &registry)
-      : width(width), height(height), fov(fov), vertexArray(vertices, indices),
+  static RenderState renderState;
+
+  static void windowResizeCallback(core::InputEvent &event) {
+    core::WindowResizeEvent windowResizeEvent =
+        std::get<core::WindowResizeEvent>(event.data);
+    renderState.width = windowResizeEvent.width;
+    renderState.height = windowResizeEvent.height;
+    renderState.windowResized = true;
+  }
+}
+
+namespace gl {
+  Renderer::Renderer(core::Registry &registry)
+      : vertexArray(vertices, indices),
         shader(ENGINE_PATH "/res/shaders/shader.vert",
                ENGINE_PATH "/res/shaders/shader.frag"),
         texture({ENGINE_PATH "/res/textures/container.jpg",
                  ENGINE_PATH "/res/textures/awesomeface.png"}),
         registry(registry) {
     core::InputEventManager::getInstance().subscribe(
-        core::InputEventType::WINDOW_RESIZE_EVENT,
-        Renderer::windowResizeCallback);
+        core::InputEventType::WINDOW_RESIZE_EVENT, windowResizeCallback);
+
     for (int i = 0; i < 10; i++) {
       this->registry.addComponent<core::Transform>(
           this->registry.createEntity(),
@@ -28,6 +39,7 @@ namespace gl {
           .get(registry.getLastEntity())
           .setPosition(cubePositions[i]);
     }
+
     glEnable(GL_DEPTH_TEST);
     if (indices.size() == 0)
       drawMode = DrawMode::TRIANGLES;
@@ -47,6 +59,10 @@ namespace gl {
   }
 
   void Renderer::onUpdate(float ts) {
+    if (renderState.windowResized) {
+      GL_CALL(glViewport(0, 0, renderState.width, renderState.height));
+      renderState.windowResized = false;
+    }
     this->clear();
     this->shader.use();
     this->texture.bind();
@@ -64,8 +80,8 @@ namespace gl {
     }
 
     glm::mat4 projection = glm::perspective(
-        glm::radians(this->fov), (float) this->width / (float) this->height,
-        0.1f, 100.0f);
+        glm::radians(renderState.fov),
+        (float) renderState.width / (float) renderState.height, 0.1f, 100.0f);
     this->shader.set<glm::mat4>("projection", projection);
 
     this->vertexArray.bind();
@@ -80,12 +96,5 @@ namespace gl {
     }
     this->frameCount = (this->frameCount + 1) % 36000;
     this->cameraAngle += angle;
-  }
-
-  void Renderer::windowResizeCallback(core::InputEvent &event) {
-    core::WindowResizeEvent windowResizeEvent =
-        std::get<core::WindowResizeEvent>(event.data);
-    GL_CALL(
-        glViewport(0, 0, windowResizeEvent.width, windowResizeEvent.height));
   }
 }

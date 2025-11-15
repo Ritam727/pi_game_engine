@@ -17,9 +17,7 @@ App::App()
   this->registry.getPool<core::CameraTransform>().get(0).setCameraActive(true);
   layers.emplace_back(std::make_unique<inputs::Inputs>(
       this->window, this->registry, this->stateManager));
-  layers.emplace_back(std::make_unique<gl::Renderer>(
-      App::getScreenSize().width, App::getScreenSize().height,
-      inputs::Inputs::getScreenFov(), this->registry));
+  layers.emplace_back(std::make_unique<gl::Renderer>(this->registry));
   core::InputEventManager::getInstance().subscribe(
       core::InputEventType::WINDOW_CLOSE_EVENT, App::windowCloseHandler);
   core::InputEventManager::getInstance().subscribe(
@@ -59,8 +57,7 @@ ScreenSize &App::getScreenSize() {
 }
 
 void App::run() {
-  int backend = glfwGetPlatform();
-  core::logger::info("backend: {} {}", backend, GLFW_PLATFORM_X11);
+  int   backend = glfwGetPlatform();
   float previousFrame = glfwGetTime();
   while (App::isRunning()) {
     window.pollEvents();
