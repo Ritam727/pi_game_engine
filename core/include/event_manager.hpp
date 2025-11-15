@@ -52,13 +52,13 @@ namespace core {
     void executeEvents();
 
     template <IsSubclassOf<BaseEvent> T>
-    void enqueue(std::unique_ptr<T> &event) {
+    void enqueue(std::unique_ptr<T> event) {
       std::type_index idx = std::type_index(typeid(T));
       if (!this->topicMutexes.contains(idx)) {
         this->topicMutexes.emplace(idx, std::mutex{});
       }
       std::lock_guard<std::mutex> lock(this->topicMutexes[idx]);
-      this->topics[idx].emplace_back(event);
+      this->topics[idx].emplace_back(std::move(event));
     }
 
     template <IsSubclassOf<BaseEvent> T>
