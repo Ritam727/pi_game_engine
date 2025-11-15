@@ -133,7 +133,8 @@ namespace inputs {
           cameraTransform.resetCameraTransform();
           break;
         }
-        glm::vec2 currentPosition = Inputs::getMousePositions().currentPosition;
+        glm::vec2 &currentPosition =
+            Inputs::getMousePositions().currentPosition;
         glm::vec2 &previousPosition =
             Inputs::getMousePositions().previousPosition;
 
@@ -153,7 +154,7 @@ namespace inputs {
           glm::vec3 front = cameraTransform.getForwardDirection();
           glm::vec3 right = cameraTransform.getRightDirection();
           glm::vec3 up = glm::normalize(glm::cross(right, front));
-          direction = xOffset * right + yOffset * up;
+          direction = glm::normalize(xOffset * right + yOffset * up);
           speed = core::Constants::SPEED_SCALAR * 0.1;
           cameraTransform.updatePosition(direction * ts * speed);
         }
