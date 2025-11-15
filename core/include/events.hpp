@@ -87,3 +87,13 @@ namespace core {
     }
   };
 }
+
+namespace core {
+  struct BaseEvent {
+    virtual ~BaseEvent() = default;
+  };
+
+  struct FovChangeEvent : public BaseEvent {
+    float fov;
+  };
+}

@@ -33,15 +33,45 @@ namespace core {
       std::vector<InputEvent> &events = this->topics[idx][this->read];
       std::vector<std::function<void(InputEvent &)>> &handles =
           this->subscribers[idx];
-      for (int i = 0; i < events.size(); i++)
-        for (std::function<void(InputEvent &)> &handle : handles)
+      for (int i = 0; i < events.size(); i++) {
+        for (std::function<void(InputEvent &)> &handle : handles) {
           handle(events[i]);
+        }
+      }
       events.clear();
     }
   }
 
   InputEventManager &InputEventManager::getInstance() {
-    static InputEventManager instance;
-    return instance;
+    static InputEventManager inputEventManager;
+    return inputEventManager;
+  }
+}
+
+namespace core {
+  EventManager::EventManager() {}
+
+  EventManager &EventManager::getInstance() {
+    static EventManager eventManager;
+    return eventManager;
+  }
+
+  void EventManager::executeEvents() {
+    for (std::pair<const std::type_index,
+                   std::vector<std::unique_ptr<BaseEvent>>> &p : this->topics) {
+      const std::type_index &idx = p.first;
+      std::lock_guard        topicLock(this->topicMutexes[idx]);
+      std::lock_guard        subscriberLock(this->subscriberMutexes[idx]);
+      std::vector<std::unique_ptr<BaseEvent>> &events = p.second;
+      std::vector<std::function<void(std::unique_ptr<BaseEvent> &)>> &handles =
+          this->subscribers.at(idx);
+      for (std::function<void(std::unique_ptr<BaseEvent> &)> &handle :
+           handles) {
+        for (unsigned int i = 0; i < events.size(); i++) {
+          handle(events[i]);
+        }
+      }
+      events.clear();
+    }
   }
 }
