@@ -62,7 +62,7 @@ namespace core {
     }
 
     template <IsSubclassOf<BaseEvent> T>
-    void subscribe(std::function<void(std::unique_ptr<T> &)> &handle) {
+    void subscribe(std::function<void(std::unique_ptr<T> &)> handle) {
       std::type_index idx = std::type_index(typeid(T));
       if (!this->subscriberMutexes.contains(idx)) {
         this->subscriberMutexes.emplace(idx, std::mutex{});
