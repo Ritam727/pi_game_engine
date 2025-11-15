@@ -19,7 +19,7 @@ App::App()
       this->window, this->registry, this->stateManager));
   layers.emplace_back(std::make_unique<gl::Renderer>(
       App::getScreenSize().width, App::getScreenSize().height,
-      inputs::Inputs::getScreenFov().fov, this->registry));
+      inputs::Inputs::getScreenFov(), this->registry));
   core::InputEventManager::getInstance().subscribe(
       core::InputEventType::WINDOW_CLOSE_EVENT, App::windowCloseHandler);
   core::InputEventManager::getInstance().subscribe(

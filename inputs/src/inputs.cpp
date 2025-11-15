@@ -1,5 +1,4 @@
 #include "inputs.hpp"
-#include "GLFW/glfw3.h"
 #include "camera_transform.hpp"
 #include "event_manager.hpp"
 #include "events.hpp"
@@ -39,9 +38,14 @@ namespace inputs {
     return mousePositions;
   }
 
-  ScreenFov &Inputs::getScreenFov() {
-    static ScreenFov screenFov{45.0f, 0.0f};
+  float &Inputs::getScreenFov() {
+    static float screenFov = 45.0f;
     return screenFov;
+  }
+
+  float &Inputs::getMouseScrollDelta() {
+    static float mouseScrollDelta = 0.0f;
+    return mouseScrollDelta;
   }
 
   void Inputs::keyPressHandler(core::InputEvent &event) {
@@ -69,8 +73,8 @@ namespace inputs {
   void Inputs::mouseScrollHandler(core::InputEvent &event) {
     core::MouseScrollEvent mouseScrollEvent =
         std::get<core::MouseScrollEvent>(event.data);
-    ScreenFov &screenFov = Inputs::getScreenFov();
-    screenFov.delta = mouseScrollEvent.y;
+    float &delta = Inputs::getMouseScrollDelta();
+    delta = mouseScrollEvent.y;
   }
 
   bool Inputs::areKeysPressed(std::vector<std::vector<unsigned int>> &keys) {
@@ -88,7 +92,6 @@ namespace inputs {
   void Inputs::onUpdate(float ts) {
     this->handleCameraStates();
     this->toggleCursorVisibility();
-    this->updateFov(ts);
     this->updateCamera(ts);
   }
 
@@ -105,11 +108,6 @@ namespace inputs {
       }
     }
     currentState.cameraState = CameraState::DEFAULT;
-  }
-
-  void Inputs::updateFov(float ts) {
-    Inputs::getScreenFov().fov +=
-        Inputs::getScreenFov().delta * ts * core::Constants::SPEED_SCALAR;
   }
 
   void Inputs::toggleCursorVisibility() {
@@ -139,9 +137,10 @@ namespace inputs {
             Inputs::getMousePositions().previousPosition;
 
         float xOffset = (currentPosition.x - previousPosition.x) * ts *
-                        core::Constants::SPEED_SCALAR;
+                        core::Constants::SPEED_SCALAR * 0.2;
         float yOffset = (previousPosition.y - currentPosition.y) * ts *
-                        core::Constants::SPEED_SCALAR;
+                        core::Constants::SPEED_SCALAR * 0.2;
+        float &scrollDelta = Inputs::getMouseScrollDelta();
         previousPosition = currentPosition;
 
         CameraState cameraState = this->stateManager.getState().cameraState;
@@ -154,8 +153,14 @@ namespace inputs {
           glm::vec3 front = cameraTransform.getForwardDirection();
           glm::vec3 right = cameraTransform.getRightDirection();
           glm::vec3 up = glm::normalize(glm::cross(right, front));
-          direction = glm::normalize(xOffset * right + yOffset * up);
-          speed = core::Constants::SPEED_SCALAR * 0.1;
+          if (xOffset != 0 || yOffset != 0) {
+            direction = glm::normalize(xOffset * right + yOffset * up);
+            speed = core::Constants::SPEED_SCALAR * 0.1;
+          } else if (scrollDelta != 0) {
+            direction = -1.0f * scrollDelta * glm::normalize(front);
+            scrollDelta = 0;
+            speed = core::Constants::SPEED_SCALAR;
+          }
           cameraTransform.updatePosition(direction * ts * speed);
         }
       }

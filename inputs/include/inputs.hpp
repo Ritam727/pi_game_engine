@@ -34,7 +34,6 @@ namespace inputs {
 
     void onUpdate(float ts) override;
     void updateCamera(float ts);
-    void updateFov(float ts);
     void toggleCursorVisibility();
     void handleCameraStates();
 
@@ -43,7 +42,8 @@ namespace inputs {
     static std::vector<int> &getKeyPressStates();
     static std::vector<int> &getMouseButtonStates();
     static MouseState       &getMousePositions();
-    static ScreenFov        &getScreenFov();
+    static float            &getMouseScrollDelta();
+    static float            &getScreenFov();
 
     static void keyPressHandler(core::InputEvent &event);
     static void mouseMovementHandler(core::InputEvent &event);
