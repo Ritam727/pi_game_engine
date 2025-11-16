@@ -27,7 +27,7 @@ public:
 
   void run();
 
-  static void windowCloseHandler(core::InputEvent &event);
+  static void windowCloseHandler(std::unique_ptr<core::BaseEvent> &event);
   static void mouseButtonHandler(core::InputEvent &event);
 
   static void eventManagerThread();

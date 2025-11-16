@@ -6,14 +6,6 @@
 #include <variant>
 
 namespace core {
-  struct WindowCloseEvent {
-    bool operator==(const WindowCloseEvent &event) const {
-      return false;
-    }
-  };
-}
-
-namespace core {
   enum class InputAction { RELEASE, PRESS, HOLD };
 }
 
@@ -59,7 +51,7 @@ namespace core {
 
 namespace core {
   using Event = std::variant<MouseMovementEvent, MouseButtonEvent,
-                             MouseScrollEvent, KeyEvent, WindowCloseEvent>;
+                             MouseScrollEvent, KeyEvent>;
 
   iterableEnum(InputEventType, MOUSE_MOVEMENT_EVENT, MOUSE_BUTTON_EVENT,
                MOUSE_SCROLL_EVENT, KEY_EVENT, WINDOW_CLOSE_EVENT);

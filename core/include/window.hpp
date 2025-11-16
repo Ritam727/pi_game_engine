@@ -3,7 +3,6 @@
 #include "glad/glad.h"
 #include "GLFW/glfw3.h"
 #include "events.hpp"
-#include "logger.hpp"
 
 namespace core {
   struct WindowResizeEvent : public BaseEvent {
@@ -17,6 +16,12 @@ namespace core {
 
     bool operator==(const WindowResizeEvent &event) const {
       return this->width == event.width && this->height == event.height;
+    }
+  };
+
+  struct WindowCloseEvent : public BaseEvent {
+    bool operator==(const WindowCloseEvent &event) const {
+      return false;
     }
   };
 }

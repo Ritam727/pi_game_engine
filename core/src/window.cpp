@@ -3,6 +3,7 @@
 #include "core_constants.hpp"
 #include "event_manager.hpp"
 #include "events.hpp"
+#include "logger.hpp"
 
 #include <stdexcept>
 
@@ -68,14 +69,14 @@ namespace core {
         core::InputEventType::KEY_EVENT,
         core::KeyEvent(key, static_cast<core::InputAction>(action))));
     if (key == GLFW_KEY_ESCAPE) {
-      core::InputEventManager::getInstance().enqueue(core::InputEvent(
-          core::InputEventType::WINDOW_CLOSE_EVENT, core::WindowCloseEvent()));
+      core::EventManager::getInstance().enqueue<WindowCloseEvent>(
+          Constants::WINDOW_CLOSE_TOPIC, std::make_unique<WindowCloseEvent>());
     }
   }
 
   void Window::closeCallback(GLFWwindow *window) {
-    core::InputEventManager::getInstance().enqueue(core::InputEvent(
-        core::InputEventType::WINDOW_CLOSE_EVENT, core::WindowCloseEvent()));
+    core::EventManager::getInstance().enqueue<WindowCloseEvent>(
+        Constants::WINDOW_CLOSE_TOPIC, std::make_unique<WindowCloseEvent>());
   }
 
   void Window::mouseMovementCallback(GLFWwindow *window, double x, double y) {

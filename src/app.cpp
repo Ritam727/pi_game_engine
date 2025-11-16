@@ -2,6 +2,7 @@
 
 #include "GLFW/glfw3.h"
 #include "camera_transform.hpp"
+#include "core_constants.hpp"
 #include "event_manager.hpp"
 #include "events.hpp"
 #include "inputs.hpp"
@@ -12,19 +13,21 @@ App::App()
              AppConfig::NAME),
       camera(registry, glm::vec3(0.0f, 0.0f, 3.0f),
              glm::vec3(0.0f, 1.0f, 0.0f)) {
-  this->registry.addComponent<core::CameraTransform>(
-      this->registry.createEntity(), camera.getCameraTransform());
-  this->registry.getPool<core::CameraTransform>().get(0).setCameraActive(true);
   layers.emplace_back(std::make_unique<inputs::Inputs>(
       this->window, this->registry, this->stateManager));
   layers.emplace_back(std::make_unique<gl::Renderer>(this->registry));
-  core::InputEventManager::getInstance().subscribe(
-      core::InputEventType::WINDOW_CLOSE_EVENT, App::windowCloseHandler);
+
+  core::EventManager::getInstance().subscribe(
+      core::Constants::WINDOW_CLOSE_TOPIC, App::windowCloseHandler);
   core::InputEventManager::getInstance().subscribe(
       core::InputEventType::MOUSE_BUTTON_EVENT, App::mouseButtonHandler);
+
+  this->registry.addComponent<core::CameraTransform>(
+      this->registry.createEntity(), camera.getCameraTransform());
+  this->registry.getPool<core::CameraTransform>().get(0).setCameraActive(true);
 }
 
-void App::windowCloseHandler(core::InputEvent &event) {
+void App::windowCloseHandler(std::unique_ptr<core::BaseEvent> &event) {
   core::logger::info("Shutting down application");
   App::isRunning() = false;
 }
