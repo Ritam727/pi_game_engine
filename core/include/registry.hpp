@@ -7,9 +7,12 @@
 #include <memory>
 
 namespace core {
+  typedef unsigned int Entity;
+
   class Registry {
   private:
-    std::unordered_map<std::type_index, std::unique_ptr<ISparseSet>> pools;
+    std::unordered_map<std::type_index, std::unique_ptr<commons::ISparseSet>>
+           pools;
     Entity lastEntity = -1;
 
   public:
@@ -23,21 +26,23 @@ namespace core {
     template <typename T> void addComponent(Entity entity, T component) {
       std::type_index poolIndex = std::type_index(typeid(T));
       if (!this->pools.contains(poolIndex)) {
-        this->pools[poolIndex] = std::make_unique<SparseSet<T>>();
+        this->pools[poolIndex] =
+            std::make_unique<commons::SparseSet<Entity, T>>();
       }
-      static_cast<SparseSet<T> *>(this->pools[poolIndex].get())
+      static_cast<commons::SparseSet<Entity, T> *>(this->pools[poolIndex].get())
           ->addElem(entity, component);
     }
 
     template <typename T> void removeComponent(Entity entity, T &component) {
       std::type_index poolIndex = std::type_index(typeid(T));
-      static_cast<SparseSet<T> *>(this->pools[poolIndex].get())
+      static_cast<commons::SparseSet<Entity, T> *>(this->pools[poolIndex].get())
           ->removeElem(entity);
     }
 
-    template <typename T> SparseSet<T> &getPool() {
+    template <typename T> commons::SparseSet<Entity, T> &getPool() {
       std::type_index poolIndex = std::type_index(typeid(T));
-      return *static_cast<SparseSet<T> *>(this->pools[poolIndex].get());
+      return *static_cast<commons::SparseSet<Entity, T> *>(
+          this->pools[poolIndex].get());
     }
   };
 }

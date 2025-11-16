@@ -3,6 +3,7 @@
 #include "camera_transform.hpp"
 #include "constants.hpp"
 #include "event_manager.hpp"
+#include "registry.hpp"
 
 #ifndef ENGINE_PATH
 #define ENGINE_PATH "/"
@@ -94,7 +95,7 @@ namespace gl {
 
     this->vertexArray.bind();
     float angle = ts * core::Constants::SPEED_SCALAR;
-    core::SparseSet<core::Transform> &transformPool =
+    commons::SparseSet<core::Entity, core::Transform> &transformPool =
         registry.getPool<core::Transform>();
     for (core::Transform &transform : transformPool.getComponents()) {
       transform.updateRotation(glm::vec3(angle));

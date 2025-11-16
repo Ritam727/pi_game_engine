@@ -2,17 +2,15 @@
 
 #include <vector>
 
-namespace core {
-  typedef unsigned int Entity;
-
+namespace commons {
   class ISparseSet {
   public:
     virtual ~ISparseSet() = default;
   };
 
-  template <typename T> class SparseSet : public ISparseSet {
+  template <typename I, typename T> class SparseSet : public ISparseSet {
   private:
-    std::vector<Entity>       entities;
+    std::vector<I>            entities;
     std::vector<unsigned int> sparse;
     std::vector<T>            components;
 
@@ -27,7 +25,7 @@ namespace core {
       this->components.reserve(size);
     }
 
-    void addElem(Entity entity, T component) {
+    void addElem(I entity, T component) {
       if (this->contains(entity))
         return;
       this->entities.emplace_back(entity);
@@ -37,11 +35,11 @@ namespace core {
       this->sparse[entity] = this->n++;
     }
 
-    void removeElem(Entity entity) {
+    void removeElem(I entity) {
       if (!this->contains(entity))
         return;
       unsigned int entityIndex = this->sparse[entity];
-      Entity       lastEntity = this->entities.back();
+      I            lastEntity = this->entities.back();
       T           &lastComponent = this->components.back();
       unsigned int lastIndex = this->sparse[lastEntity];
 
@@ -51,12 +49,12 @@ namespace core {
       this->n--;
     }
 
-    bool contains(Entity e) {
+    bool contains(I e) {
       return e < this->n && this->sparse[e] < this->n && this->sparse[e] >= 0 &&
              e == this->entities[this->sparse[e]];
     }
 
-    T &get(Entity e) {
+    T &get(I e) {
       return this->components[this->sparse[e]];
     }
 

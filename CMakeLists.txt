@@ -14,6 +14,7 @@ add_subdirectory(stb_image)
 add_subdirectory(core)
 add_subdirectory(json)
 add_subdirectory(inputs)
+add_subdirectory(commons)
 
 file(COPY "res" DESTINATION "${CMAKE_BINARY_DIR}")
 

@@ -28,4 +28,5 @@ target_link_libraries(core
     glm
     glad
     glfw
+    commons
 )
