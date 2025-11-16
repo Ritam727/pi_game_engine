@@ -40,7 +40,6 @@ namespace core {
         subscribers;
     std::unordered_map<std::string, std::vector<std::unique_ptr<BaseEvent>>>
                                                 topics;
-    std::unordered_set<std::string>             topicNames;
     std::unordered_map<std::string, std::mutex> subscriberMutexes;
     std::unordered_map<std::string, std::mutex> topicMutexes;
 
@@ -53,7 +52,9 @@ namespace core {
 
     template <IsSubclassOf<BaseEvent> T>
     void enqueue(const std::string &topicName, std::unique_ptr<T> event) {
-      this->topicMutexes.try_emplace(topicName);
+      if (!this->topicMutexes.contains(topicName)) {
+        this->topicMutexes.try_emplace(topicName);
+      }
       std::lock_guard<std::mutex> lock(this->topicMutexes[topicName]);
       for (std::unique_ptr<BaseEvent> &queuedEvent : this->topics[topicName]) {
         if (static_cast<T>(*event.get()) ==
