@@ -1,7 +1,7 @@
 #include "renderer.hpp"
 
 #include "camera_transform.hpp"
-#include "constants.hpp"
+#include "gl_constants.hpp"
 #include "event_manager.hpp"
 #include "registry.hpp"
 
@@ -10,13 +10,13 @@
 #endif
 
 namespace gl {
-  static RenderState renderState;
+  static RenderState renderState{};
 
-  static void windowResizeCallback(core::InputEvent &event) {
-    core::WindowResizeEvent windowResizeEvent =
-        std::get<core::WindowResizeEvent>(event.data);
-    renderState.width = windowResizeEvent.width;
-    renderState.height = windowResizeEvent.height;
+  static void windowResizeCallback(std::unique_ptr<core::BaseEvent> &event) {
+    WindowResizeEvent *windowResizeEvent =
+        static_cast<WindowResizeEvent *>(event.get());
+    renderState.width = windowResizeEvent->width;
+    renderState.height = windowResizeEvent->height;
     renderState.windowResized = true;
   }
 
@@ -35,10 +35,10 @@ namespace gl {
         texture({ENGINE_PATH "/res/textures/container.jpg",
                  ENGINE_PATH "/res/textures/awesomeface.png"}),
         registry(registry) {
-    core::InputEventManager::getInstance().subscribe(
-        core::InputEventType::WINDOW_RESIZE_EVENT, windowResizeCallback);
-    core::EventManager::getInstance().subscribe<core::FovChangeEvent>(
-        fovChangeCallback);
+    core::EventManager::getInstance().subscribe(Constants::WINDOW_RESIZE_TOPIC,
+                                                windowResizeCallback);
+    core::EventManager::getInstance().subscribe(Constants::FOV_CHANGE_TOPIC,
+                                                fovChangeCallback);
 
     for (int i = 0; i < 10; i++) {
       this->registry.addComponent<core::Transform>(
@@ -94,7 +94,7 @@ namespace gl {
     this->shader.set<glm::mat4>("projection", projection);
 
     this->vertexArray.bind();
-    float angle = ts * core::Constants::SPEED_SCALAR;
+    float angle = ts * Constants::SPEED_SCALAR;
     commons::SparseSet<core::Entity, core::Transform> &transformPool =
         registry.getPool<core::Transform>();
     for (core::Transform &transform : transformPool.getComponents()) {

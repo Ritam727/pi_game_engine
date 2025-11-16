@@ -7,6 +7,7 @@
 
 #define iterableEnum(name, ...) enum class name { __VA_ARGS__, END }
 #define enumValues(name) core::getEnumIterator<name>()
+#define getTypeString(name) #name
 
 namespace core {
   template <typename T>

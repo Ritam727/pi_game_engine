@@ -22,8 +22,6 @@ App::App()
       core::InputEventType::WINDOW_CLOSE_EVENT, App::windowCloseHandler);
   core::InputEventManager::getInstance().subscribe(
       core::InputEventType::MOUSE_BUTTON_EVENT, App::mouseButtonHandler);
-  core::InputEventManager::getInstance().subscribe(
-      core::InputEventType::WINDOW_RESIZE_EVENT, App::windowResizeHandler);
 }
 
 void App::windowCloseHandler(core::InputEvent &event) {
@@ -37,13 +35,6 @@ void App::mouseButtonHandler(core::InputEvent &event) {
   core::logger::info("Received mouse button event: {}, {}",
                      mouseButtonEvent.button,
                      static_cast<int>(mouseButtonEvent.type));
-}
-
-void App::windowResizeHandler(core::InputEvent &event) {
-  core::WindowResizeEvent windowResizeEvent =
-      std::get<core::WindowResizeEvent>(event.data);
-  App::getScreenSize().width = windowResizeEvent.width;
-  App::getScreenSize().height = windowResizeEvent.height;
 }
 
 bool &App::isRunning() {

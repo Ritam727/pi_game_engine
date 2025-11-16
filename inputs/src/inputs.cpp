@@ -2,8 +2,10 @@
 #include "camera_transform.hpp"
 #include "event_manager.hpp"
 #include "events.hpp"
-#include "constants.hpp"
+#include "inputs_constants.hpp"
 #include "states.hpp"
+
+#include "inputs_constants.hpp"
 
 #define GLM_ENABLE_EXPERIMENTAL
 #include "glm/gtx/string_cast.hpp"
@@ -74,10 +76,9 @@ namespace inputs {
       if (areKeysPressed(p.second)) {
         inputState.fovState = static_cast<FovState>(p.first);
         std::unique_ptr<core::FovChangeEvent> fovChangeEvent =
-            std::make_unique<core::FovChangeEvent>();
-        fovChangeEvent->fov = 60.0f;
+            std::make_unique<core::FovChangeEvent>(60.0f);
         core::EventManager::getInstance().enqueue<core::FovChangeEvent>(
-            std::move(fovChangeEvent));
+            Constants::FOV_CHANGE_TOPIC, std::move(fovChangeEvent));
         return;
       }
     }
@@ -125,9 +126,9 @@ namespace inputs {
         glm::vec2 &previousPosition = this->mousePosition;
 
         float xOffset = (currentPosition.x - previousPosition.x) * ts *
-                        core::Constants::SPEED_SCALAR * 0.2;
+                        Constants::SPEED_SCALAR * 0.2;
         float yOffset = (previousPosition.y - currentPosition.y) * ts *
-                        core::Constants::SPEED_SCALAR * 0.2;
+                        Constants::SPEED_SCALAR * 0.2;
         float &scrollDelta = inputState.scrollDelta;
         previousPosition = currentPosition;
 
@@ -143,11 +144,11 @@ namespace inputs {
           glm::vec3 up = glm::normalize(glm::cross(right, front));
           if (xOffset != 0 || yOffset != 0) {
             direction = glm::normalize(xOffset * right + yOffset * up);
-            speed = core::Constants::SPEED_SCALAR * 0.1;
+            speed = Constants::SPEED_SCALAR * 0.1;
           } else if (scrollDelta != 0) {
             direction = -1.0f * scrollDelta * glm::normalize(front);
             scrollDelta = 0;
-            speed = core::Constants::SPEED_SCALAR;
+            speed = Constants::SPEED_SCALAR;
           }
           cameraTransform.updatePosition(direction * ts * speed);
         }

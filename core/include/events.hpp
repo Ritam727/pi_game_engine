@@ -4,18 +4,8 @@
 #include "utils.hpp"
 
 #include <variant>
-#include <vector>
 
 namespace core {
-  struct WindowResizeEvent {
-    int width;
-    int height;
-
-    bool operator==(const WindowResizeEvent &event) const {
-      return (this->width == event.width && this->height == event.height);
-    }
-  };
-
   struct WindowCloseEvent {
     bool operator==(const WindowCloseEvent &event) const {
       return false;
@@ -68,13 +58,11 @@ namespace core {
 }
 
 namespace core {
-  using Event =
-      std::variant<MouseMovementEvent, MouseButtonEvent, MouseScrollEvent,
-                   KeyEvent, WindowResizeEvent, WindowCloseEvent>;
+  using Event = std::variant<MouseMovementEvent, MouseButtonEvent,
+                             MouseScrollEvent, KeyEvent, WindowCloseEvent>;
 
   iterableEnum(InputEventType, MOUSE_MOVEMENT_EVENT, MOUSE_BUTTON_EVENT,
-               MOUSE_SCROLL_EVENT, KEY_EVENT, WINDOW_RESIZE_EVENT,
-               WINDOW_CLOSE_EVENT);
+               MOUSE_SCROLL_EVENT, KEY_EVENT, WINDOW_CLOSE_EVENT);
 }
 
 namespace core {
@@ -95,6 +83,10 @@ namespace core {
 
   struct FovChangeEvent : public BaseEvent {
     float fov;
+
+    FovChangeEvent(float fov) {
+      this->fov = fov;
+    }
 
     bool operator==(const FovChangeEvent &event) const {
       return this->fov == event.fov;

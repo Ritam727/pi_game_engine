@@ -29,7 +29,6 @@ public:
 
   static void windowCloseHandler(core::InputEvent &event);
   static void mouseButtonHandler(core::InputEvent &event);
-  static void windowResizeHandler(core::InputEvent &event);
 
   static void eventManagerThread();
 

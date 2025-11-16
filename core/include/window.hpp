@@ -2,7 +2,24 @@
 
 #include "glad/glad.h"
 #include "GLFW/glfw3.h"
+#include "events.hpp"
 #include "logger.hpp"
+
+namespace core {
+  struct WindowResizeEvent : public BaseEvent {
+    int width;
+    int height;
+
+    WindowResizeEvent(int width, int height) {
+      this->width = width;
+      this->height = height;
+    }
+
+    bool operator==(const WindowResizeEvent &event) const {
+      return this->width == event.width && this->height == event.height;
+    }
+  };
+}
 
 namespace core {
   class Window {

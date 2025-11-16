@@ -57,11 +57,11 @@ namespace core {
   }
 
   void EventManager::executeEvents() {
-    for (std::pair<const std::type_index,
-                   std::vector<std::unique_ptr<BaseEvent>>> &p : this->topics) {
-      const std::type_index &idx = p.first;
-      std::lock_guard        topicLock(this->topicMutexes[idx]);
-      std::lock_guard        subscriberLock(this->subscriberMutexes[idx]);
+    for (std::pair<const std::string, std::vector<std::unique_ptr<BaseEvent>>>
+             &p : this->topics) {
+      const std::string &idx = p.first;
+      std::lock_guard    topicLock(this->topicMutexes[idx]);
+      std::lock_guard    subscriberLock(this->subscriberMutexes[idx]);
       std::vector<std::unique_ptr<BaseEvent>> &events = p.second;
       std::vector<std::function<void(std::unique_ptr<BaseEvent> &)>> &handles =
           this->subscribers.at(idx);
@@ -73,5 +73,13 @@ namespace core {
       }
       events.clear();
     }
+  }
+
+  void EventManager::subscribe(
+      const std::string                                &topicName,
+      std::function<void(std::unique_ptr<BaseEvent> &)> handle) {
+    this->subscriberMutexes.try_emplace(topicName);
+    std::lock_guard<std::mutex> lock(this->subscriberMutexes[topicName]);
+    this->subscribers[topicName].push_back(std::move(handle));
   }
 }

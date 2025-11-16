@@ -1,5 +1,6 @@
 #include "window.hpp"
 #include "GLFW/glfw3.h"
+#include "core_constants.hpp"
 #include "event_manager.hpp"
 #include "events.hpp"
 
@@ -21,7 +22,7 @@ namespace core {
       throw std::runtime_error("Failed to create GLFW window");
     }
     glfwMakeContextCurrent(window);
-    glfwSwapInterval(1);
+    glfwSwapInterval(0);
 
     if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress)) {
       core::logger::error("Failed to initialize GLAD");
@@ -55,9 +56,10 @@ namespace core {
 
   void Window::framebufferResizeCallback(GLFWwindow *window, int width,
                                          int height) {
-    core::InputEventManager::getInstance().enqueue(
-        core::InputEvent(core::InputEventType::WINDOW_RESIZE_EVENT,
-                         core::WindowResizeEvent(width, height)));
+    std::unique_ptr<WindowResizeEvent> event =
+        std::make_unique<WindowResizeEvent>(width, height);
+    core::EventManager::getInstance().enqueue<WindowResizeEvent>(
+        Constants::WINDOW_RESIZE_TOPIC, std::move(event));
   }
 
   void Window::keyCallback(GLFWwindow *window, int key, int scanCode,

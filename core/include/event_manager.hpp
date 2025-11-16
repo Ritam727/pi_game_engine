@@ -1,14 +1,13 @@
 #pragma once
 
-#include "logger.hpp"
 #include "events.hpp"
 #include "utils.hpp"
 
 #include <array>
 #include <functional>
 #include <mutex>
-#include <typeindex>
 #include <unordered_map>
+#include <unordered_set>
 
 namespace core {
   class InputEventManager {
@@ -36,13 +35,14 @@ namespace core {
   class EventManager {
   private:
     std::unordered_map<
-        std::type_index,
+        std::string,
         std::vector<std::function<void(std::unique_ptr<BaseEvent> &)>>>
         subscribers;
-    std::unordered_map<std::type_index, std::vector<std::unique_ptr<BaseEvent>>>
-                                                    topics;
-    std::unordered_map<std::type_index, std::mutex> subscriberMutexes;
-    std::unordered_map<std::type_index, std::mutex> topicMutexes;
+    std::unordered_map<std::string, std::vector<std::unique_ptr<BaseEvent>>>
+                                                topics;
+    std::unordered_set<std::string>             topicNames;
+    std::unordered_map<std::string, std::mutex> subscriberMutexes;
+    std::unordered_map<std::string, std::mutex> topicMutexes;
 
     EventManager();
 
@@ -52,29 +52,19 @@ namespace core {
     void executeEvents();
 
     template <IsSubclassOf<BaseEvent> T>
-    void enqueue(std::unique_ptr<T> event) {
-      std::type_index idx = std::type_index(typeid(T));
-      if (!this->topicMutexes.contains(idx)) {
-        this->topicMutexes.try_emplace(idx);
-      }
-      std::lock_guard<std::mutex> lock(this->topicMutexes[idx]);
-      for (std::unique_ptr<BaseEvent> &queuedEvent : this->topics[idx]) {
+    void enqueue(const std::string &topicName, std::unique_ptr<T> event) {
+      this->topicMutexes.try_emplace(topicName);
+      std::lock_guard<std::mutex> lock(this->topicMutexes[topicName]);
+      for (std::unique_ptr<BaseEvent> &queuedEvent : this->topics[topicName]) {
         if (static_cast<T>(*event.get()) ==
             *(static_cast<T *>(queuedEvent.get()))) {
           return;
         }
       }
-      this->topics[idx].push_back(std::move(event));
+      this->topics[topicName].push_back(std::move(event));
     }
 
-    template <IsSubclassOf<BaseEvent> T>
-    void subscribe(std::function<void(std::unique_ptr<BaseEvent> &)> handle) {
-      std::type_index idx = std::type_index(typeid(T));
-      if (!this->subscriberMutexes.contains(idx)) {
-        this->subscriberMutexes.try_emplace(idx);
-      }
-      std::lock_guard<std::mutex> lock(this->subscriberMutexes[idx]);
-      this->subscribers[idx].push_back(std::move(handle));
-    }
+    void subscribe(const std::string                                &topicName,
+                   std::function<void(std::unique_ptr<BaseEvent> &)> handle);
   };
 }
