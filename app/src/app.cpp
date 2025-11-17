@@ -44,7 +44,6 @@ ScreenSize &App::getScreenSize() {
 
 void App::eventManagerThread() {
   while (App::isRunning()) {
-    core::logger::info("{}", nonMainThreadTopics.size());
     core::EventManager::getInstance().executeEvents(nonMainThreadTopics);
   }
 }
@@ -56,7 +55,6 @@ void App::run() {
 
   while (App::isRunning()) {
     window.pollEvents();
-    core::logger::info("{}", mainThreadTopics.size());
     core::EventManager::getInstance().executeEvents(mainThreadTopics);
     float currentFrame = glfwGetTime();
     for (std::unique_ptr<core::Layer> &layer : layers)

@@ -11,9 +11,7 @@ namespace core {
   }
 
   void EventManager::executeEvents(const std::vector<std::string> &topics) {
-    core::logger::info("{}", topics.size());
     for (const std::string &topic : topics) {
-      core::logger::info("Handling topic {}", topic);
       std::lock_guard topicLock(this->topicMutexes[topic]);
       std::vector<std::unique_ptr<BaseEvent>> &events = this->topics[topic];
       if (this->subscribers.contains(topic)) {
