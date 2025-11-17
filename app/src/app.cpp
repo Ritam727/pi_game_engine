@@ -2,11 +2,13 @@
 
 #include "GLFW/glfw3.h"
 #include "camera_transform.hpp"
-#include "core_constants.hpp"
+#include "constants.hpp"
 #include "event_manager.hpp"
 #include "events.hpp"
 #include "inputs.hpp"
 #include "renderer.hpp"
+
+#include "app_config.hpp"
 
 App::App()
     : window(App::getScreenSize().width, App::getScreenSize().height,
@@ -19,8 +21,6 @@ App::App()
 
   core::EventManager::getInstance().subscribe(
       core::Constants::WINDOW_CLOSE_TOPIC, App::windowCloseHandler);
-  core::InputEventManager::getInstance().subscribe(
-      core::InputEventType::MOUSE_BUTTON_EVENT, App::mouseButtonHandler);
 
   this->registry.addComponent<core::CameraTransform>(
       this->registry.createEntity(), camera.getCameraTransform());
@@ -30,14 +30,6 @@ App::App()
 void App::windowCloseHandler(std::unique_ptr<core::BaseEvent> &event) {
   core::logger::info("Shutting down application");
   App::isRunning() = false;
-}
-
-void App::mouseButtonHandler(core::InputEvent &event) {
-  core::MouseButtonEvent mouseButtonEvent =
-      std::get<core::MouseButtonEvent>(event.data);
-  core::logger::info("Received mouse button event: {}, {}",
-                     mouseButtonEvent.button,
-                     static_cast<int>(mouseButtonEvent.type));
 }
 
 bool &App::isRunning() {
@@ -52,7 +44,8 @@ ScreenSize &App::getScreenSize() {
 
 void App::eventManagerThread() {
   while (App::isRunning()) {
-    core::EventManager::getInstance().executeEvents();
+    core::logger::info("{}", nonMainThreadTopics.size());
+    core::EventManager::getInstance().executeEvents(nonMainThreadTopics);
   }
 }
 
@@ -63,7 +56,8 @@ void App::run() {
 
   while (App::isRunning()) {
     window.pollEvents();
-    core::InputEventManager::getInstance().executeEvents();
+    core::logger::info("{}", mainThreadTopics.size());
+    core::EventManager::getInstance().executeEvents(mainThreadTopics);
     float currentFrame = glfwGetTime();
     for (std::unique_ptr<core::Layer> &layer : layers)
       layer->onUpdate((currentFrame - previousFrame) * 1000);

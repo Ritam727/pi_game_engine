@@ -2,7 +2,7 @@
 
 #include <vector>
 
-namespace commons {
+namespace core {
   class ISparseSet {
   public:
     virtual ~ISparseSet() = default;

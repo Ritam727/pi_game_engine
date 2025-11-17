@@ -3,8 +3,6 @@ add_library(inputs STATIC)
 file(GLOB_RECURSE INPUTS_SOURCES CONFIGURE_DEPENDS *.c*)
 file(GLOB_RECURSE INPUTS_HEADERS CONFIGURE_DEPENDS *.hpp)
 
-list(FILTER INPUTS_HEADERS EXCLUDE REGEX "constants.hpp$")
-
 target_sources(inputs
   PRIVATE
     ${INPUTS_SOURCES}
@@ -26,7 +24,7 @@ target_link_directories(inputs
 
 target_link_libraries(inputs
   PUBLIC
-    nlohmann_json
     core
-    glfw
+
+    nlohmann_json
 )

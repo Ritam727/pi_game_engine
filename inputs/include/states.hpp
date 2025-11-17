@@ -1,6 +1,6 @@
 #pragma once
 
-#include "events.hpp"
+#include "inputs_events.hpp"
 #include "utils.hpp"
 #include "glm/glm.hpp"
 
@@ -15,14 +15,12 @@ namespace inputs {
 
 namespace inputs {
   struct InputState {
-    std::vector<core::InputAction> keyboardState{400,
-                                                 core::InputAction::RELEASE};
-    std::vector<core::InputAction> mousebuttonState{3,
-                                                    core::InputAction::RELEASE};
-    CameraState                    cameraState{CameraState::DEFAULT};
-    FovState                       fovState{FovState::NORMAL};
-    glm::vec2                      mousePosition{0.0f, 0.0f};
-    float                          scrollDelta{0.0f};
+    std::vector<InputAction> keyboardState{400, InputAction::RELEASE};
+    std::vector<InputAction> mousebuttonState{3, InputAction::RELEASE};
+    CameraState              cameraState{CameraState::DEFAULT};
+    FovState                 fovState{FovState::NORMAL};
+    glm::vec2                mousePosition{0.0f, 0.0f};
+    float                    scrollDelta{0.0f};
 
     MousePositionReset resetMousePosition{MousePositionReset::NONE};
   };

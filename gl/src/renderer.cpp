@@ -4,6 +4,7 @@
 #include "gl_constants.hpp"
 #include "event_manager.hpp"
 #include "registry.hpp"
+#include "gl_events.hpp"
 
 #ifndef ENGINE_PATH
 #define ENGINE_PATH "/"
@@ -13,16 +14,15 @@ namespace gl {
   static RenderState renderState{};
 
   static void windowResizeCallback(std::unique_ptr<core::BaseEvent> &event) {
-    WindowResizeEvent *windowResizeEvent =
-        static_cast<WindowResizeEvent *>(event.get());
+    core::WindowResizeEvent *windowResizeEvent =
+        static_cast<core::WindowResizeEvent *>(event.get());
     renderState.width = windowResizeEvent->width;
     renderState.height = windowResizeEvent->height;
     renderState.windowResized = true;
   }
 
   static void fovChangeCallback(std::unique_ptr<core::BaseEvent> &event) {
-    core::FovChangeEvent *fovChangeEvent =
-        static_cast<core::FovChangeEvent *>(event.get());
+    FovChangeEvent *fovChangeEvent = static_cast<FovChangeEvent *>(event.get());
     renderState.fov = fovChangeEvent->fov;
   }
 }
@@ -95,7 +95,7 @@ namespace gl {
 
     this->vertexArray.bind();
     float angle = ts * Constants::SPEED_SCALAR;
-    commons::SparseSet<core::Entity, core::Transform> &transformPool =
+    core::SparseSet<core::Entity, core::Transform> &transformPool =
         registry.getPool<core::Transform>();
     for (core::Transform &transform : transformPool.getComponents()) {
       transform.updateRotation(glm::vec3(angle));

@@ -3,33 +3,9 @@
 #include "events.hpp"
 #include "utils.hpp"
 
-#include <array>
 #include <functional>
 #include <mutex>
 #include <unordered_map>
-#include <unordered_set>
-
-namespace core {
-  class InputEventManager {
-  private:
-    std::vector<InputEventType>                                 inputEventTypes;
-    std::vector<std::vector<std::function<void(InputEvent &)>>> subscribers;
-    std::vector<std::array<std::vector<InputEvent>, 2>>         topics;
-
-    int read = 0;
-    int write = 1;
-
-    InputEventManager();
-
-  public:
-    static InputEventManager &getInstance();
-
-    void executeEvents();
-    void subscribe(InputEventType                    type,
-                   std::function<void(InputEvent &)> handle);
-    void enqueue(InputEvent event);
-  };
-}
 
 namespace core {
   class EventManager {
@@ -48,9 +24,9 @@ namespace core {
   public:
     static EventManager &getInstance();
 
-    void executeEvents();
+    void executeEvents(const std::vector<std::string> &topics);
 
-    template <IsSubclassOf<BaseEvent> T>
+    template <core::IsSubclassOf<BaseEvent> T>
     void enqueue(const std::string &topicName, std::unique_ptr<T> event) {
       if (!this->topicMutexes.contains(topicName)) {
         this->topicMutexes.try_emplace(topicName);

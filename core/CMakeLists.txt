@@ -1,6 +1,6 @@
 add_library(core STATIC)
 
-file(GLOB_RECURSE CORE_SOURCES CONFIGURE_DEPENDS *.cpp)
+file(GLOB_RECURSE CORE_SOURCES CONFIGURE_DEPENDS *.c*)
 file(GLOB_RECURSE CORE_HEADERS CONFIGURE_DEPENDS *.hpp)
 
 target_sources(core
@@ -28,5 +28,4 @@ target_link_libraries(core
     glm
     glad
     glfw
-    commons
 )

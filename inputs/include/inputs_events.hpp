@@ -1,27 +1,15 @@
 #pragma once
 
-#include "glm/glm.hpp"
-#include "utils.hpp"
+#include "events.hpp"
 
-namespace core {
-  struct BaseEvent {
-    virtual ~BaseEvent() = default;
-  };
-}
-
-namespace core {
+namespace inputs {
   enum class InputAction { RELEASE, PRESS, HOLD };
 }
 
-namespace core {
+namespace inputs {
   struct WindowResizeEvent : public core::BaseEvent {
     int width;
     int height;
-
-    WindowResizeEvent(int width, int height) {
-      this->width = width;
-      this->height = height;
-    }
 
     bool operator==(const WindowResizeEvent &event) const {
       return this->width == event.width && this->height == event.height;
@@ -38,11 +26,6 @@ namespace core {
     int         key;
     InputAction type;
 
-    KeyEvent(int key, InputAction type) {
-      this->key = key;
-      this->type = type;
-    }
-
     bool operator==(const KeyEvent &event) const {
       return this->key == event.key && this->type == event.type;
     }
@@ -51,11 +34,6 @@ namespace core {
   struct MouseMovementEvent : public core::BaseEvent {
     double x;
     double y;
-
-    MouseMovementEvent(double x, double y) {
-      this->x = x;
-      this->y = y;
-    }
 
     bool operator==(const MouseMovementEvent &event) const {
       return this->x == event.x && this->y == event.y;
@@ -66,11 +44,6 @@ namespace core {
     int         button;
     InputAction type;
 
-    MouseButtonEvent(int button, InputAction type) {
-      this->button = button;
-      this->type = type;
-    }
-
     bool operator==(const MouseButtonEvent &event) const {
       return this->button == event.button && this->type == event.type;
     }
@@ -80,13 +53,22 @@ namespace core {
     double x;
     double y;
 
-    MouseScrollEvent(double x, double y) {
-      this->x = x;
-      this->y = y;
-    }
-
     bool operator==(const MouseScrollEvent &event) const {
       return this->x == event.x && this->y == event.y;
+    }
+  };
+}
+
+namespace inputs {
+  struct FovChangeEvent : public core::BaseEvent {
+    float fov;
+
+    FovChangeEvent(float fov) {
+      this->fov = fov;
+    }
+
+    bool operator==(const FovChangeEvent &event) const {
+      return this->fov == fov;
     }
   };
 }

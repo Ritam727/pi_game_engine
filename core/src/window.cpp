@@ -1,8 +1,7 @@
 #include "window.hpp"
 #include "GLFW/glfw3.h"
-#include "core_constants.hpp"
+#include "constants.hpp"
 #include "event_manager.hpp"
-#include "events.hpp"
 #include "logger.hpp"
 
 #include <stdexcept>
@@ -23,7 +22,6 @@ namespace core {
       throw std::runtime_error("Failed to create GLFW window");
     }
     glfwMakeContextCurrent(window);
-    glfwSwapInterval(0);
 
     if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress)) {
       core::logger::error("Failed to initialize GLAD");
@@ -65,9 +63,9 @@ namespace core {
 
   void Window::keyCallback(GLFWwindow *window, int key, int scanCode,
                            int action, int mods) {
-    core::InputEventManager::getInstance().enqueue(core::InputEvent(
-        core::InputEventType::KEY_EVENT,
-        core::KeyEvent(key, static_cast<core::InputAction>(action))));
+    core::EventManager::getInstance().enqueue<KeyEvent>(
+        Constants::KEY_STATE_TOPIC,
+        std::make_unique<KeyEvent>(key, static_cast<InputAction>(action)));
     if (key == GLFW_KEY_ESCAPE) {
       core::EventManager::getInstance().enqueue<WindowCloseEvent>(
           Constants::WINDOW_CLOSE_TOPIC, std::make_unique<WindowCloseEvent>());
@@ -80,22 +78,22 @@ namespace core {
   }
 
   void Window::mouseMovementCallback(GLFWwindow *window, double x, double y) {
-    core::InputEventManager::getInstance().enqueue(
-        core::InputEvent(core::InputEventType::MOUSE_MOVEMENT_EVENT,
-                         core::MouseMovementEvent(x, y)));
+    core::EventManager::getInstance().enqueue<MouseMovementEvent>(
+        Constants::MOUSE_MOVEMENT_TOPIC,
+        std::make_unique<MouseMovementEvent>(x, y));
   }
 
   void Window::mouseButtonCallback(GLFWwindow *window, int button, int action,
                                    int mods) {
-    core::InputEventManager::getInstance().enqueue(
-        core::InputEvent(core::InputEventType::MOUSE_BUTTON_EVENT,
-                         core::MouseButtonEvent(
-                             button, static_cast<core::InputAction>(action))));
+    core::EventManager::getInstance().enqueue<MouseButtonEvent>(
+        Constants::MOUSE_BUTTON_TOPIC,
+        std::make_unique<MouseButtonEvent>(button,
+                                           static_cast<InputAction>(action)));
   }
 
   void Window::mouseScrollCallback(GLFWwindow *window, double x, double y) {
-    core::InputEventManager::getInstance().enqueue(
-        core::InputEvent(core::InputEventType::MOUSE_SCROLL_EVENT,
-                         core::MouseScrollEvent(x, y)));
+    core::EventManager::getInstance().enqueue<MouseScrollEvent>(
+        Constants::MOUSE_SCROLL_TOPIC,
+        std::make_unique<MouseScrollEvent>(x, y));
   }
 }

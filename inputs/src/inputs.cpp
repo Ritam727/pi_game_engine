@@ -2,7 +2,8 @@
 #include "camera_transform.hpp"
 #include "event_manager.hpp"
 #include "events.hpp"
-#include "inputs_constants.hpp"
+#include "constants.hpp"
+#include "events.hpp"
 #include "states.hpp"
 
 #include "inputs_constants.hpp"
@@ -18,33 +19,40 @@ namespace inputs {
     for (std::vector<unsigned int> &currentCombination : keys) {
       bool keysPressed = false;
       for (unsigned int &key : currentCombination) {
-        keysPressed |=
-            (inputState.keyboardState[key] != core::InputAction::RELEASE);
+        keysPressed |= (inputState.keyboardState[key] != InputAction::RELEASE);
       }
       isCombination &= keysPressed;
     }
     return isCombination;
   }
 
-  void keyPressHandler(core::InputEvent &event) {
-    core::KeyEvent keyEvent = std::get<core::KeyEvent>(event.data);
-    inputState.keyboardState[keyEvent.key] = keyEvent.type;
+  void keyPressHandler(std::unique_ptr<core::BaseEvent> &event) {
+    KeyEvent *keyEvent = static_cast<KeyEvent *>(event.get());
+    inputState.keyboardState[keyEvent->key] = keyEvent->type;
   }
 
-  void mouseMovementHandler(core::InputEvent &event) {
-    core::MouseMovementEvent mouseMovementEvent =
-        std::get<core::MouseMovementEvent>(event.data);
+  void mouseMovementHandler(std::unique_ptr<core::BaseEvent> &event) {
+    MouseMovementEvent *mouseMovementEvent =
+        static_cast<MouseMovementEvent *>(event.get());
     if (inputState.resetMousePosition == MousePositionReset::INIT) {
       inputState.resetMousePosition = MousePositionReset::DONE;
     }
     inputState.mousePosition =
-        glm::vec2(mouseMovementEvent.x, mouseMovementEvent.y);
+        glm::vec2(mouseMovementEvent->x, mouseMovementEvent->y);
   }
 
-  void mouseScrollHandler(core::InputEvent &event) {
-    core::MouseScrollEvent mouseScrollEvent =
-        std::get<core::MouseScrollEvent>(event.data);
-    inputState.scrollDelta = mouseScrollEvent.y;
+  void mouseScrollHandler(std::unique_ptr<core::BaseEvent> &event) {
+    MouseScrollEvent *mouseScrollEvent =
+        static_cast<MouseScrollEvent *>(event.get());
+    inputState.scrollDelta = mouseScrollEvent->y;
+  }
+
+  void mouseButtonHandler(std::unique_ptr<core::BaseEvent> &event) {
+    MouseButtonEvent *mouseButtonEvent =
+        static_cast<MouseButtonEvent *>(event.get());
+    core::logger::info("Received mouse button event: {}, {}",
+                       mouseButtonEvent->button,
+                       static_cast<int>(mouseButtonEvent->type));
   }
 }
 
@@ -52,12 +60,14 @@ namespace inputs {
   Inputs::Inputs(core::Window &window, core::Registry &registry,
                  StateKeyMap &stateManager)
       : window(window), registry(registry), stateManager(stateManager) {
-    core::InputEventManager::getInstance().subscribe(
-        core::InputEventType::KEY_EVENT, keyPressHandler);
-    core::InputEventManager::getInstance().subscribe(
-        core::InputEventType::MOUSE_MOVEMENT_EVENT, mouseMovementHandler);
-    core::InputEventManager::getInstance().subscribe(
-        core::InputEventType::MOUSE_SCROLL_EVENT, mouseScrollHandler);
+    core::EventManager::getInstance().subscribe(
+        core::Constants::KEY_STATE_TOPIC, keyPressHandler);
+    core::EventManager::getInstance().subscribe(
+        core::Constants::MOUSE_MOVEMENT_TOPIC, mouseMovementHandler);
+    core::EventManager::getInstance().subscribe(
+        core::Constants::MOUSE_SCROLL_TOPIC, mouseScrollHandler);
+    core::EventManager::getInstance().subscribe(
+        core::Constants::MOUSE_BUTTON_TOPIC, mouseButtonHandler);
   }
 
   void Inputs::onUpdate(float ts) {
@@ -75,10 +85,10 @@ namespace inputs {
              &p : inputMap) {
       if (areKeysPressed(p.second)) {
         inputState.fovState = static_cast<FovState>(p.first);
-        std::unique_ptr<core::FovChangeEvent> fovChangeEvent =
-            std::make_unique<core::FovChangeEvent>(60.0f);
-        core::EventManager::getInstance().enqueue<core::FovChangeEvent>(
-            Constants::FOV_CHANGE_TOPIC, std::move(fovChangeEvent));
+        std::unique_ptr<FovChangeEvent> fovChangeEvent =
+            std::make_unique<FovChangeEvent>(60.0f);
+        core::EventManager::getInstance().enqueue<FovChangeEvent>(
+            inputs::Constants::FOV_CHANGE_TOPIC, std::move(fovChangeEvent));
         return;
       }
     }
@@ -126,9 +136,9 @@ namespace inputs {
         glm::vec2 &previousPosition = this->mousePosition;
 
         float xOffset = (currentPosition.x - previousPosition.x) * ts *
-                        Constants::SPEED_SCALAR * 0.2;
+                        core::Constants::SPEED_SCALAR * 0.2;
         float yOffset = (previousPosition.y - currentPosition.y) * ts *
-                        Constants::SPEED_SCALAR * 0.2;
+                        core::Constants::SPEED_SCALAR * 0.2;
         float &scrollDelta = inputState.scrollDelta;
         previousPosition = currentPosition;
 
@@ -144,11 +154,11 @@ namespace inputs {
           glm::vec3 up = glm::normalize(glm::cross(right, front));
           if (xOffset != 0 || yOffset != 0) {
             direction = glm::normalize(xOffset * right + yOffset * up);
-            speed = Constants::SPEED_SCALAR * 0.1;
+            speed = core::Constants::SPEED_SCALAR * 0.1;
           } else if (scrollDelta != 0) {
             direction = -1.0f * scrollDelta * glm::normalize(front);
             scrollDelta = 0;
-            speed = Constants::SPEED_SCALAR;
+            speed = core::Constants::SPEED_SCALAR;
           }
           cameraTransform.updatePosition(direction * ts * speed);
         }

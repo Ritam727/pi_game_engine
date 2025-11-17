@@ -3,8 +3,7 @@ project(engine)
 
 add_compile_definitions(ENGINE_PATH="${CMAKE_BINARY_DIR}")
 
-add_executable(engine)
-add_subdirectory(src)
+add_subdirectory(app)
 add_subdirectory(gl)
 add_subdirectory(glfw)
 add_subdirectory(glad)
@@ -14,7 +13,9 @@ add_subdirectory(stb_image)
 add_subdirectory(core)
 add_subdirectory(json)
 add_subdirectory(inputs)
-add_subdirectory(commons)
+
+add_executable(engine main.cpp)
+target_link_libraries(engine app)
 
 file(COPY "res" DESTINATION "${CMAKE_BINARY_DIR}")
 

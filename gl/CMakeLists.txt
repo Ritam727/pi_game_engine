@@ -1,6 +1,6 @@
 add_library(gl STATIC)
 
-file(GLOB_RECURSE GL_SOURCES CONFIGURE_DEPENDS *.cpp)
+file(GLOB_RECURSE GL_SOURCES CONFIGURE_DEPENDS *.c*)
 file(GLOB_RECURSE GL_HEADERS CONFIGURE_DEPENDS *.hpp)
 
 target_sources(gl
@@ -24,9 +24,10 @@ target_link_directories(gl
 
 target_link_libraries(gl
   PUBLIC
+    core
+    
     glfw
     glad
     glm
     stb_image
-    core
 )

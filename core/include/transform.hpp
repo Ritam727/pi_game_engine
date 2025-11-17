@@ -3,7 +3,6 @@
 #include "base_component.hpp"
 #include "glm/glm.hpp"
 #include "glm/gtc/quaternion.hpp"
-#include "sparse_set.hpp"
 
 namespace core {
   class Transform : public BaseComponent {

@@ -1,6 +1,5 @@
 #pragma once
 
-#include "events.hpp"
 #include "layer.hpp"
 #include "logger.hpp"
 #include "shader.hpp"
@@ -15,11 +14,6 @@
 #include "glm/gtx/string_cast.hpp"
 
 namespace gl {
-  struct WindowResizeEvent : public core::BaseEvent {
-    int width;
-    int height;
-  };
-
   struct RenderState {
     int   width{800};
     int   height{600};
