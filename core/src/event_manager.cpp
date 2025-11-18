@@ -12,14 +12,18 @@ namespace core {
 
   void EventManager::executeEvents(const std::vector<std::string> &topics) {
     for (const std::string &topic : topics) {
-      std::lock_guard topicLock(this->topicMutexes[topic]);
-      std::vector<std::unique_ptr<BaseEvent>> &events = this->topics[topic];
+      std::lock_guard<std::mutex> swapLock(this->swapMutexes[topic]);
+      this->readIndexes[topic] ^= 1;
+      this->writeIndexes[topic] ^= 1;
+    }
+    for (const std::string &topic : topics) {
+      std::vector<BaseEventPtr> &events =
+          this->topics[topic][this->readIndexes[topic]];
       if (this->subscribers.contains(topic)) {
         std::lock_guard subscriberLock(this->subscriberMutexes[topic]);
-        std::vector<std::function<void(std::unique_ptr<BaseEvent> &)>>
-            &handles = this->subscribers[topic];
-        for (std::function<void(std::unique_ptr<BaseEvent> &)> &handle :
-             handles) {
+        std::vector<std::function<void(BaseEventPtr &)>> &handles =
+            this->subscribers[topic];
+        for (std::function<void(BaseEventPtr &)> &handle : handles) {
           for (unsigned int i = 0; i < events.size(); i++) {
             handle(events[i]);
           }
