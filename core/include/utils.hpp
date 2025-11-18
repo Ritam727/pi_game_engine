@@ -17,7 +17,7 @@ namespace core {
   concept IsIterableEnum = std::is_enum_v<T> && HasNoneValue<T>;
 
   template <typename C, typename B>
-  concept IsSubclassOf = std::is_base_of_v<B, C>;
+  concept IsSubClassOf = std::is_base_of_v<B, C>;
 }
 
 namespace core {

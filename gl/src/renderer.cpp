@@ -42,8 +42,7 @@ namespace gl {
 
     for (int i = 0; i < 10; i++) {
       this->registry.addComponent<core::Transform>(
-          this->registry.createEntity(),
-          core::Transform(this->registry.getLastEntity(), this->registry));
+          this->registry.createEntity(), core::Transform{});
       registry.getPool<core::Transform>()
           .get(registry.getLastEntity())
           .setPosition(cubePositions[i]);

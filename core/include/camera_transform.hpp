@@ -17,8 +17,7 @@ namespace core {
     bool cameraActive;
 
   public:
-    CameraTransform(core::Entity entityId, core::Registry &registryRef,
-                    glm::vec3 position, glm::vec3 up);
+    CameraTransform(glm::vec3 position, glm::vec3 up);
 
     void setPosition(glm::vec3 position);
 

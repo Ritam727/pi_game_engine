@@ -3,10 +3,8 @@
 #include "glm/gtc/matrix_transform.hpp"
 
 namespace core {
-  CameraTransform::CameraTransform(core::Entity    entityId,
-                                   core::Registry &registryRef,
-                                   glm::vec3 position, glm::vec3 up)
-      : BaseComponent(registryRef), yaw(-90.0f), pitch(0), position(position),
+  CameraTransform::CameraTransform(glm::vec3 position, glm::vec3 up)
+      : yaw(-90.0f), pitch(0), position(position),
         front(glm::normalize(
             glm::vec3(cos(glm::radians(yaw)) * cos(glm::radians(pitch)),
                       sin(glm::radians(pitch)),

@@ -30,7 +30,7 @@ namespace core {
 
     void executeEvents(const std::vector<std::string> &topics);
 
-    template <core::IsSubclassOf<BaseEvent> T>
+    template <core::IsSubClassOf<BaseEvent> T>
     void enqueue(const std::string &topicName, std::unique_ptr<T> event) {
       if (!this->swapMutexes.contains(topicName)) {
         this->swapMutexes.try_emplace(topicName);

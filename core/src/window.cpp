@@ -22,6 +22,7 @@ namespace core {
       throw std::runtime_error("Failed to create GLFW window");
     }
     glfwMakeContextCurrent(window);
+    glfwSwapInterval(0);
 
     if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress)) {
       core::logger::error("Failed to initialize GLAD");

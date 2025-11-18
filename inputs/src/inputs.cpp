@@ -135,32 +135,32 @@ namespace inputs {
         glm::vec2 &currentPosition = inputState.mousePosition;
         glm::vec2 &previousPosition = this->mousePosition;
 
-        float xOffset = (currentPosition.x - previousPosition.x) * ts *
-                        core::Constants::SPEED_SCALAR * 0.2;
-        float yOffset = (previousPosition.y - currentPosition.y) * ts *
-                        core::Constants::SPEED_SCALAR * 0.2;
-        float &scrollDelta = inputState.scrollDelta;
+        float       xOffset = (currentPosition.x - previousPosition.x);
+        float       yOffset = (previousPosition.y - currentPosition.y);
+        float      &scrollDelta = inputState.scrollDelta;
+        CameraState cameraState = inputState.cameraState;
         previousPosition = currentPosition;
 
-        CameraState cameraState = inputState.cameraState;
-        glm::vec3   direction(0);
-        float       speed = 0.0f;
-
         if (cameraState == CameraState::CAMERA_PAN_MODE) {
-          cameraTransform.updateRotation({xOffset, yOffset});
+          cameraTransform.updateRotation(
+              {xOffset * core::Constants::SPEED_SCALAR,
+               yOffset * core::Constants::SPEED_SCALAR});
         } else if (cameraState == CameraState::CAMERA_FLY_MODE) {
-          glm::vec3 front = cameraTransform.getForwardDirection();
-          glm::vec3 right = cameraTransform.getRightDirection();
+          glm::vec3 direction(0);
+          float     speed = 0.0f;
+          glm::vec3 front =
+              glm::normalize(cameraTransform.getForwardDirection());
+          glm::vec3 right = glm::normalize(cameraTransform.getRightDirection());
           glm::vec3 up = glm::normalize(glm::cross(right, front));
           if (xOffset != 0 || yOffset != 0) {
-            direction = glm::normalize(xOffset * right + yOffset * up);
+            direction = xOffset * right + yOffset * up;
             speed = core::Constants::SPEED_SCALAR * 0.1;
           } else if (scrollDelta != 0) {
-            direction = -1.0f * scrollDelta * glm::normalize(front);
+            direction = -1.0f * scrollDelta * front;
             scrollDelta = 0;
-            speed = core::Constants::SPEED_SCALAR;
+            speed = core::Constants::SPEED_SCALAR * 5;
           }
-          cameraTransform.updatePosition(direction * ts * speed);
+          cameraTransform.updatePosition(direction * speed);
         }
       }
     }

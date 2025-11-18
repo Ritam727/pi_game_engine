@@ -22,8 +22,6 @@ App::App()
   core::EventManager::getInstance().subscribe(
       core::Constants::WINDOW_CLOSE_TOPIC, App::windowCloseHandler);
 
-  this->registry.addComponent<core::CameraTransform>(
-      this->registry.createEntity(), camera.getCameraTransform());
   this->registry.getPool<core::CameraTransform>().get(0).setCameraActive(true);
 }
 
