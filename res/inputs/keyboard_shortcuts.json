@@ -1,43 +1,20 @@
 {
-  "0": {
-    "1": [
-      [
-        341,
-        345
-      ],
-      [
-        340,
-        344
-      ]
-    ],
-    "2": [
-      [
-        341,
-        345
-      ],
-      [
-        342,
-        346
-      ]
-    ],
-    "3": [
-      [
-        341,
-        345
-      ],
-      [
-        67
-      ],
-      [
-        82
-      ]
+  "_ALT_V": {
+    "inputs::CameraViewMode": [
+      "inc",
+      "none"
     ]
   },
-  "1": {
-    "1": [
-      [
-        67
-      ]
+  "_CONTROL_ALT_MOUSELEFT": {
+    "inputs::CameraMoveMode": [
+      "set 1",
+      "set 0"
+    ]
+  },
+  "_CONTROL_SHIFT_MOUSELEFT": {
+    "inputs::CameraMoveMode": [
+      "set 2",
+      "set 0"
     ]
   }
 }

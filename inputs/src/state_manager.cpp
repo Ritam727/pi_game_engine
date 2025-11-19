@@ -3,7 +3,6 @@
 #include "inputs_constants.hpp"
 #include "nlohmann/json.hpp"
 #include "states.hpp"
-#include "window.hpp"
 #include <fstream>
 #include <string>
 
@@ -17,12 +16,23 @@ namespace inputs {
     nlohmann::json loadedKeyboardShortcuts = nlohmann::json::parse(inputFile);
     for (nlohmann::json::iterator it = loadedKeyboardShortcuts.begin();
          it != loadedKeyboardShortcuts.end(); it++) {
-      unsigned int stateKey = std::stoi(it.key());
-      StateType    type = static_cast<StateType>(stateKey);
+      std::string keyPress = it.key();
       for (nlohmann::json::iterator jt = it->begin(); jt != it->end(); jt++) {
-        std::vector<std::vector<unsigned int>> keyCombination(jt.value());
-        unsigned int shortcutKey = std::stoi(jt.key());
-        this->stateKeyMap[type][shortcutKey] = keyCombination;
+        std::array<std::string, 2> keyCombination(jt.value());
+        if (keyCombination[0].contains("inc")) {
+          core::logger::info("INC command");
+        } else if (keyCombination[0].contains("none")) {
+          core::logger::info("NONE command");
+        } else {
+          core::logger::info("SET command");
+        }
+        if (keyCombination[1].contains("inc")) {
+          core::logger::info("INC command");
+        } else if (keyCombination[1].contains("none")) {
+          core::logger::info("NONE command");
+        } else {
+          core::logger::info("SET command");
+        }
       }
     }
   }
@@ -34,8 +44,27 @@ namespace inputs {
 }
 
 namespace inputs {
-  StateManager::StateManager()
-      : keyToStringMap(core::Window::getGlfwToKeyMapping()) {}
+  StateManager::StateManager() {
+    std::ifstream  inputFile(ENGINE_PATH "/res/inputs/keyboard_shortcuts.json");
+    nlohmann::json loadedKeyboardShortcuts = nlohmann::json::parse(inputFile);
+    for (nlohmann::json::iterator it = loadedKeyboardShortcuts.begin();
+         it != loadedKeyboardShortcuts.end(); it++) {
+      std::string keyPress = it.key();
+      for (nlohmann::json::iterator jt = it->begin(); jt != it->end(); jt++) {
+        std::array<std::string, 2> keyCombination(jt.value());
+        std::string                type = jt.key();
+        if (type == "inputs::CameraMoveMode") {
+          this->activations.insert(
+              {keyPress,
+               StateManager::createActivation<CameraMoveMode>(keyCombination)});
+        } else if (type == "inputs::CameraViewMode") {
+          this->activations.insert(
+              {keyPress,
+               StateManager::createActivation<CameraViewMode>(keyCombination)});
+        }
+      }
+    }
+  }
 
   StateManager &StateManager::getInstance() {
     static StateManager stateManager;
@@ -115,9 +144,10 @@ namespace inputs {
   std::string StateManager::getFirstMatch(unsigned int idx,
                                           std::string  current) {
     std::vector<unsigned int> buttonsPressed = this->inputState.buttonsPressed;
-    if (idx == buttonsPressed.size())
+    if (idx == buttonsPressed.size()) {
       return this->activations.contains(current) ? current
                                                  : Constants::EMPTY_STRING;
+    }
     std::string taken = current + Constants::UNDERSCORE +
                         this->keyToStringMap[buttonsPressed[idx]];
     std::string next = this->getFirstMatch(idx + 1, taken);
