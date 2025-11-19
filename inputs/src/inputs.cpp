@@ -159,7 +159,7 @@ namespace inputs {
           if (scrollDelta != 0) {
             direction = -1.0f * scrollDelta * front;
             scrollDelta = 0;
-            speed = core::Constants::SPEED_SCALAR * 5;
+            speed = core::Constants::SPEED_SCALAR * ts;
           }
         }
         cameraTransform.updatePosition(direction * speed);
