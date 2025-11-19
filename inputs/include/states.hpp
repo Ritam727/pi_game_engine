@@ -20,7 +20,7 @@ namespace inputs {
     std::vector<InputAction> keyboardState{400, InputAction::RELEASE};
     std::vector<InputAction> mousebuttonState{3, InputAction::RELEASE};
     CameraState              cameraState{CameraState::DEFAULT};
-    FovState                 fovState{FovState::NORMAL};
+    CameraViewMode           cameraViewMode{CameraViewMode::NORMAL};
     glm::vec2                mousePosition{0.0f, 0.0f};
     float                    scrollDelta{0.0f};
 

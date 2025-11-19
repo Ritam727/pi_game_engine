@@ -19,7 +19,6 @@ private:
   core::Window                              window;
   core::Registry                            registry;
   core::Camera                              camera;
-  inputs::StateKeyMap                       stateManager;
   std::vector<std::unique_ptr<core::Layer>> layers;
 
   static const inline std::vector<std::string> nonMainThreadTopics{

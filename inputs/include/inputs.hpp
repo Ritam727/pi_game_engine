@@ -2,7 +2,7 @@
 
 #include "layer.hpp"
 #include "registry.hpp"
-#include "state_manager.hpp"
+#include "states.hpp"
 #include "window.hpp"
 
 namespace inputs {
@@ -10,17 +10,14 @@ namespace inputs {
   private:
     core::Window   &window;
     core::Registry &registry;
-    StateKeyMap    &stateManager;
     glm::vec2       mousePosition;
 
   public:
-    Inputs(core::Window &window, core::Registry &registry,
-           StateKeyMap &stateManager);
+    Inputs(core::Window &window, core::Registry &registry);
 
     void onUpdate(float ts) override;
     void updateCamera(float ts);
     void handleFovChange(float ts);
     void toggleCursorVisibility();
-    void handleCameraStates();
   };
 }

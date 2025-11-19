@@ -11,39 +11,6 @@
 #endif
 
 namespace inputs {
-  StateKeyMap::StateKeyMap() {
-    std::ifstream  inputFile(ENGINE_PATH "/res/inputs/keyboard_shortcuts.json");
-    nlohmann::json loadedKeyboardShortcuts = nlohmann::json::parse(inputFile);
-    for (nlohmann::json::iterator it = loadedKeyboardShortcuts.begin();
-         it != loadedKeyboardShortcuts.end(); it++) {
-      std::string keyPress = it.key();
-      for (nlohmann::json::iterator jt = it->begin(); jt != it->end(); jt++) {
-        std::array<std::string, 2> keyCombination(jt.value());
-        if (keyCombination[0].contains("inc")) {
-          core::logger::info("INC command");
-        } else if (keyCombination[0].contains("none")) {
-          core::logger::info("NONE command");
-        } else {
-          core::logger::info("SET command");
-        }
-        if (keyCombination[1].contains("inc")) {
-          core::logger::info("INC command");
-        } else if (keyCombination[1].contains("none")) {
-          core::logger::info("NONE command");
-        } else {
-          core::logger::info("SET command");
-        }
-      }
-    }
-  }
-
-  std::unordered_map<unsigned int, std::vector<std::vector<unsigned int>>> &
-      StateKeyMap::getInputMap(StateType type) {
-    return this->stateKeyMap[type];
-  }
-}
-
-namespace inputs {
   StateManager::StateManager() {
     std::ifstream  inputFile(ENGINE_PATH "/res/inputs/keyboard_shortcuts.json");
     nlohmann::json loadedKeyboardShortcuts = nlohmann::json::parse(inputFile);
@@ -87,7 +54,6 @@ namespace inputs {
       if (!firstMatch.empty()) {
         this->activations[firstMatch].activated = true;
         this->activations[firstMatch].onPress(this->modeManager);
-        core::logger::info("activating {}", firstMatch);
       }
     }
   }
@@ -99,7 +65,6 @@ namespace inputs {
         this->activations[currentActivation].activated) {
       this->activations[currentActivation].activated = false;
       this->activations[currentActivation].onRelease(this->modeManager);
-      core::logger::info("deactivating {}", currentActivation);
     }
     unsigned int idx = buttonsPressed.size();
     for (unsigned int i = 0; i < buttonsPressed.size(); i++) {
@@ -153,6 +118,4 @@ namespace inputs {
     std::string next = this->getFirstMatch(idx + 1, taken);
     return next.size() > 0 ? next : this->getFirstMatch(idx + 1, current);
   }
-
-  void StateManager::handleActivations() {}
 }

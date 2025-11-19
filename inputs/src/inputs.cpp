@@ -5,6 +5,7 @@
 #include "constants.hpp"
 #include "events.hpp"
 #include "inputs_events.hpp"
+#include "modes.hpp"
 #include "state_manager.hpp"
 #include "states.hpp"
 
@@ -64,9 +65,8 @@ namespace inputs {
 }
 
 namespace inputs {
-  Inputs::Inputs(core::Window &window, core::Registry &registry,
-                 StateKeyMap &stateManager)
-      : window(window), registry(registry), stateManager(stateManager) {
+  Inputs::Inputs(core::Window &window, core::Registry &registry)
+      : window(window), registry(registry) {
     core::EventManager::getInstance().subscribe(
         core::Constants::KEY_STATE_TOPIC, keyPressHandler);
     core::EventManager::getInstance().subscribe(
@@ -78,49 +78,35 @@ namespace inputs {
   }
 
   void Inputs::onUpdate(float ts) {
-    StateManager::getInstance().handleActivations();
     this->handleFovChange(ts);
-    this->handleCameraStates();
     this->toggleCursorVisibility();
     this->updateCamera(ts);
   }
 
   void Inputs::handleFovChange(float ts) {
-    StateType type = StateType::FOV_STATE;
-    std::unordered_map<unsigned int, std::vector<std::vector<unsigned int>>>
-        &inputMap = this->stateManager.getInputMap(type);
-    for (std::pair<const unsigned int, std::vector<std::vector<unsigned int>>>
-             &p : inputMap) {
-      if (areKeysPressed(p.second)) {
-        inputState.fovState = static_cast<FovState>(p.first);
-        std::unique_ptr<FovChangeEvent> fovChangeEvent =
-            std::make_unique<FovChangeEvent>(60.0f);
-        core::EventManager::getInstance().enqueue<FovChangeEvent>(
-            inputs::Constants::FOV_CHANGE_TOPIC, std::move(fovChangeEvent));
-        return;
+    CameraViewMode cameraViewMode =
+        StateManager::getInstance().getMode<CameraViewMode>()->getMode();
+    if (cameraViewMode != inputState.cameraViewMode) {
+      float fov = 45.0f;
+      if (cameraViewMode == CameraViewMode::BIRD_EYE) {
+        fov = 60.0f;
+      } else if (cameraViewMode == CameraViewMode::FISH_EYE) {
+        fov = 75.0f;
       }
+      std::unique_ptr<FovChangeEvent> fovChangeEvent =
+          std::make_unique<FovChangeEvent>(fov);
+      core::EventManager::getInstance().enqueue<FovChangeEvent>(
+          inputs::Constants::FOV_CHANGE_TOPIC, std::move(fovChangeEvent));
+      inputState.cameraViewMode = cameraViewMode;
     }
-    inputState.fovState = FovState::NORMAL;
-  }
-
-  void Inputs::handleCameraStates() {
-    StateType type = StateType::CAMERA_STATE;
-    std::unordered_map<unsigned int, std::vector<std::vector<unsigned int>>>
-        &inputMap = this->stateManager.getInputMap(type);
-    for (std::pair<const unsigned int, std::vector<std::vector<unsigned int>>>
-             &p : inputMap) {
-      if (areKeysPressed(p.second)) {
-        inputState.cameraState = static_cast<CameraState>(p.first);
-        return;
-      }
-    }
-    inputState.cameraState = CameraState::DEFAULT;
   }
 
   void Inputs::toggleCursorVisibility() {
-    CameraState cameraState = inputState.cameraState;
-    if (cameraState == CameraState::CAMERA_FLY_MODE ||
-        cameraState == CameraState::CAMERA_PAN_MODE) {
+    CameraMoveMode cameraMoveMode =
+        StateManager::getInstance().getMode<CameraMoveMode>()->getMode();
+    if (cameraMoveMode == CameraMoveMode::PAN ||
+        cameraMoveMode == CameraMoveMode::FLY ||
+        cameraMoveMode == CameraMoveMode::MOVE_AROUND) {
       this->window.setCursorVisibility(false);
     } else {
       this->window.setCursorVisibility(true);
@@ -143,33 +129,37 @@ namespace inputs {
         glm::vec2 &currentPosition = inputState.mousePosition;
         glm::vec2 &previousPosition = this->mousePosition;
 
-        float       xOffset = (currentPosition.x - previousPosition.x);
-        float       yOffset = (previousPosition.y - currentPosition.y);
-        float      &scrollDelta = inputState.scrollDelta;
-        CameraState cameraState = inputState.cameraState;
+        float          xOffset = (currentPosition.x - previousPosition.x);
+        float          yOffset = (previousPosition.y - currentPosition.y);
+        float         &scrollDelta = inputState.scrollDelta;
+        CameraMoveMode cameraMoveMode =
+            StateManager::getInstance().getMode<CameraMoveMode>()->getMode();
         previousPosition = currentPosition;
 
-        if (cameraState == CameraState::CAMERA_PAN_MODE) {
+        if (cameraMoveMode == CameraMoveMode::PAN) {
           cameraTransform.updateRotation(
               {xOffset * core::Constants::SPEED_SCALAR,
                yOffset * core::Constants::SPEED_SCALAR});
-        } else if (cameraState == CameraState::CAMERA_FLY_MODE) {
-          glm::vec3 direction(0);
-          float     speed = 0.0f;
-          glm::vec3 front =
-              glm::normalize(cameraTransform.getForwardDirection());
-          glm::vec3 right = glm::normalize(cameraTransform.getRightDirection());
-          glm::vec3 up = glm::normalize(glm::cross(right, front));
+        }
+
+        glm::vec3 direction(0);
+        float     speed = 0.0f;
+        glm::vec3 front = glm::normalize(cameraTransform.getForwardDirection());
+        glm::vec3 right = glm::normalize(cameraTransform.getRightDirection());
+        glm::vec3 up = glm::normalize(glm::cross(right, front));
+        if (cameraMoveMode == CameraMoveMode::MOVE_AROUND) {
           if (xOffset != 0 || yOffset != 0) {
             direction = xOffset * right + yOffset * up;
             speed = core::Constants::SPEED_SCALAR * 0.1;
-          } else if (scrollDelta != 0) {
+          }
+        } else if (cameraMoveMode == CameraMoveMode::FLY) {
+          if (scrollDelta != 0) {
             direction = -1.0f * scrollDelta * front;
             scrollDelta = 0;
             speed = core::Constants::SPEED_SCALAR * 5;
           }
-          cameraTransform.updatePosition(direction * speed);
         }
+        cameraTransform.updatePosition(direction * speed);
       }
     }
   }

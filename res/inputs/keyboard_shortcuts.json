@@ -7,13 +7,37 @@
   },
   "_CONTROL_ALT_MOUSELEFT": {
     "inputs::CameraMoveMode": [
-      "set 1",
+      "set 2",
       "set 0"
     ]
   },
   "_CONTROL_SHIFT_MOUSELEFT": {
     "inputs::CameraMoveMode": [
+      "set 1",
+      "set 0"
+    ]
+  },
+  "_ALT_CONTROL_MOUSELEFT": {
+    "inputs::CameraMoveMode": [
       "set 2",
+      "set 0"
+    ]
+  },
+  "_SHIFT_CONTROL_MOUSELEFT": {
+    "inputs::CameraMoveMode": [
+      "set 1",
+      "set 0"
+    ]
+  },
+  "_ALT_CONTROL_F": {
+    "inputs::CameraMoveMode": [
+      "set 3",
+      "set 0"
+    ]
+  },
+  "_CONTROL_ALT_F": {
+    "inputs::CameraMoveMode": [
+      "set 3",
       "set 0"
     ]
   }
