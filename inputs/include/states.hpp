@@ -1,6 +1,7 @@
 #pragma once
 
 #include "inputs_events.hpp"
+#include "mode_manager.hpp"
 #include "utils.hpp"
 #include "glm/glm.hpp"
 #include <functional>
@@ -32,8 +33,8 @@ namespace inputs {
   };
 
   struct Activation {
-    const std::function<void()> onPress;
-    const std::function<void()> onRelease;
-    bool                        activated{false};
+    const std::function<void(ModeManager &)> onPress;
+    const std::function<void(ModeManager &)> onRelease;
+    bool                                     activated{false};
   };
 }

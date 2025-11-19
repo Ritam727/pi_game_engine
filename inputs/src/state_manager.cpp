@@ -53,10 +53,11 @@ namespace inputs {
     if (buttonsPressed.size() == Constants::KEYBOARD_SHORTCUT_DEPTH)
       return;
     buttonsPressed.emplace_back(key);
-    if (currentActivation.size() == 0) {
+    if (currentActivation.empty()) {
       std::string firstMatch = this->getFirstMatch(0, std::string{});
-      if (firstMatch.size() > 0) {
-        this->activations[firstMatch].second = true;
+      if (!firstMatch.empty()) {
+        this->activations[firstMatch].activated = true;
+        this->activations[firstMatch].onPress(this->modeManager);
         core::logger::info("activating {}", firstMatch);
       }
     }
@@ -66,8 +67,9 @@ namespace inputs {
     std::vector<unsigned int> &buttonsPressed = this->inputState.buttonsPressed;
     std::string currentActivation = this->getFirstMatch(0, std::string{});
     if (this->currentActivationContainsKey(key) &&
-        this->activations[currentActivation].second) {
-      this->activations[currentActivation].second = false;
+        this->activations[currentActivation].activated) {
+      this->activations[currentActivation].activated = false;
+      this->activations[currentActivation].onRelease(this->modeManager);
       core::logger::info("deactivating {}", currentActivation);
     }
     unsigned int idx = buttonsPressed.size();
@@ -76,9 +78,8 @@ namespace inputs {
         idx = i;
       }
     }
-    for (unsigned int i = idx; i < buttonsPressed.size() - 1; i++) {
+    for (unsigned int i = idx; i < buttonsPressed.size() - 1; i++)
       buttonsPressed[i] = buttonsPressed[i + 1];
-    }
     buttonsPressed.pop_back();
   }
 
@@ -98,14 +99,14 @@ namespace inputs {
     std::vector<std::string> keys;
     std::string              current{};
     for (char c : firstMatch) {
-      if (c == '_') {
+      if (c == Constants::UNDERSCORE) {
         keys.push_back(current);
-        current = "";
+        current.clear();
       } else {
         current += c;
       }
     }
-    if (current.size() > 0) {
+    if (!current.empty()) {
       keys.push_back(current);
     }
     return keys;
@@ -115,9 +116,10 @@ namespace inputs {
                                           std::string  current) {
     std::vector<unsigned int> buttonsPressed = this->inputState.buttonsPressed;
     if (idx == buttonsPressed.size())
-      return this->activations.contains(current) ? current : "";
-    std::string taken =
-        current + +"_" + this->keyToStringMap[buttonsPressed[idx]];
+      return this->activations.contains(current) ? current
+                                                 : Constants::EMPTY_STRING;
+    std::string taken = current + Constants::UNDERSCORE +
+                        this->keyToStringMap[buttonsPressed[idx]];
     std::string next = this->getFirstMatch(idx + 1, taken);
     return next.size() > 0 ? next : this->getFirstMatch(idx + 1, current);
   }

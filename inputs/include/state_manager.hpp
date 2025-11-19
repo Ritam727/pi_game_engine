@@ -1,5 +1,6 @@
 #pragma once
 
+#include "mode_manager.hpp"
 #include "states.hpp"
 
 namespace inputs {
@@ -21,12 +22,10 @@ namespace inputs {
 namespace inputs {
   class StateManager {
   private:
-    InputState                                                     inputState{};
-    std::unordered_map<std::string, std::pair<unsigned int, bool>> activations{
-        {"_CONTROL_ALT_K", {0, 0}},
-        {"_CONTROL_SHIFT_P", {1, 0}},
-        {"_CONTROL_ALT_MOUSELEFT", {2, 0}}};
-    const std::vector<std::string> &keyToStringMap;
+    InputState                                  inputState{};
+    ModeManager                                 modeManager{};
+    std::unordered_map<std::string, Activation> activations{};
+    const std::vector<std::string>             &keyToStringMap;
 
     std::string getFirstMatch(unsigned int idx, std::string current);
     std::vector<std::string> getKeysInCurrentActivation();
