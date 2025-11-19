@@ -1,7 +1,9 @@
 #include "state_manager.hpp"
 
+#include "inputs_constants.hpp"
 #include "nlohmann/json.hpp"
 #include "states.hpp"
+#include "window.hpp"
 #include <fstream>
 #include <string>
 
@@ -29,4 +31,96 @@ namespace inputs {
       StateKeyMap::getInputMap(StateType type) {
     return this->stateKeyMap[type];
   }
+}
+
+namespace inputs {
+  StateManager::StateManager()
+      : keyToStringMap(core::Window::getGlfwToKeyMapping()) {}
+
+  StateManager &StateManager::getInstance() {
+    static StateManager stateManager;
+    return stateManager;
+  }
+
+  void StateManager::addKey(unsigned int key) {
+    std::vector<unsigned int> &buttonsPressed = this->inputState.buttonsPressed;
+    std::string currentActivation = this->getFirstMatch(0, std::string{});
+    for (unsigned int &pressedKey : buttonsPressed) {
+      if (pressedKey == key) {
+        return;
+      }
+    }
+    if (buttonsPressed.size() == Constants::KEYBOARD_SHORTCUT_DEPTH)
+      return;
+    buttonsPressed.emplace_back(key);
+    if (currentActivation.size() == 0) {
+      std::string firstMatch = this->getFirstMatch(0, std::string{});
+      if (firstMatch.size() > 0) {
+        this->activations[firstMatch].second = true;
+        core::logger::info("activating {}", firstMatch);
+      }
+    }
+  }
+
+  void StateManager::removeKey(unsigned int key) {
+    std::vector<unsigned int> &buttonsPressed = this->inputState.buttonsPressed;
+    std::string currentActivation = this->getFirstMatch(0, std::string{});
+    if (this->currentActivationContainsKey(key) &&
+        this->activations[currentActivation].second) {
+      this->activations[currentActivation].second = false;
+      core::logger::info("deactivating {}", currentActivation);
+    }
+    unsigned int idx = buttonsPressed.size();
+    for (unsigned int i = 0; i < buttonsPressed.size(); i++) {
+      if (buttonsPressed[i] == key) {
+        idx = i;
+      }
+    }
+    for (unsigned int i = idx; i < buttonsPressed.size() - 1; i++) {
+      buttonsPressed[i] = buttonsPressed[i + 1];
+    }
+    buttonsPressed.pop_back();
+  }
+
+  bool StateManager::currentActivationContainsKey(unsigned int key) {
+    std::vector<std::string> activationKeys =
+        this->getKeysInCurrentActivation();
+    for (std::string &activationKey : activationKeys) {
+      if (this->keyToStringMap[key] == activationKey) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  std::vector<std::string> StateManager::getKeysInCurrentActivation() {
+    std::string              firstMatch = this->getFirstMatch(0, std::string{});
+    std::vector<std::string> keys;
+    std::string              current{};
+    for (char c : firstMatch) {
+      if (c == '_') {
+        keys.push_back(current);
+        current = "";
+      } else {
+        current += c;
+      }
+    }
+    if (current.size() > 0) {
+      keys.push_back(current);
+    }
+    return keys;
+  }
+
+  std::string StateManager::getFirstMatch(unsigned int idx,
+                                          std::string  current) {
+    std::vector<unsigned int> buttonsPressed = this->inputState.buttonsPressed;
+    if (idx == buttonsPressed.size())
+      return this->activations.contains(current) ? current : "";
+    std::string taken =
+        current + +"_" + this->keyToStringMap[buttonsPressed[idx]];
+    std::string next = this->getFirstMatch(idx + 1, taken);
+    return next.size() > 0 ? next : this->getFirstMatch(idx + 1, current);
+  }
+
+  void StateManager::handleActivations() {}
 }

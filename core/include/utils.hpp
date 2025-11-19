@@ -5,16 +5,15 @@
 #include <string>
 #include <fstream>
 
-#define iterableEnum(name, ...) enum class name { __VA_ARGS__, END }
-#define enumValues(name) core::getEnumIterator<name>()
-#define getTypeString(name) #name
+#define ITERABLE_ENUM(name, ...) enum class name { __VA_ARGS__, END }
+#define ENUM_VALUES(name) core::getEnumIterator<name>()
 
 namespace core {
   template <typename T>
   concept HasNoneValue = requires { T::END; };
 
   template <typename T>
-  concept IsIterableEnum = std::is_enum_v<T> && HasNoneValue<T>;
+  concept IsITERABLE_ENUM = std::is_enum_v<T> && HasNoneValue<T>;
 
   template <typename C, typename B>
   concept IsSubClassOf = std::is_base_of_v<B, C>;
@@ -38,7 +37,7 @@ namespace core {
     }
   }
 
-  template <IsIterableEnum T> inline std::vector<T> getEnumIterator() {
+  template <IsITERABLE_ENUM T> inline std::vector<T> getEnumIterator() {
     std::vector<T> vec(static_cast<unsigned int>(T::END), T::END);
     for (unsigned int i = 0; i < static_cast<unsigned int>(T::END); i++) {
       vec[i] = static_cast<T>(i);

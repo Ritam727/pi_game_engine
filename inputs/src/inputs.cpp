@@ -4,6 +4,8 @@
 #include "events.hpp"
 #include "constants.hpp"
 #include "events.hpp"
+#include "inputs_events.hpp"
+#include "state_manager.hpp"
 #include "states.hpp"
 
 #include "inputs_constants.hpp"
@@ -12,7 +14,7 @@
 #include "glm/gtx/string_cast.hpp"
 
 namespace inputs {
-  static InputState inputState{};
+  static State inputState{};
 
   bool areKeysPressed(std::vector<std::vector<unsigned int>> &keys) {
     bool isCombination = true;
@@ -28,6 +30,10 @@ namespace inputs {
 
   void keyPressHandler(std::unique_ptr<core::BaseEvent> &event) {
     KeyEvent *keyEvent = static_cast<KeyEvent *>(event.get());
+    if (keyEvent->type != InputAction::RELEASE)
+      StateManager::getInstance().addKey(keyEvent->key);
+    else
+      StateManager::getInstance().removeKey(keyEvent->key);
     inputState.keyboardState[keyEvent->key] = keyEvent->type;
   }
 
@@ -50,9 +56,10 @@ namespace inputs {
   void mouseButtonHandler(std::unique_ptr<core::BaseEvent> &event) {
     MouseButtonEvent *mouseButtonEvent =
         static_cast<MouseButtonEvent *>(event.get());
-    core::logger::info("Received mouse button event: {}, {}",
-                       mouseButtonEvent->button,
-                       static_cast<int>(mouseButtonEvent->type));
+    if (mouseButtonEvent->type != InputAction::RELEASE)
+      StateManager::getInstance().addKey(mouseButtonEvent->button);
+    else
+      StateManager::getInstance().removeKey(mouseButtonEvent->button);
   }
 }
 
@@ -71,6 +78,7 @@ namespace inputs {
   }
 
   void Inputs::onUpdate(float ts) {
+    StateManager::getInstance().handleActivations();
     this->handleFovChange(ts);
     this->handleCameraStates();
     this->toggleCursorVisibility();
