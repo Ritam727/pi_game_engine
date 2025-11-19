@@ -15,7 +15,8 @@
 #include "glm/gtx/string_cast.hpp"
 
 namespace inputs {
-  static State inputState{};
+  static State        inputState{};
+  static StateManager stateManager{};
 
   bool areKeysPressed(std::vector<std::vector<unsigned int>> &keys) {
     bool isCombination = true;
@@ -32,9 +33,9 @@ namespace inputs {
   void keyPressHandler(std::unique_ptr<core::BaseEvent> &event) {
     KeyEvent *keyEvent = static_cast<KeyEvent *>(event.get());
     if (keyEvent->type != InputAction::RELEASE)
-      StateManager::getInstance().addKey(keyEvent->key);
+      stateManager.addKey(keyEvent->key);
     else
-      StateManager::getInstance().removeKey(keyEvent->key);
+      stateManager.removeKey(keyEvent->key);
     inputState.keyboardState[keyEvent->key] = keyEvent->type;
   }
 
@@ -58,15 +59,17 @@ namespace inputs {
     MouseButtonEvent *mouseButtonEvent =
         static_cast<MouseButtonEvent *>(event.get());
     if (mouseButtonEvent->type != InputAction::RELEASE)
-      StateManager::getInstance().addKey(mouseButtonEvent->button);
+      stateManager.addKey(mouseButtonEvent->button);
     else
-      StateManager::getInstance().removeKey(mouseButtonEvent->button);
+      stateManager.removeKey(mouseButtonEvent->button);
   }
 }
 
 namespace inputs {
   Inputs::Inputs(core::Window &window, core::Registry &registry)
       : window(window), registry(registry) {
+    stateManager.registerMode<CameraViewMode>();
+    stateManager.registerMode<CameraMoveMode>();
     core::EventManager::getInstance().subscribe(
         core::Constants::KEY_STATE_TOPIC, keyPressHandler);
     core::EventManager::getInstance().subscribe(
@@ -85,7 +88,7 @@ namespace inputs {
 
   void Inputs::handleFovChange(float ts) {
     CameraViewMode cameraViewMode =
-        StateManager::getInstance().getMode<CameraViewMode>()->getMode();
+        stateManager.getMode<CameraViewMode>()->getMode();
     if (cameraViewMode != inputState.cameraViewMode) {
       float fov = 45.0f;
       if (cameraViewMode == CameraViewMode::BIRD_EYE) {
@@ -103,7 +106,7 @@ namespace inputs {
 
   void Inputs::toggleCursorVisibility() {
     CameraMoveMode cameraMoveMode =
-        StateManager::getInstance().getMode<CameraMoveMode>()->getMode();
+        stateManager.getMode<CameraMoveMode>()->getMode();
     if (cameraMoveMode == CameraMoveMode::PAN ||
         cameraMoveMode == CameraMoveMode::FLY ||
         cameraMoveMode == CameraMoveMode::MOVE_AROUND) {
@@ -133,7 +136,7 @@ namespace inputs {
         float          yOffset = (previousPosition.y - currentPosition.y);
         float         &scrollDelta = inputState.scrollDelta;
         CameraMoveMode cameraMoveMode =
-            StateManager::getInstance().getMode<CameraMoveMode>()->getMode();
+            stateManager.getMode<CameraMoveMode>()->getMode();
         previousPosition = currentPosition;
 
         if (cameraMoveMode == CameraMoveMode::PAN) {

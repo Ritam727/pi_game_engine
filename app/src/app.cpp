@@ -15,8 +15,6 @@ App::App()
              AppConfig::NAME),
       camera(registry, glm::vec3(0.0f, 0.0f, 3.0f),
              glm::vec3(0.0f, 1.0f, 0.0f)) {
-  inputs::StateManager::getInstance().registerMode<inputs::CameraViewMode>();
-  inputs::StateManager::getInstance().registerMode<inputs::CameraMoveMode>();
   layers.emplace_back(
       std::make_unique<inputs::Inputs>(this->window, this->registry));
   layers.emplace_back(std::make_unique<gl::Renderer>(this->registry));

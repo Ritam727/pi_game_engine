@@ -51,10 +51,8 @@ namespace inputs {
       return val;
     }
 
-    StateManager();
-
   public:
-    static StateManager &getInstance();
+    StateManager();
 
     void addKey(unsigned int key);
     void removeKey(unsigned int key);

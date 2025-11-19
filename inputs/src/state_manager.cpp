@@ -33,11 +33,6 @@ namespace inputs {
     }
   }
 
-  StateManager &StateManager::getInstance() {
-    static StateManager stateManager;
-    return stateManager;
-  }
-
   void StateManager::addKey(unsigned int key) {
     std::vector<unsigned int> &buttonsPressed = this->inputState.buttonsPressed;
     std::string currentActivation = this->getFirstMatch(0, std::string{});
