@@ -28,8 +28,8 @@ namespace inputs {
   void Inputs::registerKeyCallback() {
     this->eventManager.subscribe(
         core::Constants::KEY_STATE_TOPIC, [&](core::BaseEventPtr &event) {
-          KeyEvent *keyEvent = static_cast<KeyEvent *>(event.get());
-          if (keyEvent->type != InputAction::RELEASE)
+          core::KeyEvent *keyEvent = static_cast<core::KeyEvent *>(event.get());
+          if (keyEvent->type != core::InputAction::RELEASE)
             this->stateManager.addKey(keyEvent->key);
           else
             this->stateManager.removeKey(keyEvent->key);
@@ -39,9 +39,9 @@ namespace inputs {
   void Inputs::registerMouseButtonCallback() {
     this->eventManager.subscribe(
         core::Constants::MOUSE_BUTTON_TOPIC, [&](core::BaseEventPtr &event) {
-          MouseButtonEvent *mouseButtonEvent =
-              static_cast<MouseButtonEvent *>(event.get());
-          if (mouseButtonEvent->type != InputAction::RELEASE)
+          core::MouseButtonEvent *mouseButtonEvent =
+              static_cast<core::MouseButtonEvent *>(event.get());
+          if (mouseButtonEvent->type != core::InputAction::RELEASE)
             this->stateManager.addKey(mouseButtonEvent->button);
           else
             this->stateManager.removeKey(mouseButtonEvent->button);
@@ -51,8 +51,8 @@ namespace inputs {
   void Inputs::registerMouseMoveCallback() {
     this->eventManager.subscribe(
         core::Constants::MOUSE_MOVEMENT_TOPIC, [&](core::BaseEventPtr &event) {
-          MouseMovementEvent *mouseMovementEvent =
-              static_cast<MouseMovementEvent *>(event.get());
+          core::MouseMovementEvent *mouseMovementEvent =
+              static_cast<core::MouseMovementEvent *>(event.get());
           glm::vec2 &previousPosition = this->inputState.mousePosition;
           glm::vec2  currentPosition =
               glm::vec2(mouseMovementEvent->x, mouseMovementEvent->y);
@@ -86,8 +86,8 @@ namespace inputs {
   void Inputs::registerMouseScrollCallback() {
     this->eventManager.subscribe(
         core::Constants::MOUSE_SCROLL_TOPIC, [&](core::BaseEventPtr &event) {
-          MouseScrollEvent *mouseScrollEvent =
-              static_cast<MouseScrollEvent *>(event.get());
+          core::MouseScrollEvent *mouseScrollEvent =
+              static_cast<core::MouseScrollEvent *>(event.get());
           float scrollDelta = mouseScrollEvent->y;
 
           CameraMoveMode cameraMoveMode =
