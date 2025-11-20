@@ -4,7 +4,6 @@
 #include "camera_transform.hpp"
 #include "constants.hpp"
 #include "event_manager.hpp"
-#include "events.hpp"
 #include "inputs.hpp"
 #include "renderer.hpp"
 
@@ -20,20 +19,13 @@ App::App()
   layers.emplace_back(
       std::make_unique<gl::Renderer>(this->registry, eventManager));
 
-  this->eventManager.subscribe(core::Constants::WINDOW_CLOSE_TOPIC,
-                               App::windowCloseHandler);
+  this->eventManager.subscribe(
+      core::Constants::WINDOW_CLOSE_TOPIC, [&](core::BaseEventPtr &event) {
+        core::logger::info("Shutting down application");
+        this->running = false;
+      });
 
   this->registry.getPool<core::CameraTransform>().get(0).setCameraActive(true);
-}
-
-void App::windowCloseHandler(std::unique_ptr<core::BaseEvent> &event) {
-  core::logger::info("Shutting down application");
-  App::isRunning() = false;
-}
-
-bool &App::isRunning() {
-  static bool running = true;
-  return running;
 }
 
 ScreenSize &App::getScreenSize() {
@@ -41,19 +33,16 @@ ScreenSize &App::getScreenSize() {
   return screenSize;
 }
 
-void App::eventManagerThread(core::EventManager &eventManager) {
-  while (App::isRunning()) {
-    eventManager.executeEvents(nonMainThreadTopics);
-  }
-}
-
 void App::run() {
   int         backend = glfwGetPlatform();
   float       previousFrame = glfwGetTime();
-  std::thread eventThread(App::eventManagerThread,
-                          std::ref(this->eventManager));
+  std::thread eventThread([&]() {
+    while (this->running) {
+      this->eventManager.executeEvents(nonMainThreadTopics);
+    }
+  });
 
-  while (App::isRunning()) {
+  while (this->running) {
     window.pollEvents();
     this->eventManager.executeEvents(mainThreadTopics);
     float currentFrame = glfwGetTime();

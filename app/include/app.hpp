@@ -1,11 +1,9 @@
 #pragma once
 
 #include "camera.hpp"
-#include "events.hpp"
 #include "layer.hpp"
 #include "registry.hpp"
 #include "window.hpp"
-#include "state_manager.hpp"
 #include "constants.hpp"
 #include "inputs_constants.hpp"
 
@@ -21,6 +19,7 @@ private:
   core::Registry                            registry;
   core::Camera                              camera;
   std::vector<std::unique_ptr<core::Layer>> layers;
+  bool                                      running;
 
   static const inline std::vector<std::string> nonMainThreadTopics{
       inputs::Constants::FOV_CHANGE_TOPIC};
@@ -37,9 +36,5 @@ public:
 
   void run();
 
-  static void windowCloseHandler(std::unique_ptr<core::BaseEvent> &event);
-  static void eventManagerThread(core::EventManager &eventManager);
-
-  static bool       &isRunning();
   static ScreenSize &getScreenSize();
 };

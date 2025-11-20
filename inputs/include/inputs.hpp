@@ -14,7 +14,6 @@ namespace inputs {
     core::EventManager &eventManager;
     StateManager        stateManager{};
     State               inputState{};
-    glm::vec2           mousePosition;
 
     void registerKeyCallback();
     void registerMouseButtonCallback();
