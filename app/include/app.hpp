@@ -16,6 +16,7 @@ struct ScreenSize {
 
 class App {
 private:
+  core::EventManager                        eventManager;
   core::Window                              window;
   core::Registry                            registry;
   core::Camera                              camera;
@@ -37,7 +38,7 @@ public:
   void run();
 
   static void windowCloseHandler(std::unique_ptr<core::BaseEvent> &event);
-  static void eventManagerThread();
+  static void eventManagerThread(core::EventManager &eventManager);
 
   static bool       &isRunning();
   static ScreenSize &getScreenSize();

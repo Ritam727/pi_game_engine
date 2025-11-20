@@ -1,5 +1,6 @@
 #pragma once
 
+#include "event_manager.hpp"
 #include "glad/glad.h"
 #include "GLFW/glfw3.h"
 
@@ -9,23 +10,16 @@
 namespace core {
   class Window {
   private:
-    GLFWwindow *window;
+    EventManager &eventManager;
+    GLFWwindow   *window;
 
-    static void framebufferResizeCallback(GLFWwindow *window, int width,
-                                          int height);
-    static void keyCallback(GLFWwindow *window, int key, int scanCode,
-                            int action, int mods);
-    static void closeCallback(GLFWwindow *window);
-    static void mouseMovementCallback(GLFWwindow *window, double x, double y);
-    static void mouseButtonCallback(GLFWwindow *window, int button, int action,
-                                    int mods);
-    static void mouseScrollCallback(GLFWwindow *window, double x, double y);
     static void buildGlfwKeyMapping();
 
     static inline std::vector<std::string> glfwKeyMapping{350, std::string{}};
 
   public:
-    Window(int width, int height, const std::string &name);
+    Window(int width, int height, const std::string &name,
+           EventManager &eventManager);
     ~Window();
 
     void processGlfwFrame();

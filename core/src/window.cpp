@@ -7,7 +7,9 @@
 #include <stdexcept>
 
 namespace core {
-  Window::Window(int width, int height, const std::string &name) {
+  Window::Window(int width, int height, const std::string &name,
+                 EventManager &eventManager)
+      : eventManager(eventManager) {
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -15,6 +17,7 @@ namespace core {
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 
     window = glfwCreateWindow(width, height, name.c_str(), nullptr, nullptr);
+    glfwSetWindowUserPointer(window, this);
 
     if (window == nullptr) {
       core::logger::error("Failed to create window");
@@ -29,13 +32,82 @@ namespace core {
       throw std::runtime_error("Failed to initialize GLAD");
     }
 
-    glfwSetFramebufferSizeCallback(window, Window::framebufferResizeCallback);
-    glfwSetKeyCallback(window, Window::keyCallback);
-    glfwSetWindowCloseCallback(window, Window::closeCallback);
-    glfwSetCursorPosCallback(window, Window::mouseMovementCallback);
-    glfwSetMouseButtonCallback(window, Window::mouseButtonCallback);
-    glfwSetScrollCallback(window, Window::mouseScrollCallback);
+    glfwSetFramebufferSizeCallback(window, [](GLFWwindow *window, int width,
+                                              int height) {
+      Window *self = static_cast<Window *>(glfwGetWindowUserPointer(window));
+      if (self == nullptr)
+        return;
+      std::unique_ptr<WindowResizeEvent> event =
+          std::make_unique<WindowResizeEvent>(width, height);
+      self->eventManager.enqueue<WindowResizeEvent>(
+          Constants::WINDOW_RESIZE_TOPIC, std::move(event));
+    });
+    glfwSetKeyCallback(window, [](GLFWwindow *window, int key, int scanCode,
+                                  int action, int mods) {
+      Window *self = static_cast<Window *>(glfwGetWindowUserPointer(window));
+      if (self == nullptr)
+        return;
+      self->eventManager.enqueue<KeyEvent>(
+          Constants::KEY_STATE_TOPIC,
+          std::make_unique<KeyEvent>(key, static_cast<InputAction>(action)));
+      if (key == GLFW_KEY_ESCAPE) {
+        self->eventManager.enqueue<WindowCloseEvent>(
+            Constants::WINDOW_CLOSE_TOPIC,
+            std::make_unique<WindowCloseEvent>());
+      }
+    });
+    glfwSetWindowCloseCallback(window, [](GLFWwindow *window) {
+      Window *self = static_cast<Window *>(glfwGetWindowUserPointer(window));
+      if (self == nullptr)
+        return;
+      self->eventManager.enqueue<WindowCloseEvent>(
+          Constants::WINDOW_CLOSE_TOPIC, std::make_unique<WindowCloseEvent>());
+    });
+    glfwSetCursorPosCallback(window, [](GLFWwindow *window, double x,
+                                        double y) {
+      Window *self = static_cast<Window *>(glfwGetWindowUserPointer(window));
+      if (self == nullptr)
+        return;
+      self->eventManager.enqueue<MouseMovementEvent>(
+          Constants::MOUSE_MOVEMENT_TOPIC,
+          std::make_unique<MouseMovementEvent>(x, y));
+    });
+    glfwSetMouseButtonCallback(window, [](GLFWwindow *window, int button,
+                                          int action, int mods) {
+      Window *self = static_cast<Window *>(glfwGetWindowUserPointer(window));
+      if (self == nullptr)
+        return;
+      self->eventManager.enqueue<MouseButtonEvent>(
+          Constants::MOUSE_BUTTON_TOPIC,
+          std::make_unique<MouseButtonEvent>(button,
+                                             static_cast<InputAction>(action)));
+    });
+    glfwSetScrollCallback(window, [](GLFWwindow *window, double x, double y) {
+      Window *self = static_cast<Window *>(glfwGetWindowUserPointer(window));
+      if (self == nullptr)
+        return;
+      self->eventManager.enqueue<MouseScrollEvent>(
+          Constants::MOUSE_SCROLL_TOPIC,
+          std::make_unique<MouseScrollEvent>(x, y));
+    });
     Window::buildGlfwKeyMapping();
+  }
+
+  Window::~Window() {
+    glfwTerminate();
+  }
+
+  void Window::processGlfwFrame() {
+    glfwSwapBuffers(window);
+  }
+
+  void Window::pollEvents() {
+    glfwWaitEventsTimeout(0.001);
+  }
+
+  void Window::setCursorVisibility(bool visibility) {
+    glfwSetInputMode(window, GLFW_CURSOR,
+                     visibility ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_DISABLED);
   }
 
   void Window::buildGlfwKeyMapping() {
@@ -161,67 +233,6 @@ namespace core {
     Window::glfwKeyMapping[GLFW_MOUSE_BUTTON_LEFT] = "MOUSELEFT";
     Window::glfwKeyMapping[GLFW_MOUSE_BUTTON_RIGHT] = "MOUSE_RIGHT";
     Window::glfwKeyMapping[GLFW_MOUSE_BUTTON_MIDDLE] = "MOUSEMIDDLE";
-  }
-
-  Window::~Window() {
-    glfwTerminate();
-  }
-
-  void Window::processGlfwFrame() {
-    glfwSwapBuffers(window);
-  }
-
-  void Window::pollEvents() {
-    glfwWaitEventsTimeout(0.001);
-  }
-
-  void Window::setCursorVisibility(bool visibility) {
-    glfwSetInputMode(window, GLFW_CURSOR,
-                     visibility ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_DISABLED);
-  }
-
-  void Window::framebufferResizeCallback(GLFWwindow *window, int width,
-                                         int height) {
-    std::unique_ptr<WindowResizeEvent> event =
-        std::make_unique<WindowResizeEvent>(width, height);
-    core::EventManager::getInstance().enqueue<WindowResizeEvent>(
-        Constants::WINDOW_RESIZE_TOPIC, std::move(event));
-  }
-
-  void Window::keyCallback(GLFWwindow *window, int key, int scanCode,
-                           int action, int mods) {
-    core::EventManager::getInstance().enqueue<KeyEvent>(
-        Constants::KEY_STATE_TOPIC,
-        std::make_unique<KeyEvent>(key, static_cast<InputAction>(action)));
-    if (key == GLFW_KEY_ESCAPE) {
-      core::EventManager::getInstance().enqueue<WindowCloseEvent>(
-          Constants::WINDOW_CLOSE_TOPIC, std::make_unique<WindowCloseEvent>());
-    }
-  }
-
-  void Window::closeCallback(GLFWwindow *window) {
-    core::EventManager::getInstance().enqueue<WindowCloseEvent>(
-        Constants::WINDOW_CLOSE_TOPIC, std::make_unique<WindowCloseEvent>());
-  }
-
-  void Window::mouseMovementCallback(GLFWwindow *window, double x, double y) {
-    core::EventManager::getInstance().enqueue<MouseMovementEvent>(
-        Constants::MOUSE_MOVEMENT_TOPIC,
-        std::make_unique<MouseMovementEvent>(x, y));
-  }
-
-  void Window::mouseButtonCallback(GLFWwindow *window, int button, int action,
-                                   int mods) {
-    core::EventManager::getInstance().enqueue<MouseButtonEvent>(
-        Constants::MOUSE_BUTTON_TOPIC,
-        std::make_unique<MouseButtonEvent>(button,
-                                           static_cast<InputAction>(action)));
-  }
-
-  void Window::mouseScrollCallback(GLFWwindow *window, double x, double y) {
-    core::EventManager::getInstance().enqueue<MouseScrollEvent>(
-        Constants::MOUSE_SCROLL_TOPIC,
-        std::make_unique<MouseScrollEvent>(x, y));
   }
 
   const std::vector<std::string> &Window::getGlfwToKeyMapping() {

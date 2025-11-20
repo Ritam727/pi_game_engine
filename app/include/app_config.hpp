@@ -3,5 +3,5 @@
 #include <string>
 
 struct AppConfig {
-  static constexpr std::string NAME{"Learn OpenGL"};
+  static constexpr std::string NAME{"PI Game Engine"};
 };

@@ -5,11 +5,6 @@
 namespace core {
   EventManager::EventManager() {}
 
-  EventManager &EventManager::getInstance() {
-    static EventManager eventManager;
-    return eventManager;
-  }
-
   void EventManager::executeEvents(const std::vector<std::string> &topics) {
     for (const std::string &topic : topics) {
       std::lock_guard<std::mutex> swapLock(this->swapMutexes[topic]);

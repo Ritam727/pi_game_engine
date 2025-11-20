@@ -1,10 +1,10 @@
 #pragma once
 
+#include "event_manager.hpp"
 #include "layer.hpp"
 #include "logger.hpp"
 #include "shader.hpp"
 #include "texture.hpp"
-#include "transform.hpp"
 #include "gl_utils.hpp"
 #include "vertex_array.hpp"
 
@@ -18,8 +18,6 @@ namespace gl {
     int   width{800};
     int   height{600};
     float fov{45.0f};
-
-    bool windowResized{false};
   };
 }
 
@@ -73,9 +71,8 @@ namespace gl {
         glm::vec3(1.3f, -2.0f, -2.5f),  glm::vec3(1.5f, 2.0f, -2.5f),
         glm::vec3(1.5f, 0.2f, -1.5f),   glm::vec3(-1.3f, 1.0f, -1.5f)};
 
-    core::Registry &registry;
-
-    std::vector<core::Transform> transforms;
+    core::Registry     &registry;
+    core::EventManager &eventManager;
 
     VertexArray vertexArray;
     Shader      shader;
@@ -85,10 +82,12 @@ namespace gl {
     float        cameraAngle = 0;
     DrawMode     drawMode = DrawMode::TRIANGLES;
 
+    RenderState renderState{};
+
     void draw();
 
   public:
-    Renderer(core::Registry &registry);
+    Renderer(core::Registry &registry, core::EventManager &eventManager);
 
     inline void clear() {
       GL_CALL(glClearColor(0.2f, 0.3f, 0.3f, 1.0f));

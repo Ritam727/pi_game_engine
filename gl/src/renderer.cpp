@@ -5,40 +5,35 @@
 #include "event_manager.hpp"
 #include "registry.hpp"
 #include "gl_events.hpp"
+#include "transform.hpp"
 
 #ifndef ENGINE_PATH
 #define ENGINE_PATH "/"
 #endif
 
 namespace gl {
-  static RenderState renderState{};
-
-  static void windowResizeCallback(std::unique_ptr<core::BaseEvent> &event) {
-    core::WindowResizeEvent *windowResizeEvent =
-        static_cast<core::WindowResizeEvent *>(event.get());
-    renderState.width = windowResizeEvent->width;
-    renderState.height = windowResizeEvent->height;
-    renderState.windowResized = true;
-  }
-
-  static void fovChangeCallback(std::unique_ptr<core::BaseEvent> &event) {
-    FovChangeEvent *fovChangeEvent = static_cast<FovChangeEvent *>(event.get());
-    renderState.fov = fovChangeEvent->fov;
-  }
-}
-
-namespace gl {
-  Renderer::Renderer(core::Registry &registry)
+  Renderer::Renderer(core::Registry &registry, core::EventManager &eventManager)
       : vertexArray(vertices, indices),
         shader(ENGINE_PATH "/res/shaders/shader.vert",
                ENGINE_PATH "/res/shaders/shader.frag"),
         texture({ENGINE_PATH "/res/textures/container.jpg",
                  ENGINE_PATH "/res/textures/awesomeface.png"}),
-        registry(registry) {
-    core::EventManager::getInstance().subscribe(Constants::WINDOW_RESIZE_TOPIC,
-                                                windowResizeCallback);
-    core::EventManager::getInstance().subscribe(Constants::FOV_CHANGE_TOPIC,
-                                                fovChangeCallback);
+        registry(registry), eventManager(eventManager) {
+    this->eventManager.subscribe(
+        Constants::WINDOW_RESIZE_TOPIC, [&](core::BaseEventPtr &event) {
+          core::WindowResizeEvent *windowResizeEvent =
+              static_cast<core::WindowResizeEvent *>(event.get());
+          this->renderState.width = windowResizeEvent->width;
+          this->renderState.height = windowResizeEvent->height;
+          GL_CALL(glViewport(0, 0, windowResizeEvent->width,
+                             windowResizeEvent->height));
+        });
+    this->eventManager.subscribe(
+        Constants::FOV_CHANGE_TOPIC, [&](core::BaseEventPtr &event) {
+          FovChangeEvent *fovChangeEvent =
+              static_cast<FovChangeEvent *>(event.get());
+          this->renderState.fov = fovChangeEvent->fov;
+        });
 
     for (int i = 0; i < 10; i++) {
       this->registry.addComponent<core::Transform>(
@@ -67,10 +62,6 @@ namespace gl {
   }
 
   void Renderer::onUpdate(float ts) {
-    if (renderState.windowResized) {
-      GL_CALL(glViewport(0, 0, renderState.width, renderState.height));
-      renderState.windowResized = false;
-    }
     this->clear();
     this->shader.use();
     this->texture.bind();
@@ -88,8 +79,9 @@ namespace gl {
     }
 
     glm::mat4 projection = glm::perspective(
-        glm::radians(renderState.fov),
-        (float) renderState.width / (float) renderState.height, 0.1f, 100.0f);
+        glm::radians(this->renderState.fov),
+        (float) this->renderState.width / (float) this->renderState.height,
+        0.1f, 100.0f);
     this->shader.set<glm::mat4>("projection", projection);
 
     this->vertexArray.bind();

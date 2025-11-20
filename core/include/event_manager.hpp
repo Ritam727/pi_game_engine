@@ -23,10 +23,8 @@ namespace core {
     std::unordered_map<std::string, std::mutex>   subscriberMutexes;
     std::unordered_map<std::string, std::mutex>   swapMutexes;
 
-    EventManager();
-
   public:
-    static EventManager &getInstance();
+    EventManager();
 
     void executeEvents(const std::vector<std::string> &topics);
 

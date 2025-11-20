@@ -1,9 +1,7 @@
 #include "inputs.hpp"
 #include "camera_transform.hpp"
 #include "event_manager.hpp"
-#include "events.hpp"
 #include "constants.hpp"
-#include "events.hpp"
 #include "inputs_events.hpp"
 #include "modes.hpp"
 #include "state_manager.hpp"
@@ -15,69 +13,46 @@
 #include "glm/gtx/string_cast.hpp"
 
 namespace inputs {
-  static State        inputState{};
-  static StateManager stateManager{};
-
-  bool areKeysPressed(std::vector<std::vector<unsigned int>> &keys) {
-    bool isCombination = true;
-    for (std::vector<unsigned int> &currentCombination : keys) {
-      bool keysPressed = false;
-      for (unsigned int &key : currentCombination) {
-        keysPressed |= (inputState.keyboardState[key] != InputAction::RELEASE);
-      }
-      isCombination &= keysPressed;
-    }
-    return isCombination;
-  }
-
-  void keyPressHandler(std::unique_ptr<core::BaseEvent> &event) {
-    KeyEvent *keyEvent = static_cast<KeyEvent *>(event.get());
-    if (keyEvent->type != InputAction::RELEASE)
-      stateManager.addKey(keyEvent->key);
-    else
-      stateManager.removeKey(keyEvent->key);
-    inputState.keyboardState[keyEvent->key] = keyEvent->type;
-  }
-
-  void mouseMovementHandler(std::unique_ptr<core::BaseEvent> &event) {
-    MouseMovementEvent *mouseMovementEvent =
-        static_cast<MouseMovementEvent *>(event.get());
-    if (inputState.resetMousePosition == MousePositionReset::INIT) {
-      inputState.resetMousePosition = MousePositionReset::DONE;
-    }
-    inputState.mousePosition =
-        glm::vec2(mouseMovementEvent->x, mouseMovementEvent->y);
-  }
-
-  void mouseScrollHandler(std::unique_ptr<core::BaseEvent> &event) {
-    MouseScrollEvent *mouseScrollEvent =
-        static_cast<MouseScrollEvent *>(event.get());
-    inputState.scrollDelta = mouseScrollEvent->y;
-  }
-
-  void mouseButtonHandler(std::unique_ptr<core::BaseEvent> &event) {
-    MouseButtonEvent *mouseButtonEvent =
-        static_cast<MouseButtonEvent *>(event.get());
-    if (mouseButtonEvent->type != InputAction::RELEASE)
-      stateManager.addKey(mouseButtonEvent->button);
-    else
-      stateManager.removeKey(mouseButtonEvent->button);
-  }
-}
-
-namespace inputs {
-  Inputs::Inputs(core::Window &window, core::Registry &registry)
-      : window(window), registry(registry) {
+  Inputs::Inputs(core::Window &window, core::Registry &registry,
+                 core::EventManager &eventManager)
+      : window(window), registry(registry), eventManager(eventManager) {
     stateManager.registerMode<CameraViewMode>();
     stateManager.registerMode<CameraMoveMode>();
-    core::EventManager::getInstance().subscribe(
-        core::Constants::KEY_STATE_TOPIC, keyPressHandler);
-    core::EventManager::getInstance().subscribe(
-        core::Constants::MOUSE_MOVEMENT_TOPIC, mouseMovementHandler);
-    core::EventManager::getInstance().subscribe(
-        core::Constants::MOUSE_SCROLL_TOPIC, mouseScrollHandler);
-    core::EventManager::getInstance().subscribe(
-        core::Constants::MOUSE_BUTTON_TOPIC, mouseButtonHandler);
+
+    this->eventManager.subscribe(
+        core::Constants::KEY_STATE_TOPIC, [&](core::BaseEventPtr &event) {
+          KeyEvent *keyEvent = static_cast<KeyEvent *>(event.get());
+          if (keyEvent->type != InputAction::RELEASE)
+            this->stateManager.addKey(keyEvent->key);
+          else
+            this->stateManager.removeKey(keyEvent->key);
+          this->inputState.keyboardState[keyEvent->key] = keyEvent->type;
+        });
+    this->eventManager.subscribe(
+        core::Constants::MOUSE_MOVEMENT_TOPIC, [&](core::BaseEventPtr &event) {
+          MouseMovementEvent *mouseMovementEvent =
+              static_cast<MouseMovementEvent *>(event.get());
+          if (this->inputState.resetMousePosition == MousePositionReset::INIT) {
+            this->inputState.resetMousePosition = MousePositionReset::DONE;
+          }
+          this->inputState.mousePosition =
+              glm::vec2(mouseMovementEvent->x, mouseMovementEvent->y);
+        });
+    this->eventManager.subscribe(
+        core::Constants::MOUSE_SCROLL_TOPIC, [&](core::BaseEventPtr &event) {
+          MouseScrollEvent *mouseScrollEvent =
+              static_cast<MouseScrollEvent *>(event.get());
+          this->inputState.scrollDelta = mouseScrollEvent->y;
+        });
+    this->eventManager.subscribe(
+        core::Constants::MOUSE_BUTTON_TOPIC, [&](core::BaseEventPtr &event) {
+          MouseButtonEvent *mouseButtonEvent =
+              static_cast<MouseButtonEvent *>(event.get());
+          if (mouseButtonEvent->type != InputAction::RELEASE)
+            this->stateManager.addKey(mouseButtonEvent->button);
+          else
+            this->stateManager.removeKey(mouseButtonEvent->button);
+        });
   }
 
   void Inputs::onUpdate(float ts) {
@@ -89,7 +64,7 @@ namespace inputs {
   void Inputs::handleFovChange(float ts) {
     CameraViewMode cameraViewMode =
         stateManager.getMode<CameraViewMode>()->getMode();
-    if (cameraViewMode != inputState.cameraViewMode) {
+    if (cameraViewMode != this->inputState.cameraViewMode) {
       float fov = 45.0f;
       if (cameraViewMode == CameraViewMode::BIRD_EYE) {
         fov = 60.0f;
@@ -98,9 +73,9 @@ namespace inputs {
       }
       std::unique_ptr<FovChangeEvent> fovChangeEvent =
           std::make_unique<FovChangeEvent>(fov);
-      core::EventManager::getInstance().enqueue<FovChangeEvent>(
+      this->eventManager.enqueue<FovChangeEvent>(
           inputs::Constants::FOV_CHANGE_TOPIC, std::move(fovChangeEvent));
-      inputState.cameraViewMode = cameraViewMode;
+      this->inputState.cameraViewMode = cameraViewMode;
     }
   }
 
@@ -113,7 +88,7 @@ namespace inputs {
       this->window.setCursorVisibility(false);
     } else {
       this->window.setCursorVisibility(true);
-      inputState.resetMousePosition = MousePositionReset::INIT;
+      this->inputState.resetMousePosition = MousePositionReset::INIT;
     }
   }
 
@@ -121,20 +96,20 @@ namespace inputs {
     for (core::CameraTransform &cameraTransform :
          this->registry.getPool<core::CameraTransform>().getComponents()) {
       if (cameraTransform.isCameraActive()) {
-        if (inputState.cameraState == CameraState::CAMERA_RESET_MODE) {
+        if (this->inputState.cameraState == CameraState::CAMERA_RESET_MODE) {
           cameraTransform.resetCameraTransform();
           break;
         }
-        if (inputState.resetMousePosition == MousePositionReset::DONE) {
-          this->mousePosition = inputState.mousePosition;
-          inputState.resetMousePosition = MousePositionReset::NONE;
+        if (this->inputState.resetMousePosition == MousePositionReset::DONE) {
+          this->mousePosition = this->inputState.mousePosition;
+          this->inputState.resetMousePosition = MousePositionReset::NONE;
         }
-        glm::vec2 &currentPosition = inputState.mousePosition;
+        glm::vec2 &currentPosition = this->inputState.mousePosition;
         glm::vec2 &previousPosition = this->mousePosition;
 
         float          xOffset = (currentPosition.x - previousPosition.x);
         float          yOffset = (previousPosition.y - currentPosition.y);
-        float         &scrollDelta = inputState.scrollDelta;
+        float         &scrollDelta = this->inputState.scrollDelta;
         CameraMoveMode cameraMoveMode =
             stateManager.getMode<CameraMoveMode>()->getMode();
         previousPosition = currentPosition;
