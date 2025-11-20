@@ -7,10 +7,6 @@
 #include <cxxabi.h>
 
 #define ITERABLE_ENUM(name, ...) enum class name { __VA_ARGS__, END }
-#define ENUM_VALUES(name) core::getEnumIterator<name>()
-#define GET_NEXT_ENUM_VALUE(name, val) core::getNextEnumValue<name>(val)
-#define GET_STATIC_TYPE(name) core::getStaticType<name>()
-#define TYPE_STRING(t) #t
 
 namespace core {
   template <typename T>

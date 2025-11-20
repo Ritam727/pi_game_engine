@@ -16,13 +16,20 @@ namespace inputs {
     State               inputState{};
     glm::vec2           mousePosition;
 
+    void registerKeyCallback();
+    void registerMouseButtonCallback();
+    void registerMouseMoveCallback();
+    void registerMouseScrollCallback();
+    void cameraMoveAround(float xOffset, float yOffset);
+    void cameraPan(float xOffset, float yOffset);
+    void cameraFly(float delta);
+
   public:
     Inputs(core::Window &window, core::Registry &registry,
            core::EventManager &eventManager);
 
     void onUpdate(float ts) override;
-    void updateCamera(float ts);
-    void handleFovChange(float ts);
+    void handleFovChange();
     void toggleCursorVisibility();
   };
 }

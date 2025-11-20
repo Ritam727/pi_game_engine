@@ -7,7 +7,6 @@
 #include <string>
 #include <unordered_map>
 #include <utility>
-#include <cxxabi.h>
 
 namespace inputs {
   class ModeManager {
@@ -21,21 +20,21 @@ namespace inputs {
     void registerMode(Args... args) {
       if (this->isRegistered<T>()) {
         core::logger::warn("{} is already registered, not registering again",
-                           GET_STATIC_TYPE(T));
+                           core::getStaticType<T>());
         return;
       }
-      std::string concreteName = GET_STATIC_TYPE(T);
+      std::string concreteName = core::getStaticType<T>();
       this->modeMap[concreteName] =
           std::make_unique<Mode<T>>(std::forward(args)...);
     }
 
     template <core::IsIterableEnum T> bool isRegistered() {
-      std::string concreteName = GET_STATIC_TYPE(T);
+      std::string concreteName = core::getStaticType<T>();
       return this->modeMap.contains(concreteName);
     }
 
     template <core::IsIterableEnum T> Mode<T> *getModePointer() {
-      std::string concreteName = GET_STATIC_TYPE(T);
+      std::string concreteName = core::getStaticType<T>();
       Mode<T> *mode = static_cast<Mode<T> *>(this->modeMap[concreteName].get());
       return mode;
     }

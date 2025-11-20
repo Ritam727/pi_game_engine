@@ -26,7 +26,7 @@ namespace inputs {
     }
 
     void incrementMode() {
-      this->mode = GET_NEXT_ENUM_VALUE(T, this->mode);
+      this->mode = core::getNextEnumValue<T>(this->mode);
     }
   };
 }

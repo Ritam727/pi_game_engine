@@ -16,9 +16,16 @@ namespace inputs {
   Inputs::Inputs(core::Window &window, core::Registry &registry,
                  core::EventManager &eventManager)
       : window(window), registry(registry), eventManager(eventManager) {
-    stateManager.registerMode<CameraViewMode>();
-    stateManager.registerMode<CameraMoveMode>();
+    this->stateManager.registerMode<CameraViewMode>();
+    this->stateManager.registerMode<CameraMoveMode>();
 
+    this->registerKeyCallback();
+    this->registerMouseButtonCallback();
+    this->registerMouseMoveCallback();
+    this->registerMouseScrollCallback();
+  }
+
+  void Inputs::registerKeyCallback() {
     this->eventManager.subscribe(
         core::Constants::KEY_STATE_TOPIC, [&](core::BaseEventPtr &event) {
           KeyEvent *keyEvent = static_cast<KeyEvent *>(event.get());
@@ -26,24 +33,10 @@ namespace inputs {
             this->stateManager.addKey(keyEvent->key);
           else
             this->stateManager.removeKey(keyEvent->key);
-          this->inputState.keyboardState[keyEvent->key] = keyEvent->type;
         });
-    this->eventManager.subscribe(
-        core::Constants::MOUSE_MOVEMENT_TOPIC, [&](core::BaseEventPtr &event) {
-          MouseMovementEvent *mouseMovementEvent =
-              static_cast<MouseMovementEvent *>(event.get());
-          if (this->inputState.resetMousePosition == MousePositionReset::INIT) {
-            this->inputState.resetMousePosition = MousePositionReset::DONE;
-          }
-          this->inputState.mousePosition =
-              glm::vec2(mouseMovementEvent->x, mouseMovementEvent->y);
-        });
-    this->eventManager.subscribe(
-        core::Constants::MOUSE_SCROLL_TOPIC, [&](core::BaseEventPtr &event) {
-          MouseScrollEvent *mouseScrollEvent =
-              static_cast<MouseScrollEvent *>(event.get());
-          this->inputState.scrollDelta = mouseScrollEvent->y;
-        });
+  }
+
+  void Inputs::registerMouseButtonCallback() {
     this->eventManager.subscribe(
         core::Constants::MOUSE_BUTTON_TOPIC, [&](core::BaseEventPtr &event) {
           MouseButtonEvent *mouseButtonEvent =
@@ -55,15 +48,102 @@ namespace inputs {
         });
   }
 
-  void Inputs::onUpdate(float ts) {
-    this->handleFovChange(ts);
-    this->toggleCursorVisibility();
-    this->updateCamera(ts);
+  void Inputs::registerMouseMoveCallback() {
+    this->eventManager.subscribe(
+        core::Constants::MOUSE_MOVEMENT_TOPIC, [&](core::BaseEventPtr &event) {
+          MouseMovementEvent *mouseMovementEvent =
+              static_cast<MouseMovementEvent *>(event.get());
+          glm::vec2 &previousPosition = this->inputState.mousePosition;
+          glm::vec2  currentPosition =
+              glm::vec2(mouseMovementEvent->x, mouseMovementEvent->y);
+          CameraMoveMode cameraMoveMode =
+              this->stateManager.getMode<CameraMoveMode>()->getMode();
+
+          if (this->inputState.resetMousePosition) {
+            previousPosition = currentPosition;
+            this->inputState.resetMousePosition = false;
+            return;
+          }
+
+          float xOffset = (currentPosition.x - previousPosition.x);
+          float yOffset = (previousPosition.y - currentPosition.y);
+
+          switch (cameraMoveMode) {
+          case CameraMoveMode::MOVE_AROUND:
+            this->cameraMoveAround(xOffset, yOffset);
+            break;
+          case CameraMoveMode::PAN:
+            this->cameraPan(xOffset, yOffset);
+            break;
+          default:
+            break;
+          }
+
+          previousPosition = currentPosition;
+        });
   }
 
-  void Inputs::handleFovChange(float ts) {
+  void Inputs::registerMouseScrollCallback() {
+    this->eventManager.subscribe(
+        core::Constants::MOUSE_SCROLL_TOPIC, [&](core::BaseEventPtr &event) {
+          MouseScrollEvent *mouseScrollEvent =
+              static_cast<MouseScrollEvent *>(event.get());
+          float scrollDelta = mouseScrollEvent->y;
+
+          CameraMoveMode cameraMoveMode =
+              this->stateManager.getMode<CameraMoveMode>()->getMode();
+
+          switch (cameraMoveMode) {
+          case CameraMoveMode::FLY:
+            this->cameraFly(scrollDelta);
+            break;
+          default:
+            return;
+          }
+        });
+  }
+
+  void Inputs::cameraMoveAround(float xOffset, float yOffset) {
+    for (core::CameraTransform &cameraTransform :
+         this->registry.getPool<core::CameraTransform>().getComponents()) {
+      if (cameraTransform.isCameraActive()) {
+        glm::vec3 front = glm::normalize(cameraTransform.getForwardDirection());
+        glm::vec3 right = glm::normalize(cameraTransform.getRightDirection());
+        glm::vec3 up = glm::normalize(glm::cross(right, front));
+        glm::vec3 direction = xOffset * right + yOffset * up;
+        float     speed = core::Constants::SPEED_SCALAR * 0.1;
+        cameraTransform.updatePosition(direction * speed);
+      }
+    }
+  }
+
+  void Inputs::cameraPan(float xOffset, float yOffset) {
+    for (core::CameraTransform &cameraTransform :
+         this->registry.getPool<core::CameraTransform>().getComponents()) {
+      cameraTransform.updateRotation({xOffset * core::Constants::SPEED_SCALAR,
+                                      yOffset * core::Constants::SPEED_SCALAR});
+    }
+  }
+
+  void Inputs::cameraFly(float delta) {
+    for (core::CameraTransform &cameraTransform :
+         this->registry.getPool<core::CameraTransform>().getComponents()) {
+      glm::vec3 front = cameraTransform.getForwardDirection();
+      glm::vec3 direction = -1.0f * delta * front;
+
+      float speed = core::Constants::SPEED_SCALAR;
+      cameraTransform.updatePosition(direction * speed);
+    }
+  }
+
+  void Inputs::onUpdate(float ts) {
+    this->handleFovChange();
+    this->toggleCursorVisibility();
+  }
+
+  void Inputs::handleFovChange() {
     CameraViewMode cameraViewMode =
-        stateManager.getMode<CameraViewMode>()->getMode();
+        this->stateManager.getMode<CameraViewMode>()->getMode();
     if (cameraViewMode != this->inputState.cameraViewMode) {
       float fov = 45.0f;
       if (cameraViewMode == CameraViewMode::BIRD_EYE) {
@@ -81,64 +161,16 @@ namespace inputs {
 
   void Inputs::toggleCursorVisibility() {
     CameraMoveMode cameraMoveMode =
-        stateManager.getMode<CameraMoveMode>()->getMode();
-    if (cameraMoveMode == CameraMoveMode::PAN ||
-        cameraMoveMode == CameraMoveMode::FLY ||
-        cameraMoveMode == CameraMoveMode::MOVE_AROUND) {
+        this->stateManager.getMode<CameraMoveMode>()->getMode();
+    switch (cameraMoveMode) {
+    case CameraMoveMode::PAN:
+    case CameraMoveMode::FLY:
+    case CameraMoveMode::MOVE_AROUND:
       this->window.setCursorVisibility(false);
-    } else {
+      break;
+    default:
       this->window.setCursorVisibility(true);
-      this->inputState.resetMousePosition = MousePositionReset::INIT;
-    }
-  }
-
-  void Inputs::updateCamera(float ts) {
-    for (core::CameraTransform &cameraTransform :
-         this->registry.getPool<core::CameraTransform>().getComponents()) {
-      if (cameraTransform.isCameraActive()) {
-        if (this->inputState.cameraState == CameraState::CAMERA_RESET_MODE) {
-          cameraTransform.resetCameraTransform();
-          break;
-        }
-        if (this->inputState.resetMousePosition == MousePositionReset::DONE) {
-          this->mousePosition = this->inputState.mousePosition;
-          this->inputState.resetMousePosition = MousePositionReset::NONE;
-        }
-        glm::vec2 &currentPosition = this->inputState.mousePosition;
-        glm::vec2 &previousPosition = this->mousePosition;
-
-        float          xOffset = (currentPosition.x - previousPosition.x);
-        float          yOffset = (previousPosition.y - currentPosition.y);
-        float         &scrollDelta = this->inputState.scrollDelta;
-        CameraMoveMode cameraMoveMode =
-            stateManager.getMode<CameraMoveMode>()->getMode();
-        previousPosition = currentPosition;
-
-        if (cameraMoveMode == CameraMoveMode::PAN) {
-          cameraTransform.updateRotation(
-              {xOffset * core::Constants::SPEED_SCALAR,
-               yOffset * core::Constants::SPEED_SCALAR});
-        }
-
-        glm::vec3 direction(0);
-        float     speed = 0.0f;
-        glm::vec3 front = glm::normalize(cameraTransform.getForwardDirection());
-        glm::vec3 right = glm::normalize(cameraTransform.getRightDirection());
-        glm::vec3 up = glm::normalize(glm::cross(right, front));
-        if (cameraMoveMode == CameraMoveMode::MOVE_AROUND) {
-          if (xOffset != 0 || yOffset != 0) {
-            direction = xOffset * right + yOffset * up;
-            speed = core::Constants::SPEED_SCALAR * 0.1;
-          }
-        } else if (cameraMoveMode == CameraMoveMode::FLY) {
-          if (scrollDelta != 0) {
-            direction = -1.0f * scrollDelta * front;
-            scrollDelta = 0;
-            speed = core::Constants::SPEED_SCALAR * ts;
-          }
-        }
-        cameraTransform.updatePosition(direction * speed);
-      }
+      this->inputState.resetMousePosition = true;
     }
   }
 }
