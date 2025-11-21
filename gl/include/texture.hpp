@@ -23,10 +23,10 @@ namespace gl {
     std::vector<unsigned int> textures;
 
     void createBindAndConfigureTexture(unsigned int index);
+    void generateTextures();
 
   public:
     Texture(const std::vector<std::string> filePaths);
-    ~Texture();
 
     void bind();
     void sendImageToTexture(Image &image);
@@ -35,5 +35,6 @@ namespace gl {
 
     static void loadImage(const std::string &filePath, unsigned int index,
                           std::vector<Image> &images, std::mutex &mutex);
+    void        releaseTextures();
   };
 }

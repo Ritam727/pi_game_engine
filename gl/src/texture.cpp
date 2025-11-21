@@ -13,7 +13,7 @@ namespace gl {
     for (unsigned int i = 0; i < filePaths.size(); i++) {
       const std::string &filePath = filePaths[i];
       imageLoadJobs.push_back(
-          std::thread(Texture::loadImage, std::ref(filePaths[i]), i,
+          std::thread(Texture::loadImage, std::ref(filePath), i,
                       std::ref(images), std::ref(writeMutex)));
     }
     for (std::thread &job : imageLoadJobs)
@@ -22,12 +22,6 @@ namespace gl {
       this->createBindAndConfigureTexture(i);
       this->sendImageToTexture(images[i]);
       stbi_image_free(images[i].data);
-    }
-  }
-
-  Texture::~Texture() {
-    for (unsigned int i = 0; i < this->textures.size(); i++) {
-      GL_CALL(glDeleteTextures(1, &this->textures[i]));
     }
   }
 
@@ -48,7 +42,7 @@ namespace gl {
     unsigned char *data =
         stbi_load(filePath.c_str(), &width, &height, &channels, 0);
     if (data) {
-      core::logger::info("Read image data from file {}", filePath);
+      core::logger::debug("Read image data from file {}", filePath);
       std::lock_guard<std::mutex> lock = std::lock_guard(mutex);
       images[index] = Image(width, height, channels, data);
     } else {
@@ -72,5 +66,11 @@ namespace gl {
 
   unsigned int Texture::getNumTextures() const {
     return this->textures.size();
+  }
+
+  void Texture::releaseTextures() {
+    for (unsigned int i = 0; i < this->textures.size(); i++) {
+      GL_CALL(glDeleteTextures(1, &this->textures[i]));
+    }
   }
 }

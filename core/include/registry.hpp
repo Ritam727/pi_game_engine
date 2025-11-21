@@ -25,14 +25,14 @@ namespace core {
     Entity getLastEntity();
     Entity createEntity();
 
-    template <IsSubClassOf<BaseComponent> T>
-    void addComponent(Entity entity, T component) {
+    template <IsSubClassOf<BaseComponent> T, typename... Args>
+    void addComponent(Entity entity, Args... args) {
       std::type_index poolIndex = std::type_index(typeid(T));
       if (!this->pools.contains(poolIndex)) {
         this->pools[poolIndex] = std::make_unique<core::SparseSet<Entity, T>>();
       }
       static_cast<core::SparseSet<Entity, T> *>(this->pools[poolIndex].get())
-          ->addElem(entity, component);
+          ->addElem(entity, std::forward<Args>(args)...);
     }
 
     template <IsSubClassOf<BaseComponent> T>

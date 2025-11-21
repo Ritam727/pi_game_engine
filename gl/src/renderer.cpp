@@ -3,6 +3,7 @@
 #include "camera_transform.hpp"
 #include "gl_constants.hpp"
 #include "event_manager.hpp"
+#include "materials.hpp"
 #include "registry.hpp"
 #include "gl_events.hpp"
 #include "transform.hpp"
@@ -33,11 +34,14 @@ namespace gl {
 
     for (int i = 0; i < 10; i++) {
       core::Entity entity = this->registry.createEntity();
-      this->registry.addComponent<core::Transform>(entity, core::Transform{});
+      this->registry.addComponent<core::Transform>(entity);
       registry.getPool<core::Transform>()
           .get(registry.getLastEntity())
           .setPosition(cubePositions[i]);
-      this->registry.addComponent<Material>(entity, materials[i]);
+      std::vector<std::string> files{ENGINE_PATH
+                                     "/res/textures/container2.png"};
+      this->registry.addComponent<TextureMaterial>(
+          entity, files, glm::vec3{1.0f, 1.0f, 1.0f}, 32.0f);
     }
 
     glEnable(GL_DEPTH_TEST);
@@ -61,11 +65,6 @@ namespace gl {
   void Renderer::onUpdate(float ts) {
     this->clear();
     this->shader.use();
-    this->texture.bind();
-    for (unsigned int i = 0; i < this->texture.getNumTextures(); i++) {
-      const std::string textureName = "ourTexture" + std::to_string(i + 1);
-      this->shader.set<int>(textureName, i);
-    }
 
     this->shader.set<glm::vec3>("basicLight.position", basicLight.position);
     this->shader.set<glm::vec3>("basicLight.ambient", basicLight.ambient);
@@ -89,21 +88,22 @@ namespace gl {
 
     this->vertexArray.bind();
     float angle = ts * Constants::SPEED_SCALAR;
-    core::SparseSet<core::Entity, Material> &materialPool =
-        registry.getPool<Material>();
+    core::SparseSet<core::Entity, TextureMaterial> &materialPool =
+        registry.getPool<TextureMaterial>();
     core::SparseSet<core::Entity, core::Transform> &transformPool =
         registry.getPool<core::Transform>();
     for (core::Entity &entity : materialPool.getEntities()) {
       core::Transform &transform = transformPool.get(entity);
       transform.updateRotation(glm::vec3(angle));
       glm::mat4 model = transform.getModelMatrix();
-
       this->shader.set<glm::mat4>("model", model);
-      Material &material = materialPool.get(entity);
-      this->shader.set<glm::vec3>("material.ambient", material.ambient);
-      this->shader.set<glm::vec3>("material.diffuse", material.diffuse);
-      this->shader.set<glm::vec3>("material.specular", material.specular);
-      this->shader.set<float>("material.shininess", material.shininess);
+
+      TextureMaterial &material = materialPool.get(entity);
+      material.diffuse.bind();
+      this->shader.set<int>("textureMaterial.diffuse", 0);
+      this->shader.set<glm::vec3>("textureMaterial.specular",
+                                  material.specular);
+      this->shader.set<float>("textureMaterial.shininess", material.shininess);
 
       this->draw();
     }

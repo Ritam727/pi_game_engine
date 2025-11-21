@@ -24,7 +24,7 @@ namespace core {
 
 namespace core {
   inline std::string readFromFile(char const *filePath) {
-    core::logger::info("Reading from file {}", filePath);
+    core::logger::debug("Reading from file {}", filePath);
     std::ifstream file;
     file.exceptions(std::ifstream::badbit | std::ifstream::failbit);
     try {

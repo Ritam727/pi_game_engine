@@ -1,5 +1,7 @@
 #pragma once
 
+#include "base_component.hpp"
+#include "utils.hpp"
 #include <vector>
 
 namespace core {
@@ -8,7 +10,8 @@ namespace core {
     virtual ~ISparseSet() = default;
   };
 
-  template <typename I, typename T> class SparseSet : public ISparseSet {
+  template <typename I, IsSubClassOf<BaseComponent> T>
+  class SparseSet : public ISparseSet {
   private:
     std::vector<I>            entities{};
     std::vector<unsigned int> sparse{};
@@ -19,17 +22,22 @@ namespace core {
   public:
     SparseSet() {}
 
+    ~SparseSet() {
+      for (T &component : components)
+        component.clearComponent();
+    }
+
     SparseSet(unsigned int size) {
       this->entities.reserve(size);
       this->sparse.reserve(size);
       this->components.reserve(size);
     }
 
-    void addElem(I entity, T component) {
+    template <typename... Args> void addElem(I entity, Args... args) {
       if (this->contains(entity))
         return;
       this->entities.emplace_back(entity);
-      this->components.emplace_back(component);
+      this->components.emplace_back(std::forward<Args>(args)...);
       if (this->sparse.size() <= entity)
         this->sparse.resize(entity + 1);
       this->sparse[entity] = this->n++;
