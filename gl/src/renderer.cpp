@@ -13,12 +13,7 @@
 
 namespace gl {
   Renderer::Renderer(core::Registry &registry, core::EventManager &eventManager)
-      : vertexArray(vertices, indices),
-        shader(ENGINE_PATH "/res/shaders/shader.vert",
-               ENGINE_PATH "/res/shaders/shader.frag"),
-        texture({ENGINE_PATH "/res/textures/container.jpg",
-                 ENGINE_PATH "/res/textures/awesomeface.png"}),
-        registry(registry), eventManager(eventManager) {
+      : registry(registry), eventManager(eventManager) {
     this->eventManager.subscribe(
         Constants::WINDOW_RESIZE_TOPIC, [&](core::IEventPtr &event) {
           core::WindowResizeEvent windowResizeEvent =

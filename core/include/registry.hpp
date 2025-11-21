@@ -9,13 +9,13 @@
 #include <memory>
 
 namespace core {
-  typedef unsigned int Entity;
+  typedef int Entity;
 
   class Registry {
   private:
     std::unordered_map<std::type_index, std::unique_ptr<core::ISparseSet>>
-           pools;
-    Entity lastEntity = -1;
+           pools{};
+    Entity lastEntity{-1};
 
   public:
     Registry();

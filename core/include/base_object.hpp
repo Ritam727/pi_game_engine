@@ -9,6 +9,7 @@ namespace core {
 
   public:
     BaseObject(core::Registry &registryRef);
+    virtual ~BaseObject() = default;
 
     core::Entity getEntityId();
   };

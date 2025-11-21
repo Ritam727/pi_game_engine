@@ -7,12 +7,12 @@
 namespace core {
   class Transform : public BaseComponent {
   private:
-    glm::vec3 position;
-    glm::vec3 scale;
-    glm::vec3 axisX;
-    glm::vec3 axisY;
-    glm::vec3 axisZ;
-    glm::quat rotation;
+    glm::vec3 position{0};
+    glm::vec3 scale{1};
+    glm::vec3 axisX{1, 0, 0};
+    glm::vec3 axisY{0, 1, 0};
+    glm::vec3 axisZ{0, 0, 1};
+    glm::quat rotation{glm::radians(glm::vec3(0.0f))};
 
     glm::mat4 getTranslationMatrix() const;
     glm::mat4 getRotationMatrix() const;

@@ -26,7 +26,7 @@ namespace gl {
 
   class Renderer : public core::Layer {
   private:
-    std::vector<core::Vertex> vertices = {
+    std::vector<core::Vertex> vertices{
         {{-0.5f, -0.5f, -0.5f}, {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f}},
         {{0.5f, -0.5f, -0.5f}, {1.0f, 1.0f, 1.0f}, {1.0f, 0.0f}},
         {{0.5f, 0.5f, -0.5f}, {1.0f, 1.0f, 1.0f}, {1.0f, 1.0f}},
@@ -63,8 +63,8 @@ namespace gl {
         {{0.5f, 0.5f, 0.5f}, {1.0f, 1.0f, 1.0f}, {1.0f, 0.0f}},
         {{-0.5f, 0.5f, 0.5f}, {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f}},
         {{-0.5f, 0.5f, -0.5f}, {1.0f, 1.0f, 1.0f}, {0.0f, 1.0f}}};
-    std::vector<unsigned int> indices;
-    std::vector<glm::vec3>    cubePositions = {
+    std::vector<unsigned int> indices{};
+    std::vector<glm::vec3>    cubePositions{
         glm::vec3(0.0f, 0.0f, 0.0f),    glm::vec3(2.0f, 5.0f, -15.0f),
         glm::vec3(-1.5f, -2.2f, -2.5f), glm::vec3(-3.8f, -2.0f, -12.3f),
         glm::vec3(2.4f, -0.4f, -3.5f),  glm::vec3(-1.7f, 3.0f, -7.5f),
@@ -74,13 +74,15 @@ namespace gl {
     core::Registry     &registry;
     core::EventManager &eventManager;
 
-    VertexArray vertexArray;
-    Shader      shader;
-    Texture     texture;
+    VertexArray vertexArray{vertices, indices};
+    Shader      shader{ENGINE_PATH "/res/shaders/shader.vert",
+                  ENGINE_PATH "/res/shaders/shader.frag"};
+    Texture     texture{{ENGINE_PATH "/res/textures/container.jpg",
+                         ENGINE_PATH "/res/textures/awesomeface.png"}};
 
-    unsigned int frameCount = 0;
-    float        cameraAngle = 0;
-    DrawMode     drawMode = DrawMode::TRIANGLES;
+    unsigned int frameCount{0};
+    float        cameraAngle{0};
+    DrawMode     drawMode{DrawMode::TRIANGLES};
 
     RenderState renderState{};
 

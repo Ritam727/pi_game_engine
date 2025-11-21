@@ -15,13 +15,13 @@ namespace core {
   private:
     std::unordered_map<std::string,
                        std::vector<std::function<void(IEventPtr &)>>>
-        subscribers;
+        subscribers{};
     std::unordered_map<std::string, std::array<std::vector<IEventPtr>, 2>>
-                                                  topics;
-    std::unordered_map<std::string, unsigned int> readIndexes;
-    std::unordered_map<std::string, unsigned int> writeIndexes;
-    std::unordered_map<std::string, std::mutex>   subscriberMutexes;
-    std::unordered_map<std::string, std::mutex>   swapMutexes;
+                                                  topics{};
+    std::unordered_map<std::string, unsigned int> readIndexes{};
+    std::unordered_map<std::string, unsigned int> writeIndexes{};
+    std::unordered_map<std::string, std::mutex>   subscriberMutexes{};
+    std::unordered_map<std::string, std::mutex>   swapMutexes{};
 
   public:
     EventManager();

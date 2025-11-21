@@ -20,34 +20,19 @@ namespace core {
     const unsigned int getSizeOfElement() const;
   };
 
-  class VertexAttribute {
-  private:
+  struct VertexAttribute {
     unsigned int                        stride = 0;
     std::vector<VertexAttributeElement> elements;
-
-  public:
-    const std::vector<VertexAttributeElement> getElements() const;
-    const unsigned int                        getStride() const;
 
     template <typename T> inline void push(unsigned int count);
   };
 
-  class Vertex {
-  private:
+  struct Vertex {
     glm::vec3 position;
     glm::vec3 color;
     glm::vec2 textureCoordinates;
 
-  public:
     Vertex(glm::vec3 position, glm::vec3 color, glm::vec2 textureCoordinates);
-
-    void setPosition(glm::vec3 position);
-    void setColor(glm::vec3 color);
-    void setTextureCoordinate(glm::vec2 textureCoordinate);
-
-    glm::vec3 getPosition() const;
-    glm::vec3 getColor() const;
-    glm::vec2 getTextureCoordinate() const;
 
     static VertexAttribute getAttribute();
   };

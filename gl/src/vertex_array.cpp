@@ -28,13 +28,13 @@ namespace gl {
   void VertexArray::arrangeVertexLayout() {
     unsigned int          offset = 0;
     core::VertexAttribute vertexAttribute = core::Vertex::getAttribute();
-    const std::vector<core::VertexAttributeElement> vertexAttributeElements =
-        vertexAttribute.getElements();
+    const std::vector<core::VertexAttributeElement> &vertexAttributeElements =
+        vertexAttribute.elements;
     for (int i = 0; i < vertexAttributeElements.size(); i++) {
       GL_CALL(glVertexAttribPointer(i, vertexAttributeElements[i].getCount(),
                                     vertexAttributeElements[i].getType(),
                                     vertexAttributeElements[i].isNormalised(),
-                                    vertexAttribute.getStride(),
+                                    vertexAttribute.stride,
                                     (const void *) ((std::size_t) offset)));
       GL_CALL(glEnableVertexAttribArray(i));
       offset += vertexAttributeElements[i].getCount() *

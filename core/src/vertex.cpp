@@ -30,15 +30,6 @@ namespace core {
 }
 
 namespace core {
-  const std::vector<VertexAttributeElement>
-      VertexAttribute::getElements() const {
-    return this->elements;
-  }
-
-  const unsigned int VertexAttribute::getStride() const {
-    return this->stride;
-  }
-
   template <> inline void VertexAttribute::push<float>(unsigned int count) {
     this->elements.push_back(VertexAttributeElement(GL_FLOAT, count, GL_FALSE));
     this->stride += count * this->elements.back().getSizeOfElement();
@@ -65,30 +56,6 @@ namespace core {
                  glm::vec2 textureCoordinates)
       : position(position), color(color),
         textureCoordinates(textureCoordinates) {}
-
-  void Vertex::setPosition(glm::vec3 position) {
-    this->position = position;
-  }
-
-  void Vertex::setColor(glm::vec3 color) {
-    this->color = color;
-  }
-
-  void Vertex::setTextureCoordinate(glm::vec2 textureCoordinates) {
-    this->textureCoordinates = textureCoordinates;
-  }
-
-  glm::vec3 Vertex::getPosition() const {
-    return this->position;
-  }
-
-  glm::vec3 Vertex::getColor() const {
-    return this->color;
-  }
-
-  glm::vec2 Vertex::getTextureCoordinate() const {
-    return this->textureCoordinates;
-  }
 
   VertexAttribute Vertex::getAttribute() {
     VertexAttribute vertexAttribute;

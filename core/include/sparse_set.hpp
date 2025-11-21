@@ -10,9 +10,9 @@ namespace core {
 
   template <typename I, typename T> class SparseSet : public ISparseSet {
   private:
-    std::vector<I>            entities;
-    std::vector<unsigned int> sparse;
-    std::vector<T>            components;
+    std::vector<I>            entities{};
+    std::vector<unsigned int> sparse{};
+    std::vector<T>            components{};
 
     unsigned int n = 0;
 

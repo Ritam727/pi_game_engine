@@ -4,14 +4,13 @@
 
 namespace core {
   CameraTransform::CameraTransform(glm::vec3 position, glm::vec3 up)
-      : yaw(-90.0f), pitch(0), position(position),
+      : position(position),
         front(glm::normalize(
             glm::vec3(cos(glm::radians(yaw)) * cos(glm::radians(pitch)),
                       sin(glm::radians(pitch)),
                       sin(glm::radians(yaw)) * cos(glm::radians(pitch))))),
         up(up), right(glm::normalize(glm::cross(glm::normalize(this->front),
-                                                glm::normalize(this->up)))),
-        cameraActive(false) {}
+                                                glm::normalize(this->up)))) {}
 
   void CameraTransform::setPosition(glm::vec3 position) {
     this->position = position;

@@ -3,9 +3,7 @@
 #include "glm/gtc/matrix_transform.hpp"
 
 namespace core {
-  Transform::Transform()
-      : position(0), scale(1), axisX(1, 0, 0), axisY(0, 1, 0), axisZ(0, 0, 1),
-        rotation(glm::radians(glm::vec3(0.0f))) {}
+  Transform::Transform() {}
 
   glm::mat4 Transform::getTranslationMatrix() const {
     return glm::translate(glm::mat4(1.0f), this->position);
