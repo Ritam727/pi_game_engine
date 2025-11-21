@@ -27,35 +27,39 @@ namespace inputs {
 
   void Inputs::registerKeyCallback() {
     this->eventManager.subscribe(
-        core::Constants::KEY_STATE_TOPIC, [&](core::BaseEventPtr &event) {
-          core::KeyEvent *keyEvent = static_cast<core::KeyEvent *>(event.get());
-          if (keyEvent->type != core::InputAction::RELEASE)
-            this->stateManager.addKey(keyEvent->key);
+        core::Constants::KEY_STATE_TOPIC, [&](core::IEventPtr &event) {
+          core::KeyEvent keyEvent =
+              (static_cast<core::Event<core::KeyEvent> *>(event.get()))->data;
+          if (keyEvent.type != core::InputAction::RELEASE)
+            this->stateManager.addKey(keyEvent.key);
           else
-            this->stateManager.removeKey(keyEvent->key);
+            this->stateManager.removeKey(keyEvent.key);
         });
   }
 
   void Inputs::registerMouseButtonCallback() {
     this->eventManager.subscribe(
-        core::Constants::MOUSE_BUTTON_TOPIC, [&](core::BaseEventPtr &event) {
-          core::MouseButtonEvent *mouseButtonEvent =
-              static_cast<core::MouseButtonEvent *>(event.get());
-          if (mouseButtonEvent->type != core::InputAction::RELEASE)
-            this->stateManager.addKey(mouseButtonEvent->button);
+        core::Constants::MOUSE_BUTTON_TOPIC, [&](core::IEventPtr &event) {
+          core::MouseButtonEvent mouseButtonEvent =
+              (static_cast<core::Event<core::MouseButtonEvent> *>(event.get()))
+                  ->data;
+          if (mouseButtonEvent.type != core::InputAction::RELEASE)
+            this->stateManager.addKey(mouseButtonEvent.button);
           else
-            this->stateManager.removeKey(mouseButtonEvent->button);
+            this->stateManager.removeKey(mouseButtonEvent.button);
         });
   }
 
   void Inputs::registerMouseMoveCallback() {
     this->eventManager.subscribe(
-        core::Constants::MOUSE_MOVEMENT_TOPIC, [&](core::BaseEventPtr &event) {
-          core::MouseMovementEvent *mouseMovementEvent =
-              static_cast<core::MouseMovementEvent *>(event.get());
+        core::Constants::MOUSE_MOVEMENT_TOPIC, [&](core::IEventPtr &event) {
+          core::MouseMovementEvent mouseMovementEvent =
+              (static_cast<core::Event<core::MouseMovementEvent> *>(
+                   event.get()))
+                  ->data;
           glm::vec2 &previousPosition = this->inputState.mousePosition;
           glm::vec2  currentPosition =
-              glm::vec2(mouseMovementEvent->x, mouseMovementEvent->y);
+              glm::vec2(mouseMovementEvent.x, mouseMovementEvent.y);
           CameraMoveMode cameraMoveMode =
               this->stateManager.getMode<CameraMoveMode>()->getMode();
 
@@ -85,21 +89,25 @@ namespace inputs {
 
   void Inputs::registerMouseScrollCallback() {
     this->eventManager.subscribe(
-        core::Constants::MOUSE_SCROLL_TOPIC, [&](core::BaseEventPtr &event) {
-          core::MouseScrollEvent *mouseScrollEvent =
-              static_cast<core::MouseScrollEvent *>(event.get());
-          float scrollDelta = mouseScrollEvent->y;
+        core::Constants::MOUSE_SCROLL_TOPIC, [&](core::IEventPtr &event) {
+          this->stateManager.addKey(3);
+          core::MouseScrollEvent mouseScrollEvent =
+              (static_cast<core::Event<core::MouseScrollEvent> *>(event.get()))
+                  ->data;
+          float scrollDelta = mouseScrollEvent.y;
 
           CameraMoveMode cameraMoveMode =
               this->stateManager.getMode<CameraMoveMode>()->getMode();
 
           switch (cameraMoveMode) {
-          case CameraMoveMode::FLY:
+          case CameraMoveMode::MOVE_AROUND:
             this->cameraFly(scrollDelta);
             break;
           default:
-            return;
+            break;
           }
+
+          this->stateManager.removeKey(3);
         });
   }
 
@@ -151,10 +159,8 @@ namespace inputs {
       } else if (cameraViewMode == CameraViewMode::FISH_EYE) {
         fov = 75.0f;
       }
-      std::unique_ptr<FovChangeEvent> fovChangeEvent =
-          std::make_unique<FovChangeEvent>(fov);
       this->eventManager.enqueue<FovChangeEvent>(
-          inputs::Constants::FOV_CHANGE_TOPIC, std::move(fovChangeEvent));
+          inputs::Constants::FOV_CHANGE_TOPIC, fov);
       this->inputState.cameraViewMode = cameraViewMode;
     }
   }

@@ -20,7 +20,7 @@ App::App()
       std::make_unique<gl::Renderer>(this->registry, eventManager));
 
   this->eventManager.subscribe(
-      core::Constants::WINDOW_CLOSE_TOPIC, [&](core::BaseEventPtr &event) {
+      core::Constants::WINDOW_CLOSE_TOPIC, [&](core::IEventPtr &event) {
         core::logger::info("Shutting down application");
         this->running = false;
       });

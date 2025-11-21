@@ -37,10 +37,8 @@ namespace core {
       Window *self = static_cast<Window *>(glfwGetWindowUserPointer(window));
       if (self == nullptr)
         return;
-      std::unique_ptr<WindowResizeEvent> event =
-          std::make_unique<WindowResizeEvent>(width, height);
       self->eventManager.enqueue<WindowResizeEvent>(
-          Constants::WINDOW_RESIZE_TOPIC, std::move(event));
+          Constants::WINDOW_RESIZE_TOPIC, width, height);
     });
     glfwSetKeyCallback(window, [](GLFWwindow *window, int key, int scanCode,
                                   int action, int mods) {
@@ -49,11 +47,10 @@ namespace core {
         return;
       self->eventManager.enqueue<KeyEvent>(
           Constants::KEY_STATE_TOPIC,
-          std::make_unique<KeyEvent>(key, static_cast<InputAction>(action)));
+          KeyEvent{key, static_cast<InputAction>(action)});
       if (key == GLFW_KEY_ESCAPE) {
         self->eventManager.enqueue<WindowCloseEvent>(
-            Constants::WINDOW_CLOSE_TOPIC,
-            std::make_unique<WindowCloseEvent>());
+            Constants::WINDOW_CLOSE_TOPIC);
       }
     });
     glfwSetWindowCloseCallback(window, [](GLFWwindow *window) {
@@ -61,7 +58,7 @@ namespace core {
       if (self == nullptr)
         return;
       self->eventManager.enqueue<WindowCloseEvent>(
-          Constants::WINDOW_CLOSE_TOPIC, std::make_unique<WindowCloseEvent>());
+          Constants::WINDOW_CLOSE_TOPIC);
     });
     glfwSetCursorPosCallback(window, [](GLFWwindow *window, double x,
                                         double y) {
@@ -69,8 +66,7 @@ namespace core {
       if (self == nullptr)
         return;
       self->eventManager.enqueue<MouseMovementEvent>(
-          Constants::MOUSE_MOVEMENT_TOPIC,
-          std::make_unique<MouseMovementEvent>(x, y));
+          Constants::MOUSE_MOVEMENT_TOPIC, x, y);
     });
     glfwSetMouseButtonCallback(window, [](GLFWwindow *window, int button,
                                           int action, int mods) {
@@ -78,17 +74,15 @@ namespace core {
       if (self == nullptr)
         return;
       self->eventManager.enqueue<MouseButtonEvent>(
-          Constants::MOUSE_BUTTON_TOPIC,
-          std::make_unique<MouseButtonEvent>(button,
-                                             static_cast<InputAction>(action)));
+          Constants::MOUSE_BUTTON_TOPIC, button,
+          static_cast<InputAction>(action));
     });
     glfwSetScrollCallback(window, [](GLFWwindow *window, double x, double y) {
       Window *self = static_cast<Window *>(glfwGetWindowUserPointer(window));
       if (self == nullptr)
         return;
       self->eventManager.enqueue<MouseScrollEvent>(
-          Constants::MOUSE_SCROLL_TOPIC,
-          std::make_unique<MouseScrollEvent>(x, y));
+          Constants::MOUSE_SCROLL_TOPIC, x, y);
     });
     Window::buildGlfwKeyMapping();
   }
@@ -155,12 +149,12 @@ namespace core {
     Window::glfwKeyMapping[GLFW_KEY_X] = "X";
     Window::glfwKeyMapping[GLFW_KEY_Y] = "Y";
     Window::glfwKeyMapping[GLFW_KEY_Z] = "Z";
-    Window::glfwKeyMapping[GLFW_KEY_LEFT_BRACKET] = "LEFT_BRACKET";
+    Window::glfwKeyMapping[GLFW_KEY_LEFT_BRACKET] = "LEFTBRACKET";
     Window::glfwKeyMapping[GLFW_KEY_BACKSLASH] = "BACKSLASH";
-    Window::glfwKeyMapping[GLFW_KEY_RIGHT_BRACKET] = "RIGHT_BRACKET";
-    Window::glfwKeyMapping[GLFW_KEY_GRAVE_ACCENT] = "GRAVE_ACCENT";
-    Window::glfwKeyMapping[GLFW_KEY_WORLD_1] = "WORLD_1";
-    Window::glfwKeyMapping[GLFW_KEY_WORLD_2] = "WORLD_2";
+    Window::glfwKeyMapping[GLFW_KEY_RIGHT_BRACKET] = "RIGHTBRACKET";
+    Window::glfwKeyMapping[GLFW_KEY_GRAVE_ACCENT] = "GRAVEACCENT";
+    Window::glfwKeyMapping[GLFW_KEY_WORLD_1] = "WORLD1";
+    Window::glfwKeyMapping[GLFW_KEY_WORLD_2] = "WORLD2";
     Window::glfwKeyMapping[GLFW_KEY_ESCAPE] = "ESCAPE";
     Window::glfwKeyMapping[GLFW_KEY_ENTER] = "ENTER";
     Window::glfwKeyMapping[GLFW_KEY_TAB] = "TAB";
@@ -171,14 +165,14 @@ namespace core {
     Window::glfwKeyMapping[GLFW_KEY_LEFT] = "LEFT";
     Window::glfwKeyMapping[GLFW_KEY_DOWN] = "DOWN";
     Window::glfwKeyMapping[GLFW_KEY_UP] = "UP";
-    Window::glfwKeyMapping[GLFW_KEY_PAGE_UP] = "PAGE_UP";
-    Window::glfwKeyMapping[GLFW_KEY_PAGE_DOWN] = "PAGE_DOWN";
+    Window::glfwKeyMapping[GLFW_KEY_PAGE_UP] = "PAGEUP";
+    Window::glfwKeyMapping[GLFW_KEY_PAGE_DOWN] = "PAGEDOWN";
     Window::glfwKeyMapping[GLFW_KEY_HOME] = "HOME";
     Window::glfwKeyMapping[GLFW_KEY_END] = "END";
-    Window::glfwKeyMapping[GLFW_KEY_CAPS_LOCK] = "CAPS_LOCK";
-    Window::glfwKeyMapping[GLFW_KEY_SCROLL_LOCK] = "SCROLL_LOCK";
-    Window::glfwKeyMapping[GLFW_KEY_NUM_LOCK] = "NUM_LOCK";
-    Window::glfwKeyMapping[GLFW_KEY_PRINT_SCREEN] = "PRINT_SCREEN";
+    Window::glfwKeyMapping[GLFW_KEY_CAPS_LOCK] = "CAPSLOCK";
+    Window::glfwKeyMapping[GLFW_KEY_SCROLL_LOCK] = "SCROLLLOCK";
+    Window::glfwKeyMapping[GLFW_KEY_NUM_LOCK] = "NUMLOCK";
+    Window::glfwKeyMapping[GLFW_KEY_PRINT_SCREEN] = "PRINTSCREEN";
     Window::glfwKeyMapping[GLFW_KEY_PAUSE] = "PAUSE";
     Window::glfwKeyMapping[GLFW_KEY_F1] = "F1";
     Window::glfwKeyMapping[GLFW_KEY_F2] = "F2";
@@ -205,23 +199,23 @@ namespace core {
     Window::glfwKeyMapping[GLFW_KEY_F23] = "F23";
     Window::glfwKeyMapping[GLFW_KEY_F24] = "F24";
     Window::glfwKeyMapping[GLFW_KEY_F25] = "F25";
-    Window::glfwKeyMapping[GLFW_KEY_KP_0] = "KP_0";
-    Window::glfwKeyMapping[GLFW_KEY_KP_1] = "KP_1";
-    Window::glfwKeyMapping[GLFW_KEY_KP_2] = "KP_2";
-    Window::glfwKeyMapping[GLFW_KEY_KP_3] = "KP_3";
-    Window::glfwKeyMapping[GLFW_KEY_KP_4] = "KP_4";
-    Window::glfwKeyMapping[GLFW_KEY_KP_5] = "KP_5";
-    Window::glfwKeyMapping[GLFW_KEY_KP_6] = "KP_6";
-    Window::glfwKeyMapping[GLFW_KEY_KP_7] = "KP_7";
-    Window::glfwKeyMapping[GLFW_KEY_KP_8] = "KP_8";
-    Window::glfwKeyMapping[GLFW_KEY_KP_9] = "KP_9";
-    Window::glfwKeyMapping[GLFW_KEY_KP_DECIMAL] = "KP_DECIMAL";
-    Window::glfwKeyMapping[GLFW_KEY_KP_DIVIDE] = "KP_DIVIDE";
-    Window::glfwKeyMapping[GLFW_KEY_KP_MULTIPLY] = "KP_MULTIPLY";
-    Window::glfwKeyMapping[GLFW_KEY_KP_SUBTRACT] = "KP_SUBTRACT";
-    Window::glfwKeyMapping[GLFW_KEY_KP_ADD] = "KP_ADD";
-    Window::glfwKeyMapping[GLFW_KEY_KP_ENTER] = "KP_ENTER";
-    Window::glfwKeyMapping[GLFW_KEY_KP_EQUAL] = "KP_EQUAL";
+    Window::glfwKeyMapping[GLFW_KEY_KP_0] = "KP0";
+    Window::glfwKeyMapping[GLFW_KEY_KP_1] = "KP1";
+    Window::glfwKeyMapping[GLFW_KEY_KP_2] = "KP2";
+    Window::glfwKeyMapping[GLFW_KEY_KP_3] = "KP3";
+    Window::glfwKeyMapping[GLFW_KEY_KP_4] = "KP4";
+    Window::glfwKeyMapping[GLFW_KEY_KP_5] = "KP5";
+    Window::glfwKeyMapping[GLFW_KEY_KP_6] = "KP6";
+    Window::glfwKeyMapping[GLFW_KEY_KP_7] = "KP7";
+    Window::glfwKeyMapping[GLFW_KEY_KP_8] = "KP8";
+    Window::glfwKeyMapping[GLFW_KEY_KP_9] = "KP9";
+    Window::glfwKeyMapping[GLFW_KEY_KP_DECIMAL] = "KPDECIMAL";
+    Window::glfwKeyMapping[GLFW_KEY_KP_DIVIDE] = "KPDIVIDE";
+    Window::glfwKeyMapping[GLFW_KEY_KP_MULTIPLY] = "KPMULTIPLY";
+    Window::glfwKeyMapping[GLFW_KEY_KP_SUBTRACT] = "KPSUBTRACT";
+    Window::glfwKeyMapping[GLFW_KEY_KP_ADD] = "KPADD";
+    Window::glfwKeyMapping[GLFW_KEY_KP_ENTER] = "KPENTER";
+    Window::glfwKeyMapping[GLFW_KEY_KP_EQUAL] = "KPEQUAL";
     Window::glfwKeyMapping[GLFW_KEY_LEFT_SHIFT] = "SHIFT";
     Window::glfwKeyMapping[GLFW_KEY_LEFT_CONTROL] = "CONTROL";
     Window::glfwKeyMapping[GLFW_KEY_LEFT_ALT] = "ALT";
@@ -231,8 +225,9 @@ namespace core {
     Window::glfwKeyMapping[GLFW_KEY_RIGHT_ALT] = "ALT";
     Window::glfwKeyMapping[GLFW_KEY_RIGHT_SUPER] = "SUPER";
     Window::glfwKeyMapping[GLFW_MOUSE_BUTTON_LEFT] = "MOUSELEFT";
-    Window::glfwKeyMapping[GLFW_MOUSE_BUTTON_RIGHT] = "MOUSE_RIGHT";
+    Window::glfwKeyMapping[GLFW_MOUSE_BUTTON_RIGHT] = "MOUSERIGHT";
     Window::glfwKeyMapping[GLFW_MOUSE_BUTTON_MIDDLE] = "MOUSEMIDDLE";
+    Window::glfwKeyMapping[GLFW_MOUSE_BUTTON_4] = "MOUSESCROLL";
   }
 
   const std::vector<std::string> &Window::getGlfwToKeyMapping() {

@@ -1,20 +1,25 @@
 #pragma once
 
-#include "glm/glm.hpp"
-#include "utils.hpp"
-
 namespace core {
-  struct BaseEvent {
-    virtual ~BaseEvent() = default;
+  struct IEvent {
+    virtual ~IEvent() = default;
   };
 }
+
+namespace core {
+  template <typename T> struct Event : public IEvent {
+    T data;
+
+    Event(T data) : data(data) {}
+  };
+};
 
 namespace core {
   enum class InputAction { RELEASE, PRESS, HOLD };
 }
 
 namespace core {
-  struct WindowResizeEvent : public core::BaseEvent {
+  struct WindowResizeEvent {
     int width;
     int height;
 
@@ -28,13 +33,13 @@ namespace core {
     }
   };
 
-  struct WindowCloseEvent : public core::BaseEvent {
+  struct WindowCloseEvent {
     bool operator==(const WindowCloseEvent &event) const {
       return false;
     }
   };
 
-  struct KeyEvent : public core::BaseEvent {
+  struct KeyEvent {
     int         key;
     InputAction type;
 
@@ -48,7 +53,7 @@ namespace core {
     }
   };
 
-  struct MouseMovementEvent : public core::BaseEvent {
+  struct MouseMovementEvent {
     double x;
     double y;
 
@@ -62,7 +67,7 @@ namespace core {
     }
   };
 
-  struct MouseButtonEvent : public core::BaseEvent {
+  struct MouseButtonEvent {
     int         button;
     InputAction type;
 
@@ -76,7 +81,7 @@ namespace core {
     }
   };
 
-  struct MouseScrollEvent : public core::BaseEvent {
+  struct MouseScrollEvent {
     double x;
     double y;
 

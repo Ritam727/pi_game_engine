@@ -9,14 +9,14 @@
 #include <unordered_map>
 
 namespace core {
-  using BaseEventPtr = std::unique_ptr<BaseEvent>;
+  using IEventPtr = std::unique_ptr<IEvent>;
 
   class EventManager {
   private:
     std::unordered_map<std::string,
-                       std::vector<std::function<void(BaseEventPtr &)>>>
+                       std::vector<std::function<void(IEventPtr &)>>>
         subscribers;
-    std::unordered_map<std::string, std::array<std::vector<BaseEventPtr>, 2>>
+    std::unordered_map<std::string, std::array<std::vector<IEventPtr>, 2>>
                                                   topics;
     std::unordered_map<std::string, unsigned int> readIndexes;
     std::unordered_map<std::string, unsigned int> writeIndexes;
@@ -28,8 +28,8 @@ namespace core {
 
     void executeEvents(const std::vector<std::string> &topics);
 
-    template <core::IsSubClassOf<BaseEvent> T>
-    void enqueue(const std::string &topicName, std::unique_ptr<T> event) {
+    template <typename T, typename... Args>
+    void enqueue(const std::string &topicName, Args... args) {
       if (!this->swapMutexes.contains(topicName)) {
         this->swapMutexes.try_emplace(topicName);
       }
@@ -39,19 +39,18 @@ namespace core {
       if (!this->writeIndexes.contains(topicName)) {
         this->writeIndexes[topicName] = 1;
       }
-      std::lock_guard<std::mutex> lock(this->swapMutexes[topicName]);
-      for (BaseEventPtr &queuedEvent :
+      T event{std::forward<Args>(args)...};
+      for (IEventPtr &queuedEvent :
            this->topics[topicName][this->writeIndexes[topicName]]) {
-        if (static_cast<T>(*event.get()) ==
-            *(static_cast<T *>(queuedEvent.get()))) {
+        if (event == (static_cast<Event<T> *>(queuedEvent.get()))->data) {
           return;
         }
       }
       this->topics[topicName][this->writeIndexes[topicName]].push_back(
-          std::move(event));
+          std::make_unique<Event<T>>(event));
     }
 
-    void subscribe(const std::string                  &topicName,
-                   std::function<void(BaseEventPtr &)> handle);
+    void subscribe(const std::string               &topicName,
+                   std::function<void(IEventPtr &)> handle);
   };
 }

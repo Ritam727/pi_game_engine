@@ -12,13 +12,13 @@ namespace core {
       this->writeIndexes[topic] ^= 1;
     }
     for (const std::string &topic : topics) {
-      std::vector<BaseEventPtr> &events =
+      std::vector<IEventPtr> &events =
           this->topics[topic][this->readIndexes[topic]];
       if (this->subscribers.contains(topic)) {
         std::lock_guard subscriberLock(this->subscriberMutexes[topic]);
-        std::vector<std::function<void(BaseEventPtr &)>> &handles =
+        std::vector<std::function<void(IEventPtr &)>> &handles =
             this->subscribers[topic];
-        for (std::function<void(BaseEventPtr &)> &handle : handles) {
+        for (std::function<void(IEventPtr &)> &handle : handles) {
           for (unsigned int i = 0; i < events.size(); i++) {
             handle(events[i]);
           }
@@ -28,9 +28,8 @@ namespace core {
     }
   }
 
-  void EventManager::subscribe(
-      const std::string                                &topicName,
-      std::function<void(std::unique_ptr<BaseEvent> &)> handle) {
+  void EventManager::subscribe(const std::string               &topicName,
+                               std::function<void(IEventPtr &)> handle) {
     if (!this->subscriberMutexes.contains(topicName)) {
       this->subscriberMutexes.try_emplace(topicName);
     }

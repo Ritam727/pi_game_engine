@@ -1,9 +1,7 @@
 #pragma once
 
-#include "events.hpp"
-
 namespace gl {
-  struct FovChangeEvent : public core::BaseEvent {
+  struct FovChangeEvent {
     float fov;
 
     FovChangeEvent(float fov) {

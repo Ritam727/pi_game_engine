@@ -29,15 +29,15 @@
       "set 0"
     ]
   },
-  "_ALT_CONTROL_F": {
+  "_ALT_CONTROL_MOUSESCROLL": {
     "inputs::CameraMoveMode": [
-      "set 3",
+      "set 2",
       "set 0"
     ]
   },
-  "_CONTROL_ALT_F": {
+  "_CONTROL_ALT_MOUSESCROLL": {
     "inputs::CameraMoveMode": [
-      "set 3",
+      "set 2",
       "set 0"
     ]
   }

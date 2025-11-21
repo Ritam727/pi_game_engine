@@ -20,19 +20,20 @@ namespace gl {
                  ENGINE_PATH "/res/textures/awesomeface.png"}),
         registry(registry), eventManager(eventManager) {
     this->eventManager.subscribe(
-        Constants::WINDOW_RESIZE_TOPIC, [&](core::BaseEventPtr &event) {
-          core::WindowResizeEvent *windowResizeEvent =
-              static_cast<core::WindowResizeEvent *>(event.get());
-          this->renderState.width = windowResizeEvent->width;
-          this->renderState.height = windowResizeEvent->height;
-          GL_CALL(glViewport(0, 0, windowResizeEvent->width,
-                             windowResizeEvent->height));
+        Constants::WINDOW_RESIZE_TOPIC, [&](core::IEventPtr &event) {
+          core::WindowResizeEvent windowResizeEvent =
+              (static_cast<core::Event<core::WindowResizeEvent> *>(event.get()))
+                  ->data;
+          this->renderState.width = windowResizeEvent.width;
+          this->renderState.height = windowResizeEvent.height;
+          GL_CALL(glViewport(0, 0, windowResizeEvent.width,
+                             windowResizeEvent.height));
         });
     this->eventManager.subscribe(
-        Constants::FOV_CHANGE_TOPIC, [&](core::BaseEventPtr &event) {
-          FovChangeEvent *fovChangeEvent =
-              static_cast<FovChangeEvent *>(event.get());
-          this->renderState.fov = fovChangeEvent->fov;
+        Constants::FOV_CHANGE_TOPIC, [&](core::IEventPtr &event) {
+          FovChangeEvent fovChangeEvent =
+              (static_cast<core::Event<FovChangeEvent> *>(event.get()))->data;
+          this->renderState.fov = fovChangeEvent.fov;
         });
 
     for (int i = 0; i < 10; i++) {
