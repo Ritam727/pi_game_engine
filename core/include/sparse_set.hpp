@@ -61,5 +61,9 @@ namespace core {
     std::vector<T> &getComponents() {
       return this->components;
     }
+
+    std::vector<I> &getEntities() {
+      return this->entities;
+    }
   };
 }

@@ -52,14 +52,14 @@ namespace core {
 }
 
 namespace core {
-  Vertex::Vertex(glm::vec3 position, glm::vec3 color,
+  Vertex::Vertex(glm::vec3 position, glm::vec3 color, glm::vec3 normal,
                  glm::vec2 textureCoordinates)
-      : position(position), color(color),
+      : position(position), color(color), normal(normal),
         textureCoordinates(textureCoordinates) {}
 
   VertexAttribute Vertex::getAttribute() {
     VertexAttribute vertexAttribute;
-    vertexAttribute.push<glm::vec3>(2);
+    vertexAttribute.push<glm::vec3>(3);
     vertexAttribute.push<glm::vec2>(1);
     return vertexAttribute;
   }

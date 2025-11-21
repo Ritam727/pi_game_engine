@@ -13,7 +13,8 @@
 
 namespace gl {
   Renderer::Renderer(core::Registry &registry, core::EventManager &eventManager)
-      : registry(registry), eventManager(eventManager) {
+      : registry(registry), eventManager(eventManager),
+        basicLight({0.2f, 0.2f, 0.2f}, {0.5f, 0.5f, 0.5f}, {1.0f, 1.0f, 1.0f}) {
     this->eventManager.subscribe(
         Constants::WINDOW_RESIZE_TOPIC, [&](core::IEventPtr &event) {
           core::WindowResizeEvent windowResizeEvent =
@@ -32,11 +33,12 @@ namespace gl {
         });
 
     for (int i = 0; i < 10; i++) {
-      this->registry.addComponent<core::Transform>(
-          this->registry.createEntity(), core::Transform{});
+      core::Entity entity = this->registry.createEntity();
+      this->registry.addComponent<core::Transform>(entity, core::Transform{});
       registry.getPool<core::Transform>()
           .get(registry.getLastEntity())
           .setPosition(cubePositions[i]);
+      this->registry.addComponent<Material>(entity, materials[i]);
     }
 
     glEnable(GL_DEPTH_TEST);
@@ -66,11 +68,17 @@ namespace gl {
       this->shader.set<int>(textureName, i);
     }
 
+    this->shader.set<glm::vec3>("basicLight.position", basicLight.position);
+    this->shader.set<glm::vec3>("basicLight.ambient", basicLight.ambient);
+    this->shader.set<glm::vec3>("basicLight.diffuse", basicLight.diffuse);
+    this->shader.set<glm::vec3>("basicLight.specular", basicLight.specular);
+
     for (core::CameraTransform &cameraTransform :
          registry.getPool<core::CameraTransform>().getComponents()) {
       if (cameraTransform.isCameraActive()) {
         glm::mat4 view = cameraTransform.getViewMatrix();
         this->shader.set<glm::mat4>("view", view);
+        this->shader.set<glm::vec3>("viewerPos", cameraTransform.getPosition());
       }
     }
 
@@ -82,12 +90,22 @@ namespace gl {
 
     this->vertexArray.bind();
     float angle = ts * Constants::SPEED_SCALAR;
+    core::SparseSet<core::Entity, Material> &materialPool =
+        registry.getPool<Material>();
     core::SparseSet<core::Entity, core::Transform> &transformPool =
         registry.getPool<core::Transform>();
-    for (core::Transform &transform : transformPool.getComponents()) {
+    for (core::Entity &entity : materialPool.getEntities()) {
+      core::Transform &transform = transformPool.get(entity);
       transform.updateRotation(glm::vec3(angle));
       glm::mat4 model = transform.getModelMatrix();
+
       this->shader.set<glm::mat4>("model", model);
+      Material &material = materialPool.get(entity);
+      this->shader.set<glm::vec3>("material.ambient", material.ambient);
+      this->shader.set<glm::vec3>("material.diffuse", material.diffuse);
+      this->shader.set<glm::vec3>("material.specular", material.specular);
+      this->shader.set<float>("material.shininess", material.shininess);
+
       this->draw();
     }
     this->frameCount = (this->frameCount + 1) % 36000;

@@ -63,6 +63,10 @@ namespace core {
     return this->right;
   }
 
+  glm::vec3 CameraTransform::getPosition() const {
+    return this->position;
+  }
+
   glm::mat4 CameraTransform::getViewMatrix() const {
     return glm::lookAt(this->position, this->position + this->front, this->up);
   }
