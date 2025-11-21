@@ -27,15 +27,15 @@ private:
   bool                                      running;
 
   static const inline std::vector<std::string> nonMainThreadTopics{
-      inputs::Constants::FOV_CHANGE_TOPIC};
+      inputs::Constants::FOV_CHANGE_TOPIC,
+      inputs::Constants::MOUSE_VISIBLE_TOPIC};
   static const inline std::vector<std::string> mainThreadTopics{
       core::Constants::WINDOW_CLOSE_TOPIC,
       core::Constants::WINDOW_RESIZE_TOPIC,
       core::Constants::KEY_STATE_TOPIC,
       core::Constants::MOUSE_BUTTON_TOPIC,
       core::Constants::MOUSE_MOVEMENT_TOPIC,
-      core::Constants::MOUSE_SCROLL_TOPIC,
-      inputs::Constants::MOUSE_VISIBLE_TOPIC};
+      core::Constants::MOUSE_SCROLL_TOPIC};
 
 public:
   App();
