@@ -17,8 +17,8 @@ namespace inputs {
   };
 
   struct Activation {
-    const std::function<void(ModeManager &)> onPress;
-    const std::function<void(ModeManager &)> onRelease;
-    bool                                     activated{false};
+    const std::function<void(ModeManager &, std::function<void()>)> onPress;
+    const std::function<void(ModeManager &, std::function<void()>)> onRelease;
+    bool activated{false};
   };
 }

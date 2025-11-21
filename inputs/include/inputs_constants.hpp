@@ -10,6 +10,7 @@ namespace inputs {
     static const inline char UNDERSCORE{'_'};
 
     static const inline std::string FOV_CHANGE_TOPIC{"events.renderer.fov"};
+    static const inline std::string MOUSE_VISIBLE_TOPIC{"events.mouse.visible"};
     static const inline std::string EMPTY_STRING{""};
   };
 }

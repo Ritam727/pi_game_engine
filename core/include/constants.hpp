@@ -13,5 +13,6 @@ namespace core {
         "events.mouse.movement"};
     static const inline std::string MOUSE_BUTTON_TOPIC{"events.mouse.button"};
     static const inline std::string MOUSE_SCROLL_TOPIC{"events.mouse.scroll"};
+    static const inline std::string MOUSE_VISIBLE_TOPIC{"events.mouse.visible"};
   };
 }

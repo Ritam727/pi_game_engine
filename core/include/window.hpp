@@ -13,6 +13,14 @@ namespace core {
     EventManager &eventManager;
     GLFWwindow   *window;
 
+    void registerKeyCallback();
+    void registerMouseButtonCallback();
+    void registerWindowResizeCallback();
+    void registerWindowCloseCallback();
+    void registerMouseMoveCallback();
+    void registerMouseScrollCallback();
+    void registerMouseVisibilityCallback();
+
     static void buildGlfwKeyMapping();
 
     static inline std::vector<std::string> glfwKeyMapping{350, std::string{}};

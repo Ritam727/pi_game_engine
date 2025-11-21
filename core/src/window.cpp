@@ -32,14 +32,29 @@ namespace core {
       throw std::runtime_error("Failed to initialize GLAD");
     }
 
-    glfwSetFramebufferSizeCallback(window, [](GLFWwindow *window, int width,
-                                              int height) {
-      Window *self = static_cast<Window *>(glfwGetWindowUserPointer(window));
-      if (self == nullptr)
-        return;
-      self->eventManager.enqueue<WindowResizeEvent>(
-          Constants::WINDOW_RESIZE_TOPIC, width, height);
-    });
+    this->registerKeyCallback();
+    this->registerWindowResizeCallback();
+    this->registerWindowCloseCallback();
+    this->registerMouseButtonCallback();
+    this->registerMouseMoveCallback();
+    this->registerMouseScrollCallback();
+    this->registerMouseVisibilityCallback();
+
+    Window::buildGlfwKeyMapping();
+  }
+
+  void Window::registerMouseVisibilityCallback() {
+    this->eventManager.subscribe(
+        Constants::MOUSE_VISIBLE_TOPIC, [&](IEventPtr &event) {
+          MouseVisibleEvent mouseVisibleEvent =
+              (static_cast<Event<MouseVisibleEvent> *>(event.get()))->data;
+          glfwSetInputMode(this->window, GLFW_CURSOR,
+                           mouseVisibleEvent.visible ? GLFW_CURSOR_NORMAL
+                                                     : GLFW_CURSOR_DISABLED);
+        });
+  }
+
+  void Window::registerKeyCallback() {
     glfwSetKeyCallback(window, [](GLFWwindow *window, int key, int scanCode,
                                   int action, int mods) {
       Window *self = static_cast<Window *>(glfwGetWindowUserPointer(window));
@@ -53,21 +68,9 @@ namespace core {
             Constants::WINDOW_CLOSE_TOPIC);
       }
     });
-    glfwSetWindowCloseCallback(window, [](GLFWwindow *window) {
-      Window *self = static_cast<Window *>(glfwGetWindowUserPointer(window));
-      if (self == nullptr)
-        return;
-      self->eventManager.enqueue<WindowCloseEvent>(
-          Constants::WINDOW_CLOSE_TOPIC);
-    });
-    glfwSetCursorPosCallback(window, [](GLFWwindow *window, double x,
-                                        double y) {
-      Window *self = static_cast<Window *>(glfwGetWindowUserPointer(window));
-      if (self == nullptr)
-        return;
-      self->eventManager.enqueue<MouseMovementEvent>(
-          Constants::MOUSE_MOVEMENT_TOPIC, x, y);
-    });
+  }
+
+  void Window::registerMouseButtonCallback() {
     glfwSetMouseButtonCallback(window, [](GLFWwindow *window, int button,
                                           int action, int mods) {
       Window *self = static_cast<Window *>(glfwGetWindowUserPointer(window));
@@ -77,6 +80,41 @@ namespace core {
           Constants::MOUSE_BUTTON_TOPIC, button,
           static_cast<InputAction>(action));
     });
+  }
+
+  void Window::registerWindowResizeCallback() {
+    glfwSetFramebufferSizeCallback(window, [](GLFWwindow *window, int width,
+                                              int height) {
+      Window *self = static_cast<Window *>(glfwGetWindowUserPointer(window));
+      if (self == nullptr)
+        return;
+      self->eventManager.enqueue<WindowResizeEvent>(
+          Constants::WINDOW_RESIZE_TOPIC, width, height);
+    });
+  }
+
+  void Window::registerWindowCloseCallback() {
+    glfwSetWindowCloseCallback(window, [](GLFWwindow *window) {
+      Window *self = static_cast<Window *>(glfwGetWindowUserPointer(window));
+      if (self == nullptr)
+        return;
+      self->eventManager.enqueue<WindowCloseEvent>(
+          Constants::WINDOW_CLOSE_TOPIC);
+    });
+  }
+
+  void Window::registerMouseMoveCallback() {
+    glfwSetCursorPosCallback(window, [](GLFWwindow *window, double x,
+                                        double y) {
+      Window *self = static_cast<Window *>(glfwGetWindowUserPointer(window));
+      if (self == nullptr)
+        return;
+      self->eventManager.enqueue<MouseMovementEvent>(
+          Constants::MOUSE_MOVEMENT_TOPIC, x, y);
+    });
+  }
+
+  void Window::registerMouseScrollCallback() {
     glfwSetScrollCallback(window, [](GLFWwindow *window, double x, double y) {
       Window *self = static_cast<Window *>(glfwGetWindowUserPointer(window));
       if (self == nullptr)
@@ -84,7 +122,6 @@ namespace core {
       self->eventManager.enqueue<MouseScrollEvent>(
           Constants::MOUSE_SCROLL_TOPIC, x, y);
     });
-    Window::buildGlfwKeyMapping();
   }
 
   Window::~Window() {

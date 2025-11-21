@@ -94,4 +94,14 @@ namespace core {
       return this->x == event.x && this->y == event.y;
     }
   };
+
+  struct MouseVisibleEvent {
+    bool visible;
+
+    MouseVisibleEvent(bool visible) : visible(visible) {}
+
+    bool operator==(const MouseVisibleEvent &event) const {
+      return this->visible == event.visible;
+    }
+  };
 }

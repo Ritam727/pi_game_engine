@@ -12,12 +12,32 @@
 #define GLM_ENABLE_EXPERIMENTAL
 #include "glm/gtx/string_cast.hpp"
 
+#ifndef ENGINE_PATH
+#define ENGINE_PATH "/"
+#endif
+
 namespace inputs {
   Inputs::Inputs(core::Window &window, core::Registry &registry,
                  core::EventManager &eventManager)
       : window(window), registry(registry), eventManager(eventManager) {
-    this->stateManager.registerMode<CameraViewMode>();
-    this->stateManager.registerMode<CameraMoveMode>();
+    this->stateManager.registerMode<CameraViewMode>([&]() {
+      this->eventManager.enqueue<FovChangeEvent>(
+          Constants::FOV_CHANGE_TOPIC,
+          this->fovMap[static_cast<unsigned int>(
+              this->stateManager.getMode<CameraViewMode>()->getMode())]);
+    });
+    this->stateManager.registerMode<CameraMoveMode>(
+        [&]() {
+          this->eventManager.enqueue<core::MouseVisibleEvent>(
+              Constants::MOUSE_VISIBLE_TOPIC, false);
+        },
+        [&]() {
+          this->eventManager.enqueue<core::MouseVisibleEvent>(
+              Constants::MOUSE_VISIBLE_TOPIC, true);
+          this->inputState.resetMousePosition = true;
+        });
+    this->stateManager.loadKeyMap(ENGINE_PATH
+                                  "/res/inputs/keyboard_shortcuts.json");
 
     this->registerKeyCallback();
     this->registerMouseButtonCallback();
@@ -73,7 +93,7 @@ namespace inputs {
           float yOffset = (previousPosition.y - currentPosition.y);
 
           switch (cameraMoveMode) {
-          case CameraMoveMode::MOVE_AROUND:
+          case CameraMoveMode::FLY:
             this->cameraMoveAround(xOffset, yOffset);
             break;
           case CameraMoveMode::PAN:
@@ -100,7 +120,7 @@ namespace inputs {
               this->stateManager.getMode<CameraMoveMode>()->getMode();
 
           switch (cameraMoveMode) {
-          case CameraMoveMode::MOVE_AROUND:
+          case CameraMoveMode::FLY:
             this->cameraFly(scrollDelta);
             break;
           default:
@@ -141,42 +161,6 @@ namespace inputs {
 
       float speed = core::Constants::SPEED_SCALAR;
       cameraTransform.updatePosition(direction * speed);
-    }
-  }
-
-  void Inputs::onUpdate(float ts) {
-    this->handleFovChange();
-    this->toggleCursorVisibility();
-  }
-
-  void Inputs::handleFovChange() {
-    CameraViewMode cameraViewMode =
-        this->stateManager.getMode<CameraViewMode>()->getMode();
-    if (cameraViewMode != this->inputState.cameraViewMode) {
-      float fov = 45.0f;
-      if (cameraViewMode == CameraViewMode::BIRD_EYE) {
-        fov = 60.0f;
-      } else if (cameraViewMode == CameraViewMode::FISH_EYE) {
-        fov = 75.0f;
-      }
-      this->eventManager.enqueue<FovChangeEvent>(
-          inputs::Constants::FOV_CHANGE_TOPIC, fov);
-      this->inputState.cameraViewMode = cameraViewMode;
-    }
-  }
-
-  void Inputs::toggleCursorVisibility() {
-    CameraMoveMode cameraMoveMode =
-        this->stateManager.getMode<CameraMoveMode>()->getMode();
-    switch (cameraMoveMode) {
-    case CameraMoveMode::PAN:
-    case CameraMoveMode::FLY:
-    case CameraMoveMode::MOVE_AROUND:
-      this->window.setCursorVisibility(false);
-      break;
-    default:
-      this->window.setCursorVisibility(true);
-      this->inputState.resetMousePosition = true;
     }
   }
 }

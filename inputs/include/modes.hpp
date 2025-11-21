@@ -33,5 +33,5 @@ namespace inputs {
 
 namespace inputs {
   ITERABLE_ENUM(CameraViewMode, NORMAL, BIRD_EYE, FISH_EYE);
-  ITERABLE_ENUM(CameraMoveMode, STATIC, PAN, MOVE_AROUND, FLY);
+  ITERABLE_ENUM(CameraMoveMode, STATIC, PAN, FLY);
 }

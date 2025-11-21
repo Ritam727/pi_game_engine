@@ -4,18 +4,9 @@
 #include "camera_transform.hpp"
 #include "constants.hpp"
 #include "event_manager.hpp"
-#include "inputs.hpp"
 #include "renderer.hpp"
 
-#include "app_config.hpp"
-
-App::App()
-    : window(App::getScreenSize().width, App::getScreenSize().height,
-             AppConfig::NAME, this->eventManager),
-      camera(registry, glm::vec3(0.0f, 0.0f, 3.0f),
-             glm::vec3(0.0f, 1.0f, 0.0f)) {
-  layers.emplace_back(std::make_unique<inputs::Inputs>(
-      this->window, this->registry, eventManager));
+App::App() {
   layers.emplace_back(
       std::make_unique<gl::Renderer>(this->registry, eventManager));
 

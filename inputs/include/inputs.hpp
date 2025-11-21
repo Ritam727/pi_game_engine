@@ -7,13 +7,14 @@
 #include "window.hpp"
 
 namespace inputs {
-  class Inputs : public core::Layer {
+  class Inputs {
   private:
     core::Window       &window;
     core::Registry     &registry;
     core::EventManager &eventManager;
     StateManager        stateManager{};
     State               inputState{};
+    std::vector<float>  fovMap{45.0f, 60.0f, 75.0f};
 
     void registerKeyCallback();
     void registerMouseButtonCallback();
@@ -26,9 +27,5 @@ namespace inputs {
   public:
     Inputs(core::Window &window, core::Registry &registry,
            core::EventManager &eventManager);
-
-    void onUpdate(float ts) override;
-    void handleFovChange();
-    void toggleCursorVisibility();
   };
 }
