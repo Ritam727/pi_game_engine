@@ -13,8 +13,7 @@
 
 namespace gl {
   Renderer::Renderer(core::Registry &registry, core::EventManager &eventManager)
-      : registry(registry), eventManager(eventManager),
-        basicLight({0.2f, 0.2f, 0.2f}, {0.5f, 0.5f, 0.5f}, {1.0f, 1.0f, 1.0f}) {
+      : registry(registry), eventManager(eventManager) {
     this->eventManager.subscribe(
         Constants::WINDOW_RESIZE_TOPIC, [&](core::IEventPtr &event) {
           core::WindowResizeEvent windowResizeEvent =

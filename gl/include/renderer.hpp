@@ -234,7 +234,9 @@ namespace gl {
 
     RenderState renderState{};
 
-    BasicLight basicLight;
+    BasicLight basicLight{{0.2f, 0.2f, 0.2f},
+                          {0.5f, 0.5f, 0.5f},
+                          {1.0f, 1.0f, 1.0f}};
 
     void draw();
 
