@@ -179,18 +179,13 @@ namespace gl {
            {1.3f, -2.0f, -2.5f},   {1.5f, 2.0f, -2.5f},  {1.5f, 0.2f, -1.5f},
            {-1.3f, 1.0f, -1.5f}};
 
-    DirectionalLight        directionalLight{{0.1f, 0.1f, 0.1f},
-                                             {0.2f, 0.2f, 0.2f},
-                                             {0.4f, 0.4f, 0.4f}};
-    std::vector<PointLight> pointLights{
-        {{0.2f, 0.2f, 0.2f}, {0.4f, 0.4f, 0.4f}, {0.8f, 0.8f, 0.8f}}};
-    SpotLight           spotLight{{0.2f, 0.2f, 0.2f},
-                                  {0.5f, 0.5f, 0.5f},
-                                  {1.0f, 1.0f, 1.0f},
-                        glm::cos(glm::radians(12.5f)),
-                        glm::cos(glm::radians(17.5f))};
+    std::vector<glm::vec3> pointLightPositions{
+        glm::vec3(0.7f, 0.2f, 2.0f), glm::vec3(2.3f, -3.3f, -4.0f),
+        glm::vec3(-4.0f, 2.0f, -12.0f), glm::vec3(0.0f, 0.0f, -3.0f)};
+
     core::Registry     &registry;
     core::EventManager &eventManager;
+    Light               light{registry};
 
     VertexArray vertexArray{vertices, indices};
     Shader      shader{ENGINE_PATH "/res/shaders/multiple_lights.vert",

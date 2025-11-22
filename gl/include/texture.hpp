@@ -21,21 +21,18 @@ namespace gl {
 namespace gl {
   class Texture {
   private:
-    std::vector<unsigned int> textures;
+    unsigned int texture;
 
-    void createBindAndConfigureTexture(unsigned index);
+    void createBindAndConfigureTexture();
     void generateTextures();
-
-  public:
-    Texture(const std::vector<std::string> filePaths);
-
-    void bind();
     void sendImageToTexture(Image &image);
 
-    unsigned int getNumTextures() const;
+    static void loadImage(const std::string &filePath, Image &images);
 
-    static void loadImage(const std::string &filePath, unsigned int index,
-                          std::vector<Image> &images, std::mutex &mutex);
-    void        releaseTextures();
+  public:
+    Texture(const std::string filePath);
+
+    void bind(unsigned int activeTextureIndex);
+    void releaseTexture();
   };
 }

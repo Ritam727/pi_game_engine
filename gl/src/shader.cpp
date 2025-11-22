@@ -1,6 +1,8 @@
 #include "shader.hpp"
 #include "glm/gtc/type_ptr.hpp"
 #include "gl_utils.hpp"
+#include "lights.hpp"
+#include "materials.hpp"
 #include "utils.hpp"
 
 namespace gl {
@@ -81,5 +83,51 @@ namespace gl {
     GL_CALL(
         glUniformMatrix4fv(glGetUniformLocation(this->program, name.c_str()), 1,
                            GL_FALSE, glm::value_ptr(value)));
+  }
+
+  template <>
+  void Shader::set<DirectionalLight &>(const std::string &name,
+                                       DirectionalLight  &light) const {
+    this->set<glm::vec3>(name + ".direction", light.direction);
+    this->set<glm::vec3>(name + ".ambient", light.ambient);
+    this->set<glm::vec3>(name + ".diffuse", light.diffuse);
+    this->set<glm::vec3>(name + ".specular", light.specular);
+  }
+
+  template <>
+  void Shader::set<PointLight &>(const std::string &name,
+                                 PointLight        &light) const {
+    this->set<glm::vec3>(name + ".position", light.position);
+    this->set<glm::vec3>(name + ".ambient", light.ambient);
+    this->set<glm::vec3>(name + ".diffuse", light.diffuse);
+    this->set<glm::vec3>(name + ".specular", light.specular);
+    this->set<float>(name + ".constant", light.constant);
+    this->set<float>(name + ".linear", light.linear);
+    this->set<float>(name + ".quadratic", light.quadratic);
+  }
+
+  template <>
+  void Shader::set<SpotLight &>(const std::string &name,
+                                SpotLight         &light) const {
+    this->set<glm::vec3>(name + ".ambient", light.ambient);
+    this->set<glm::vec3>(name + ".diffuse", light.diffuse);
+    this->set<glm::vec3>(name + ".specular", light.specular);
+    this->set<glm::vec3>(name + ".position", light.position);
+    this->set<glm::vec3>(name + ".direction", light.direction);
+    this->set<float>(name + ".innerCutOff", light.innerCutOff);
+    this->set<float>(name + ".outerCutOff", light.outerCutOff);
+    this->set<float>(name + ".constant", light.constant);
+    this->set<float>(name + ".linear", light.linear);
+    this->set<float>(name + ".quadratic", light.quadratic);
+  }
+
+  template <>
+  void Shader::set<TextureMaterial &>(const std::string &name,
+                                      TextureMaterial   &material) const {
+    material.diffuse.bind(0);
+    material.specular.bind(1);
+    this->set<int>(name + ".diffuse", 0);
+    this->set<int>(name + ".specular", 1);
+    this->set<float>(name + ".shininess", material.shininess);
   }
 }

@@ -1,9 +1,11 @@
 #pragma once
 
+#include "base_component.hpp"
+#include "base_object.hpp"
 #include "glm/glm.hpp"
 
 namespace gl {
-  struct PointLight {
+  struct PointLight : public core::BaseComponent {
     glm::vec3 position{0.0f, 3.0f, 3.0f};
 
     glm::vec3 ambient;
@@ -18,7 +20,7 @@ namespace gl {
         : ambient(ambient), diffuse(diffuse), specular(specular) {}
   };
 
-  struct DirectionalLight {
+  struct DirectionalLight : public core::BaseComponent {
     glm::vec3 direction{0.0f, -1.0f, -1.0f};
 
     glm::vec3 ambient;
@@ -38,5 +40,10 @@ namespace gl {
               float innerCutOff, float outerCutOff)
         : PointLight(ambient, diffuse, specular), innerCutOff(innerCutOff),
           outerCutOff(outerCutOff) {}
+  };
+
+  class Light : public core::BaseObject {
+  public:
+    Light(core::Registry &registryRef) : core::BaseObject(registryRef) {}
   };
 }
