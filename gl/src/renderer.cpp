@@ -67,10 +67,37 @@ namespace gl {
     this->clear();
     this->shader.use();
 
-    this->shader.set<glm::vec3>("basicLight.position", basicLight.position);
-    this->shader.set<glm::vec3>("basicLight.ambient", basicLight.ambient);
-    this->shader.set<glm::vec3>("basicLight.diffuse", basicLight.diffuse);
-    this->shader.set<glm::vec3>("basicLight.specular", basicLight.specular);
+    this->shader.set<int>("pointLightCount", pointLights.size());
+    for (unsigned int i = 0; i < pointLights.size(); i++) {
+      this->shader.set<glm::vec3>("pointLights[" + std::to_string(i) +
+                                      "].position",
+                                  pointLights[i].position);
+      this->shader.set<glm::vec3>("pointLights[" + std::to_string(i) +
+                                      "].ambient",
+                                  pointLights[i].ambient);
+      this->shader.set<glm::vec3>("pointLights[" + std::to_string(i) +
+                                      "].diffuse",
+                                  pointLights[i].diffuse);
+      this->shader.set<glm::vec3>("pointLights[" + std::to_string(i) +
+                                      "].specular",
+                                  pointLights[i].specular);
+      this->shader.set<float>("pointLights[" + std::to_string(i) + "].constant",
+                              pointLights[i].constant);
+      this->shader.set<float>("pointLights[" + std::to_string(i) + "].linear",
+                              pointLights[i].linear);
+      this->shader.set<float>("pointLights[" + std::to_string(i) +
+                                  "].quadratic",
+                              pointLights[i].quadratic);
+    }
+
+    this->shader.set<glm::vec3>("directionalLight.direction",
+                                directionalLight.direction);
+    this->shader.set<glm::vec3>("directionalLight.ambient",
+                                directionalLight.ambient);
+    this->shader.set<glm::vec3>("directionalLight.diffuse",
+                                directionalLight.diffuse);
+    this->shader.set<glm::vec3>("directionalLight.specular",
+                                directionalLight.specular);
 
     for (core::CameraTransform &cameraTransform :
          registry.getPool<core::CameraTransform>().getComponents()) {
@@ -78,8 +105,21 @@ namespace gl {
         glm::mat4 view = cameraTransform.getViewMatrix();
         this->shader.set<glm::mat4>("view", view);
         this->shader.set<glm::vec3>("viewerPos", cameraTransform.getPosition());
+        spotLight.position = cameraTransform.getPosition();
+        spotLight.direction = cameraTransform.getForwardDirection();
       }
     }
+
+    this->shader.set<glm::vec3>("spotLight.ambient", spotLight.ambient);
+    this->shader.set<glm::vec3>("spotLight.diffuse", spotLight.diffuse);
+    this->shader.set<glm::vec3>("spotLight.specular", spotLight.specular);
+    this->shader.set<glm::vec3>("spotLight.position", spotLight.position);
+    this->shader.set<glm::vec3>("spotLight.direction", spotLight.direction);
+    this->shader.set<float>("spotLight.innerCutOff", spotLight.innerCutOff);
+    this->shader.set<float>("spotLight.outerCutOff", spotLight.outerCutOff);
+    this->shader.set<float>("spotLight.constant", spotLight.constant);
+    this->shader.set<float>("spotLight.linear", spotLight.linear);
+    this->shader.set<float>("spotLight.quadratic", spotLight.quadratic);
 
     glm::mat4 projection = glm::perspective(
         glm::radians(this->renderState.fov),

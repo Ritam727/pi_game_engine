@@ -179,15 +179,22 @@ namespace gl {
            {1.3f, -2.0f, -2.5f},   {1.5f, 2.0f, -2.5f},  {1.5f, 0.2f, -1.5f},
            {-1.3f, 1.0f, -1.5f}};
 
-    BasicLight          basicLight{{0.2f, 0.2f, 0.2f},
-                                   {0.5f, 0.5f, 0.5f},
-                                   {1.0f, 1.0f, 1.0f}};
+    DirectionalLight        directionalLight{{0.1f, 0.1f, 0.1f},
+                                             {0.2f, 0.2f, 0.2f},
+                                             {0.4f, 0.4f, 0.4f}};
+    std::vector<PointLight> pointLights{
+        {{0.2f, 0.2f, 0.2f}, {0.4f, 0.4f, 0.4f}, {0.8f, 0.8f, 0.8f}}};
+    SpotLight           spotLight{{0.2f, 0.2f, 0.2f},
+                                  {0.5f, 0.5f, 0.5f},
+                                  {1.0f, 1.0f, 1.0f},
+                        glm::cos(glm::radians(12.5f)),
+                        glm::cos(glm::radians(17.5f))};
     core::Registry     &registry;
     core::EventManager &eventManager;
 
     VertexArray vertexArray{vertices, indices};
-    Shader      shader{ENGINE_PATH "/res/shaders/texture_material.vert",
-                  ENGINE_PATH "/res/shaders/texture_material.frag"};
+    Shader      shader{ENGINE_PATH "/res/shaders/multiple_lights.vert",
+                  ENGINE_PATH "/res/shaders/multiple_lights.frag"};
 
     unsigned int frameCount{0};
     float        cameraAngle{0};
@@ -201,7 +208,7 @@ namespace gl {
     Renderer(core::Registry &registry, core::EventManager &eventManager);
 
     inline void clear() {
-      GL_CALL(glClearColor(0.2f, 0.3f, 0.3f, 1.0f));
+      GL_CALL(glClearColor(0.1f, 0.1f, 0.1f, 1.0f));
       GL_CALL(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
     }
 
