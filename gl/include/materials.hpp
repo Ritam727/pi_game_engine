@@ -23,11 +23,11 @@ namespace gl {
 
 namespace gl {
   struct Material : public core::BaseComponent {
-    glm::vec3              ambient;
+    glm::vec3              ambient{1.0f};
     std::optional<Texture> ambientTexture;
-    glm::vec3              diffuse;
+    glm::vec3              diffuse{1.0f};
     std::optional<Texture> diffuseTexture;
-    glm::vec3              specular;
+    glm::vec3              specular{1.0f};
     std::optional<Texture> specularTexture;
 
     float shininess;
@@ -55,6 +55,15 @@ namespace gl {
       Material::placeImage(this->ambientTexture, ambientImage);
       Material::placeImage(this->diffuseTexture, diffuseImage);
       Material::placeImage(this->specularTexture, specularImage);
+    }
+
+    void clearComponent() override {
+      if (this->ambientTexture.has_value())
+        this->ambientTexture->releaseTexture();
+      if (this->diffuseTexture.has_value())
+        this->diffuseTexture->releaseTexture();
+      if (this->specularTexture.has_value())
+        this->specularTexture->releaseTexture();
     }
 
     static void generateAttribute(MaterialAttribute &attribute,

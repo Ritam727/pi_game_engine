@@ -134,7 +134,6 @@ namespace gl {
   void Renderer::onUpdate(float ts) {
     this->clear();
     this->shader.use();
-    this->bindLights();
 
     for (core::CameraTransform &cameraTransform :
          registry.getPool<core::CameraTransform>().getComponents()) {
@@ -142,8 +141,16 @@ namespace gl {
         glm::mat4 view = cameraTransform.getViewMatrix();
         this->shader.set<glm::mat4>("view", view);
         this->shader.set<glm::vec3>("viewerPos", cameraTransform.getPosition());
+        this->registry.getPool<SpotLight>()
+            .get(this->light.getEntityId())
+            .position = cameraTransform.getPosition();
+        this->registry.getPool<SpotLight>()
+            .get(this->light.getEntityId())
+            .direction = cameraTransform.getForwardDirection();
       }
     }
+
+    this->bindLights();
 
     glm::mat4 projection = glm::perspective(
         glm::radians(this->renderState.fov),
