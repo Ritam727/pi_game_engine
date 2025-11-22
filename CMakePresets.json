@@ -12,7 +12,8 @@
         "GLFW_BUILD_WAYLAND": "OFF",
         "GLFW_BUILD_X11": "ON",
         "BUILD_SHARED_LIBS": "ON",
-        "CMAKE_BUILD_TYPE": "Debug"
+        "CMAKE_BUILD_TYPE": "Debug",
+        "ASSIMP_BUILD_ZLIB": "ON"
       }
     },
     {
@@ -26,7 +27,9 @@
         "GLFW_BUILD_WAYLAND": "OFF",
         "GLFW_BUILD_X11": "ON",
         "BUILD_SHARED_LIBS": "OFF",
-        "CMAKE_BUILD_TYPE": "Release"
+        "CMAKE_BUILD_TYPE": "Release",
+        "ASSIMP_BUILD_ZLIB": "ON",
+        "ASSIMP_BUILD_TESTS": "OFF"
       }
     }
   ]
