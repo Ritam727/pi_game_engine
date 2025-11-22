@@ -49,6 +49,12 @@ namespace gl {
     GL_CALL(glUseProgram(this->program));
   }
 
+  template <>
+  void Shader::set<bool>(const std::string &name, bool value) const {
+    GL_CALL(
+        glUniform1i(glGetUniformLocation(this->program, name.c_str()), value));
+  }
+
   template <> void Shader::set<int>(const std::string &name, int value) const {
     GL_CALL(
         glUniform1i(glGetUniformLocation(this->program, name.c_str()), value));
@@ -122,12 +128,35 @@ namespace gl {
   }
 
   template <>
-  void Shader::set<TextureMaterial &>(const std::string &name,
-                                      TextureMaterial   &material) const {
-    material.diffuse.bind(0);
-    material.specular.bind(1);
-    this->set<int>(name + ".diffuse", 0);
-    this->set<int>(name + ".specular", 1);
+  void Shader::set<Material &>(const std::string &name,
+                               Material          &material) const {
+    this->set<glm::vec3>(name + ".ambient", material.ambient);
+    this->set<glm::vec3>(name + ".diffuse", material.diffuse);
+    this->set<glm::vec3>(name + ".specular", material.specular);
     this->set<float>(name + ".shininess", material.shininess);
+
+    std::optional<Texture> &ambientTexture = material.ambientTexture;
+    this->set<bool>(name + ".ambientTexturePresent",
+                    ambientTexture.has_value());
+    if (ambientTexture.has_value()) {
+      ambientTexture->bind(0);
+      this->set<int>(name + ".ambientTexture", 0);
+    }
+
+    std::optional<Texture> &diffuseTexture = material.diffuseTexture;
+    this->set<bool>(name + ".diffuseTexturePresent",
+                    diffuseTexture.has_value());
+    if (diffuseTexture.has_value()) {
+      diffuseTexture->bind(1);
+      this->set<int>(name + ".diffuseTexture", 1);
+    }
+
+    std::optional<Texture> &specularTexture = material.specularTexture;
+    this->set<bool>(name + ".specularTexturePresent",
+                    specularTexture.has_value());
+    if (specularTexture.has_value()) {
+      specularTexture->bind(2);
+      this->set<int>(name + ".specularTexture", 2);
+    }
   }
 }

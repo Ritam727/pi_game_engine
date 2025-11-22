@@ -198,6 +198,8 @@ namespace gl {
     RenderState renderState{};
 
     void draw();
+    void bindLights();
+    void drawObjects(float ts);
 
   public:
     Renderer(core::Registry &registry, core::EventManager &eventManager);
@@ -208,6 +210,9 @@ namespace gl {
     }
 
     void onUpdate(float ts) override;
+
+    void registerWindowResizeCallback();
+    void registerFovChangeCallback();
   };
 
 }

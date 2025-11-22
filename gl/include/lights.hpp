@@ -20,6 +20,12 @@ namespace gl {
         : ambient(ambient), diffuse(diffuse), specular(specular) {}
   };
 
+  struct PointLights : public core::BaseComponent {
+    std::vector<PointLight> lights;
+
+    PointLights(std::vector<PointLight> lights) : lights(lights) {}
+  };
+
   struct DirectionalLight : public core::BaseComponent {
     glm::vec3 direction{0.0f, -1.0f, -1.0f};
 

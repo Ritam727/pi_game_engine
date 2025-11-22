@@ -1,15 +1,8 @@
 #include "texture.hpp"
 #include "gl_utils.hpp"
 
-#include <mutex>
-#include <thread>
-
 namespace gl {
-  Texture::Texture(const std::string filePath) {
-    Image                    image;
-    std::mutex               writeMutex;
-    std::vector<std::thread> imageLoadJobs;
-    Texture::loadImage(filePath, image);
+  Texture::Texture(Image &image) {
     this->createBindAndConfigureTexture();
     this->sendImageToTexture(image);
     stbi_image_free(image.data);
@@ -22,19 +15,6 @@ namespace gl {
     GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT));
     GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
     GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
-  }
-
-  void Texture::loadImage(const std::string &filePath, Image &image) {
-    stbi_set_flip_vertically_on_load(true);
-    int            width, height, channels;
-    unsigned char *data =
-        stbi_load(filePath.c_str(), &width, &height, &channels, 0);
-    if (data) {
-      core::logger::debug("Read image data from file {}", filePath);
-      image = Image(width, height, channels, data);
-    } else {
-      core::logger::error("Cannot load texture file {}", filePath);
-    }
   }
 
   void Texture::bind(unsigned int activeTextureIndex) {

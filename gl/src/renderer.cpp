@@ -15,22 +15,8 @@
 namespace gl {
   Renderer::Renderer(core::Registry &registry, core::EventManager &eventManager)
       : registry(registry), eventManager(eventManager) {
-    this->eventManager.subscribe(
-        Constants::WINDOW_RESIZE_TOPIC, [&](core::IEventPtr &event) {
-          core::WindowResizeEvent windowResizeEvent =
-              (static_cast<core::Event<core::WindowResizeEvent> *>(event.get()))
-                  ->data;
-          this->renderState.width = windowResizeEvent.width;
-          this->renderState.height = windowResizeEvent.height;
-          GL_CALL(glViewport(0, 0, windowResizeEvent.width,
-                             windowResizeEvent.height));
-        });
-    this->eventManager.subscribe(
-        Constants::FOV_CHANGE_TOPIC, [&](core::IEventPtr &event) {
-          FovChangeEvent fovChangeEvent =
-              (static_cast<core::Event<FovChangeEvent> *>(event.get()))->data;
-          this->renderState.fov = fovChangeEvent.fov;
-        });
+    this->registerWindowResizeCallback();
+    this->registerFovChangeCallback();
 
     for (int i = 0; i < 10; i++) {
       core::Entity entity = this->registry.createEntity();
@@ -41,17 +27,31 @@ namespace gl {
       std::vector<std::string> files{ENGINE_PATH "/res/textures/container2.png",
                                      ENGINE_PATH
                                      "/res/textures/container2_specular.png"};
-      this->registry.addComponent<TextureMaterial>(entity, files[0], files[1],
-                                                   32.0f);
+      this->registry.addComponent<Material>(
+          entity, MaterialAttribute{std::string(files[0])},
+          MaterialAttribute{std::string(files[0])},
+          MaterialAttribute{std::string(files[1])}, 32.0f);
     }
 
     this->registry.addComponent<DirectionalLight>(
-        this->light.getEntityId(), glm::vec3{0.1f}, glm::vec3{0.2f},
-        glm::vec3{0.4f});
+        this->light.getEntityId(), glm::vec3{0.05f}, glm::vec3{0.1f},
+        glm::vec3{0.2f});
+
+    this->registry.addComponent<PointLights>(
+        this->light.getEntityId(),
+        std::vector<PointLight>{
+            4,
+            {glm::vec3{0.1f}, glm::vec3{0.2f}, glm::vec3{0.4f}}});
+    for (unsigned int i = 0; i < 4; i++) {
+      this->registry.getPool<PointLights>()
+          .get(this->light.getEntityId())
+          .lights[i]
+          .position = this->pointLightPositions[i];
+    }
 
     this->registry.addComponent<SpotLight>(
-        this->light.getEntityId(), glm::vec3{0.1f}, glm::vec3{0.2f},
-        glm::vec3{0.4f}, glm::cos(glm::radians(12.0f)),
+        this->light.getEntityId(), glm::vec3{0.2f}, glm::vec3{0.4f},
+        glm::vec3{0.8f}, glm::cos(glm::radians(12.0f)),
         glm::cos(glm::radians(17.5f)));
 
     glEnable(GL_DEPTH_TEST);
@@ -72,46 +72,50 @@ namespace gl {
     }
   }
 
-  void Renderer::onUpdate(float ts) {
-    this->clear();
-    this->shader.use();
+  void Renderer::registerWindowResizeCallback() {
+    this->eventManager.subscribe(
+        Constants::WINDOW_RESIZE_TOPIC, [&](core::IEventPtr &event) {
+          core::WindowResizeEvent windowResizeEvent =
+              (static_cast<core::Event<core::WindowResizeEvent> *>(event.get()))
+                  ->data;
+          this->renderState.width = windowResizeEvent.width;
+          this->renderState.height = windowResizeEvent.height;
+          GL_CALL(glViewport(0, 0, windowResizeEvent.width,
+                             windowResizeEvent.height));
+        });
+  }
 
-    this->shader.set<int>("pointLightCount", 0);
-    // for (unsigned int i = 0; i < pointLights.size(); i++) {
-    //   this->shader.set<PointLight &>("pointLights[" + std::to_string(i) +
-    //   "]",
-    //                                  pointLights[i]);
-    // }
+  void Renderer::registerFovChangeCallback() {
+    this->eventManager.subscribe(
+        Constants::FOV_CHANGE_TOPIC, [&](core::IEventPtr &event) {
+          FovChangeEvent fovChangeEvent =
+              (static_cast<core::Event<FovChangeEvent> *>(event.get()))->data;
+          this->renderState.fov = fovChangeEvent.fov;
+        });
+  }
+
+  void Renderer::bindLights() {
+    PointLights &pointLights =
+        this->registry.getPool<PointLights>().get(this->light.getEntityId());
+    this->shader.set<int>("pointLightCount", pointLights.lights.size());
+    for (unsigned int i = 0; i < pointLights.lights.size(); i++)
+      this->shader.set<PointLight &>("pointLights[" + std::to_string(i) + "]",
+                                     pointLights.lights[i]);
 
     this->shader.set<DirectionalLight &>(
         "directionalLight", this->registry.getPool<DirectionalLight>().get(
                                 this->light.getEntityId()));
 
-    SpotLight &spotLight =
-        this->registry.getPool<SpotLight>().get(this->light.getEntityId());
-    for (core::CameraTransform &cameraTransform :
-         registry.getPool<core::CameraTransform>().getComponents()) {
-      if (cameraTransform.isCameraActive()) {
-        glm::mat4 view = cameraTransform.getViewMatrix();
-        this->shader.set<glm::mat4>("view", view);
-        this->shader.set<glm::vec3>("viewerPos", cameraTransform.getPosition());
-        spotLight.position = cameraTransform.getPosition();
-        spotLight.direction = cameraTransform.getForwardDirection();
-      }
-    }
+    this->shader.set<SpotLight &>(
+        "spotLight",
+        this->registry.getPool<SpotLight>().get(this->light.getEntityId()));
+  }
 
-    this->shader.set<SpotLight &>("spotLight", spotLight);
-
-    glm::mat4 projection = glm::perspective(
-        glm::radians(this->renderState.fov),
-        (float) this->renderState.width / (float) this->renderState.height,
-        0.1f, 100.0f);
-    this->shader.set<glm::mat4>("projection", projection);
-
+  void Renderer::drawObjects(float ts) {
     this->vertexArray.bind();
     float angle = ts * Constants::SPEED_SCALAR;
-    core::SparseSet<core::Entity, TextureMaterial> &materialPool =
-        registry.getPool<TextureMaterial>();
+    core::SparseSet<core::Entity, Material> &materialPool =
+        registry.getPool<Material>();
     core::SparseSet<core::Entity, core::Transform> &transformPool =
         registry.getPool<core::Transform>();
     for (core::Entity &entity : materialPool.getEntities()) {
@@ -120,12 +124,33 @@ namespace gl {
       glm::mat4 model = transform.getModelMatrix();
       this->shader.set<glm::mat4>("model", model);
 
-      TextureMaterial &material = materialPool.get(entity);
-      this->shader.set<TextureMaterial &>("textureMaterial", material);
+      Material &material = materialPool.get(entity);
+      this->shader.set<Material &>("material", material);
 
       this->draw();
     }
-    this->frameCount = (this->frameCount + 1) % 36000;
-    this->cameraAngle += angle;
+  }
+
+  void Renderer::onUpdate(float ts) {
+    this->clear();
+    this->shader.use();
+    this->bindLights();
+
+    for (core::CameraTransform &cameraTransform :
+         registry.getPool<core::CameraTransform>().getComponents()) {
+      if (cameraTransform.isCameraActive()) {
+        glm::mat4 view = cameraTransform.getViewMatrix();
+        this->shader.set<glm::mat4>("view", view);
+        this->shader.set<glm::vec3>("viewerPos", cameraTransform.getPosition());
+      }
+    }
+
+    glm::mat4 projection = glm::perspective(
+        glm::radians(this->renderState.fov),
+        (float) this->renderState.width / (float) this->renderState.height,
+        0.1f, 100.0f);
+    this->shader.set<glm::mat4>("projection", projection);
+
+    this->drawObjects(ts);
   }
 }
