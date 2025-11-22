@@ -12,7 +12,6 @@ namespace gl {
     std::vector<std::thread> imageLoadJobs;
     for (unsigned int i = 0; i < filePaths.size(); i++) {
       const std::string &filePath = filePaths[i];
-      this->indexes[filePath] = i;
       imageLoadJobs.push_back(
           std::thread(Texture::loadImage, std::ref(filePath), i,
                       std::ref(images), std::ref(writeMutex)));

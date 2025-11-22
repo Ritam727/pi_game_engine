@@ -21,8 +21,7 @@ namespace gl {
 namespace gl {
   class Texture {
   private:
-    std::unordered_map<std::string, unsigned int> indexes;
-    std::vector<unsigned int>                     textures;
+    std::vector<unsigned int> textures;
 
     void createBindAndConfigureTexture(unsigned index);
     void generateTextures();
