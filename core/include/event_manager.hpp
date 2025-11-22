@@ -29,7 +29,7 @@ namespace core {
     void executeEvents(const std::vector<std::string> &topics);
 
     template <typename T, typename... Args>
-    void enqueue(const std::string &topicName, Args... args) {
+    void enqueue(const std::string &topicName, Args &&...args) {
       if (!this->swapMutexes.contains(topicName)) {
         this->swapMutexes.try_emplace(topicName);
       }

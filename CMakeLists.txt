@@ -15,8 +15,6 @@ add_subdirectory(json)
 add_subdirectory(inputs)
 add_subdirectory(assimp)
 
-add_dependencies(core assimp)
-
 add_executable(engine main.cpp)
 target_link_libraries(engine app)
 

@@ -26,7 +26,7 @@ namespace core {
     Entity createEntity();
 
     template <IsSubClassOf<BaseComponent> T, typename... Args>
-    void addComponent(Entity entity, Args... args) {
+    void addComponent(Entity entity, Args &&...args) {
       std::type_index poolIndex = std::type_index(typeid(T));
       if (!this->pools.contains(poolIndex)) {
         this->pools[poolIndex] = std::make_unique<core::SparseSet<Entity, T>>();

@@ -33,7 +33,7 @@ namespace core {
       this->components.reserve(size);
     }
 
-    template <typename... Args> void addElem(I entity, Args... args) {
+    template <typename... Args> void addElem(I entity, Args &&...args) {
       if (this->contains(entity))
         return;
       this->entities.emplace_back(entity);
