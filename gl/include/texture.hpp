@@ -7,6 +7,7 @@
 
 #include <string>
 #include <vector>
+#include <unordered_map>
 
 namespace gl {
   struct Image {
@@ -20,9 +21,10 @@ namespace gl {
 namespace gl {
   class Texture {
   private:
-    std::vector<unsigned int> textures;
+    std::unordered_map<std::string, unsigned int> indexes;
+    std::vector<unsigned int>                     textures;
 
-    void createBindAndConfigureTexture(unsigned int index);
+    void createBindAndConfigureTexture(unsigned index);
     void generateTextures();
 
   public:

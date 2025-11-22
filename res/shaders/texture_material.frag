@@ -9,7 +9,7 @@ struct BasicLight {
 
 struct TextureMaterial {
   sampler2D diffuse;
-  vec3 specular;
+  sampler2D specular;
   
   float shininess;
 };
@@ -33,7 +33,7 @@ void main() {
   vec3 viewDir = normalize(viewerPos - fragPos);
   vec3 reflectDir = normalize(reflect(-lightDirection, normal));
   float spec = pow(max(dot(viewDir, reflectDir), 0.0f), textureMaterial.shininess);
-  vec3 specularLight = basicLight.specular * (spec * textureMaterial.specular);
+  vec3 specularLight = basicLight.specular * (spec * vec3(texture(textureMaterial.specular, fragTex)));
 
   vec3 ambientLight = vec3(texture(textureMaterial.diffuse, fragTex)) * basicLight.ambient;
 

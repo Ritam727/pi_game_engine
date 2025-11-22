@@ -19,17 +19,16 @@ namespace gl {
   };
 
   struct TextureMaterial : public core::BaseComponent {
-    Texture   diffuse;
-    glm::vec3 specular;
+    Texture textures;
 
     float shininess;
 
     TextureMaterial(std::vector<std::string> textures, glm::vec3 specular,
                     float shininess)
-        : diffuse(textures), specular(specular), shininess(shininess) {}
+        : textures(textures), shininess(shininess) {}
 
     void clearComponent() override {
-      diffuse.releaseTextures();
+      textures.releaseTextures();
     }
   };
 }

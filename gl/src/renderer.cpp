@@ -38,8 +38,9 @@ namespace gl {
       registry.getPool<core::Transform>()
           .get(registry.getLastEntity())
           .setPosition(cubePositions[i]);
-      std::vector<std::string> files{ENGINE_PATH
-                                     "/res/textures/container2.png"};
+      std::vector<std::string> files{ENGINE_PATH "/res/textures/container2.png",
+                                     ENGINE_PATH
+                                     "/res/textures/container2_specular.png"};
       this->registry.addComponent<TextureMaterial>(
           entity, files, glm::vec3{1.0f, 1.0f, 1.0f}, 32.0f);
     }
@@ -99,10 +100,9 @@ namespace gl {
       this->shader.set<glm::mat4>("model", model);
 
       TextureMaterial &material = materialPool.get(entity);
-      material.diffuse.bind();
+      material.textures.bind();
       this->shader.set<int>("textureMaterial.diffuse", 0);
-      this->shader.set<glm::vec3>("textureMaterial.specular",
-                                  material.specular);
+      this->shader.set<int>("textureMaterial.specular", 1);
       this->shader.set<float>("textureMaterial.shininess", material.shininess);
 
       this->draw();
