@@ -18,5 +18,5 @@ cmake --build . - --j4
 
 Run the application using:
 ```bash
-./engine # from inside the build folder
+./pi_game_engine # from inside the build folder
 ```
