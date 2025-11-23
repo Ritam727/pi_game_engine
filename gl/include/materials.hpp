@@ -71,7 +71,8 @@ namespace gl {
                                   std::vector<std::thread> &threads) {
       if (attribute.type == MaterialAttribute::MaterialAttributeType::TEXTURE) {
         threads.emplace_back([&]() {
-          image = Image{std::get<std::string>(attribute.attribute)};
+          image = ImageManager::createImage(
+              std::get<std::string>(attribute.attribute));
         });
       } else {
         vecAttribute = std::get<glm::vec3>(attribute.attribute);
@@ -79,8 +80,9 @@ namespace gl {
     }
 
     static void placeImage(std::optional<Texture> &texture, Image &image) {
-      if (image.data != nullptr)
-        texture.emplace(image);
+      if (image.data != nullptr) {
+        texture.emplace(TextureManager::createTexture(image));
+      }
     }
   };
 }

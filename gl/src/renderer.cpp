@@ -4,6 +4,8 @@
 #include "gl_constants.hpp"
 #include "event_manager.hpp"
 #include "materials.hpp"
+#include "mesh.hpp"
+#include "model.hpp"
 #include "registry.hpp"
 #include "gl_events.hpp"
 #include "transform.hpp"
@@ -15,25 +17,10 @@
 namespace gl {
   Renderer::Renderer(core::Registry &registry, core::EventManager &eventManager)
       : registry(registry), eventManager(eventManager) {
+    std::vector<Model> backpack{ModelLoader::loadModels(
+        ENGINE_PATH "/res/models/backpack/backpack.obj", this->registry)};
     this->registerWindowResizeCallback();
     this->registerFovChangeCallback();
-
-    this->registry.addComponent<Mesh>(this->meshEntity, this->vertices,
-                                      this->indices);
-    for (int i = 0; i < 10; i++) {
-      core::Entity entity = this->registry.createEntity();
-      this->registry.addComponent<core::Transform>(entity);
-      registry.getPool<core::Transform>()
-          .get(registry.getLastEntity())
-          .setPosition(cubePositions[i]);
-      std::vector<std::string> files{ENGINE_PATH "/res/textures/container2.png",
-                                     ENGINE_PATH
-                                     "/res/textures/container2_specular.png"};
-      this->registry.addComponent<Material>(
-          entity, MaterialAttribute{std::string(files[0])},
-          MaterialAttribute{std::string(files[0])},
-          MaterialAttribute{std::string(files[1])}, 32.0f);
-    }
 
     this->registry.addComponent<DirectionalLight>(
         this->light.getEntityId(), glm::vec3{0.05f}, glm::vec3{0.1f},
@@ -57,21 +44,6 @@ namespace gl {
         glm::cos(glm::radians(17.5f)));
 
     glEnable(GL_DEPTH_TEST);
-    if (indices.size() == 0)
-      drawMode = DrawMode::TRIANGLES;
-    else
-      drawMode = DrawMode::ELEMENTS;
-  }
-
-  void Renderer::draw() {
-    switch (drawMode) {
-    case DrawMode::TRIANGLES:
-      GL_CALL(glDrawArrays(GL_TRIANGLES, 0, vertices.size()));
-      break;
-    case DrawMode::ELEMENTS:
-      GL_CALL(glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0));
-      break;
-    }
   }
 
   void Renderer::registerWindowResizeCallback() {
@@ -114,21 +86,24 @@ namespace gl {
   }
 
   void Renderer::drawObjects(float ts) {
-    Mesh &mesh = this->registry.getPool<Mesh>().get(this->meshEntity);
-    float angle = ts * Constants::SPEED_SCALAR;
-    core::SparseSet<core::Entity, Material> &materialPool =
-        registry.getPool<Material>();
-    core::SparseSet<core::Entity, core::Transform> &transformPool =
-        registry.getPool<core::Transform>();
-    for (core::Entity &entity : materialPool.getEntities()) {
-      core::Transform &transform = transformPool.get(entity);
-      transform.updateRotation(glm::vec3(angle));
-      glm::mat4 model = transform.getModelMatrix();
-      this->shader.set<glm::mat4>("model", model);
+    std::vector<core::Entity> &entities =
+        this->registry.getPool<Mesh>().getEntities();
+    core::SparseSet<core::Entity, Mesh> &meshes =
+        this->registry.getPool<Mesh>();
+    core::SparseSet<core::Entity, core::Transform> &transforms =
+        this->registry.getPool<core::Transform>();
+    core::SparseSet<core::Entity, Material> &materials =
+        this->registry.getPool<Material>();
 
-      Material &material = materialPool.get(entity);
+    unsigned int i = 0;
+    for (core::Entity &entity : entities) {
+      core::Transform &transform = transforms.get(entity);
+      this->shader.set<glm::mat4>("model", transform.getModelMatrix());
+
+      Material &material = materials.get(entity);
       this->shader.set<Material &>("material", material);
 
+      Mesh &mesh = meshes.get(entity);
       mesh.draw();
     }
   }

@@ -45,6 +45,9 @@ namespace core {
     template <IsSubClassOf<BaseComponent> T>
     core::SparseSet<Entity, T> &getPool() {
       std::type_index poolIndex = std::type_index(typeid(T));
+      if (!this->pools.contains(poolIndex)) {
+        this->pools[poolIndex] = std::make_unique<core::SparseSet<Entity, T>>();
+      }
       return *static_cast<core::SparseSet<Entity, T> *>(
           this->pools[poolIndex].get());
     }

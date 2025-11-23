@@ -13,8 +13,8 @@ namespace gl {
     void arrangeVertexLayout();
 
   public:
-    VertexArray(std::vector<core::Vertex> vertices,
-                std::vector<unsigned int> indices);
+    VertexArray(std::vector<core::Vertex> &vertices,
+                std::vector<unsigned int> &indices);
     ~VertexArray();
 
     void bind();

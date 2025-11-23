@@ -3,10 +3,10 @@
 #include "vertex.hpp"
 
 namespace gl {
-  VertexArray::VertexArray(std::vector<core::Vertex> vertices,
-                           std::vector<unsigned int> indices) {
+  VertexArray::VertexArray(std::vector<core::Vertex> &vertices,
+                           std::vector<unsigned int> &indices) {
     GL_CALL(glGenVertexArrays(1, &this->vertexArrayIndex));
-    GL_CALL(glBindVertexArray(this->vertexArrayIndex));
+    this->bind();
     this->generateAndAttachBuffer(this->vertexBufferIndex, GL_ARRAY_BUFFER);
     GL_CALL(glBufferData(GL_ARRAY_BUFFER,
                          sizeof(core::Vertex) * vertices.size(),
@@ -17,7 +17,7 @@ namespace gl {
                          sizeof(unsigned int) * indices.size(), indices.data(),
                          GL_STATIC_DRAW));
     this->arrangeVertexLayout();
-    GL_CALL(glBindVertexArray(0));
+    this->unbind();
   }
 
   void VertexArray::generateAndAttachBuffer(unsigned int &index, int target) {

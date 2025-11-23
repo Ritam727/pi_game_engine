@@ -9,8 +9,8 @@ namespace gl {
   class Mesh : core::BaseComponent {
   private:
     VertexArray  vertexArray;
-    unsigned int count;
-    bool         indexed;
+    unsigned int vertexCount;
+    unsigned int indexCount;
 
   public:
     Mesh(std::vector<core::Vertex> &vertices,

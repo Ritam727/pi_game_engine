@@ -4,12 +4,9 @@
 #include "layer.hpp"
 #include "lights.hpp"
 #include "logger.hpp"
-#include "materials.hpp"
-#include "mesh.hpp"
 #include "shader.hpp"
 #include "texture.hpp"
 #include "gl_utils.hpp"
-#include "vertex_array.hpp"
 
 #include "registry.hpp"
 
@@ -29,157 +26,6 @@ namespace gl {
 
   class Renderer : public core::Layer {
   private:
-    std::vector<core::Vertex> vertices{{{-0.5f, -0.5f, -0.5f},
-                                        {0.8f, 0.1f, 0.2f},
-                                        {0.0f, 0.0f, -1.0f},
-                                        {0.0f, 0.0f}},
-                                       {{0.5f, -0.5f, -0.5f},
-                                        {0.8f, 0.1f, 0.2f},
-                                        {0.0f, 0.0f, -1.0f},
-                                        {1.0f, 0.0f}},
-                                       {{0.5f, 0.5f, -0.5f},
-                                        {0.8f, 0.1f, 0.2f},
-                                        {0.0f, 0.0f, -1.0f},
-                                        {1.0f, 1.0f}},
-                                       {{0.5f, 0.5f, -0.5f},
-                                        {0.8f, 0.1f, 0.2f},
-                                        {0.0f, 0.0f, -1.0f},
-                                        {1.0f, 1.0f}},
-                                       {{-0.5f, 0.5f, -0.5f},
-                                        {0.8f, 0.1f, 0.2f},
-                                        {0.0f, 0.0f, -1.0f},
-                                        {0.0f, 1.0f}},
-                                       {{-0.5f, -0.5f, -0.5f},
-                                        {0.8f, 0.1f, 0.2f},
-                                        {0.0f, 0.0f, -1.0f},
-                                        {0.0f, 0.0f}},
-                                       {{-0.5f, -0.5f, 0.5f},
-                                        {0.8f, 0.1f, 0.2f},
-                                        {0.0f, 0.0f, 1.0f},
-                                        {0.0f, 0.0f}},
-                                       {{0.5f, -0.5f, 0.5f},
-                                        {0.8f, 0.1f, 0.2f},
-                                        {0.0f, 0.0f, 1.0f},
-                                        {1.0f, 0.0f}},
-                                       {{0.5f, 0.5f, 0.5f},
-                                        {0.8f, 0.1f, 0.2f},
-                                        {0.0f, 0.0f, 1.0f},
-                                        {1.0f, 1.0f}},
-                                       {{0.5f, 0.5f, 0.5f},
-                                        {0.8f, 0.1f, 0.2f},
-                                        {0.0f, 0.0f, 1.0f},
-                                        {1.0f, 1.0f}},
-                                       {{-0.5f, 0.5f, 0.5f},
-                                        {0.8f, 0.1f, 0.2f},
-                                        {0.0f, 0.0f, 1.0f},
-                                        {0.0f, 1.0f}},
-                                       {{-0.5f, -0.5f, 0.5f},
-                                        {0.8f, 0.1f, 0.2f},
-                                        {0.0f, 0.0f, 1.0f},
-                                        {0.0f, 0.0f}},
-                                       {{-0.5f, 0.5f, 0.5f},
-                                        {0.8f, 0.1f, 0.2f},
-                                        {-1.0f, 0.0f, 0.0f},
-                                        {1.0f, 0.0f}},
-                                       {{-0.5f, 0.5f, -0.5f},
-                                        {0.8f, 0.1f, 0.2f},
-                                        {-1.0f, 0.0f, 0.0f},
-                                        {1.0f, 1.0f}},
-                                       {{-0.5f, -0.5f, -0.5f},
-                                        {0.8f, 0.1f, 0.2f},
-                                        {-1.0f, 0.0f, 0.0f},
-                                        {0.0f, 1.0f}},
-                                       {{-0.5f, -0.5f, -0.5f},
-                                        {0.8f, 0.1f, 0.2f},
-                                        {-1.0f, 0.0f, 0.0f},
-                                        {0.0f, 1.0f}},
-                                       {{-0.5f, -0.5f, 0.5f},
-                                        {0.8f, 0.1f, 0.2f},
-                                        {-1.0f, 0.0f, 0.0f},
-                                        {0.0f, 0.0f}},
-                                       {{-0.5f, 0.5f, 0.5f},
-                                        {0.8f, 0.1f, 0.2f},
-                                        {-1.0f, 0.0f, 0.0f},
-                                        {1.0f, 0.0f}},
-                                       {{0.5f, 0.5f, 0.5f},
-                                        {0.8f, 0.1f, 0.2f},
-                                        {1.0f, 0.0f, 0.0f},
-                                        {1.0f, 0.0f}},
-                                       {{0.5f, 0.5f, -0.5f},
-                                        {0.8f, 0.1f, 0.2f},
-                                        {1.0f, 0.0f, 0.0f},
-                                        {1.0f, 1.0f}},
-                                       {{0.5f, -0.5f, -0.5f},
-                                        {0.8f, 0.1f, 0.2f},
-                                        {1.0f, 0.0f, 0.0f},
-                                        {0.0f, 1.0f}},
-                                       {{0.5f, -0.5f, -0.5f},
-                                        {0.8f, 0.1f, 0.2f},
-                                        {1.0f, 0.0f, 0.0f},
-                                        {0.0f, 1.0f}},
-                                       {{0.5f, -0.5f, 0.5f},
-                                        {0.8f, 0.1f, 0.2f},
-                                        {1.0f, 0.0f, 0.0f},
-                                        {0.0f, 0.0f}},
-                                       {{0.5f, 0.5f, 0.5f},
-                                        {0.8f, 0.1f, 0.2f},
-                                        {1.0f, 0.0f, 0.0f},
-                                        {1.0f, 0.0f}},
-                                       {{-0.5f, -0.5f, -0.5f},
-                                        {0.8f, 0.1f, 0.2f},
-                                        {0.0f, -1.0f, 0.0f},
-                                        {0.0f, 1.0f}},
-                                       {{0.5f, -0.5f, -0.5f},
-                                        {0.8f, 0.1f, 0.2f},
-                                        {0.0f, -1.0f, 0.0f},
-                                        {1.0f, 1.0f}},
-                                       {{0.5f, -0.5f, 0.5f},
-                                        {0.8f, 0.1f, 0.2f},
-                                        {0.0f, -1.0f, 0.0f},
-                                        {1.0f, 0.0f}},
-                                       {{0.5f, -0.5f, 0.5f},
-                                        {0.8f, 0.1f, 0.2f},
-                                        {0.0f, -1.0f, 0.0f},
-                                        {1.0f, 0.0f}},
-                                       {{-0.5f, -0.5f, 0.5f},
-                                        {0.8f, 0.1f, 0.2f},
-                                        {0.0f, -1.0f, 0.0f},
-                                        {0.0f, 0.0f}},
-                                       {{-0.5f, -0.5f, -0.5f},
-                                        {0.8f, 0.1f, 0.2f},
-                                        {0.0f, -1.0f, 0.0f},
-                                        {0.0f, 1.0f}},
-                                       {{-0.5f, 0.5f, -0.5f},
-                                        {0.8f, 0.1f, 0.2f},
-                                        {0.0f, 1.0f, 0.0f},
-                                        {0.0f, 1.0f}},
-                                       {{0.5f, 0.5f, -0.5f},
-                                        {0.8f, 0.1f, 0.2f},
-                                        {0.0f, 1.0f, 0.0f},
-                                        {1.0f, 1.0f}},
-                                       {{0.5f, 0.5f, 0.5f},
-                                        {0.8f, 0.1f, 0.2f},
-                                        {0.0f, 1.0f, 0.0f},
-                                        {1.0f, 0.0f}},
-                                       {{0.5f, 0.5f, 0.5f},
-                                        {0.8f, 0.1f, 0.2f},
-                                        {0.0f, 1.0f, 0.0f},
-                                        {1.0f, 0.0f}},
-                                       {{-0.5f, 0.5f, 0.5f},
-                                        {0.8f, 0.1f, 0.2f},
-                                        {0.0f, 1.0f, 0.0f},
-                                        {0.0f, 0.0f}},
-                                       {{-0.5f, 0.5f, -0.5f},
-                                        {0.8f, 0.1f, 0.2f},
-                                        {0.0f, 1.0f, 0.0f},
-                                        {0.0f, 1.0f}}};
-    std::vector<unsigned int> indices{};
-    std::vector<glm::vec3>    cubePositions{
-           {0.0f, 0.0f, 0.0f},     {2.0f, 5.0f, -15.0f}, {-1.5f, -2.2f, -2.5f},
-           {-3.8f, -2.0f, -12.3f}, {2.4f, -0.4f, -3.5f}, {-1.7f, 3.0f, -7.5f},
-           {1.3f, -2.0f, -2.5f},   {1.5f, 2.0f, -2.5f},  {1.5f, 0.2f, -1.5f},
-           {-1.3f, 1.0f, -1.5f}};
-
     std::vector<glm::vec3> pointLightPositions{
         glm::vec3(0.7f, 0.2f, 2.0f), glm::vec3(2.3f, -3.3f, -4.0f),
         glm::vec3(-4.0f, 2.0f, -12.0f), glm::vec3(0.0f, 0.0f, -3.0f)};
@@ -188,17 +34,14 @@ namespace gl {
     core::EventManager &eventManager;
     Light               light{registry};
 
-    core::Entity meshEntity{registry.createEntity()};
-    Shader       shader{ENGINE_PATH "/res/shaders/multiple_lights.vert",
+    Shader shader{ENGINE_PATH "/res/shaders/multiple_lights.vert",
                   ENGINE_PATH "/res/shaders/multiple_lights.frag"};
 
     unsigned int frameCount{0};
     float        cameraAngle{0};
-    DrawMode     drawMode{DrawMode::TRIANGLES};
 
     RenderState renderState{};
 
-    void draw();
     void bindLights();
     void drawObjects(float ts);
 
@@ -215,5 +58,4 @@ namespace gl {
     void registerWindowResizeCallback();
     void registerFovChangeCallback();
   };
-
 }

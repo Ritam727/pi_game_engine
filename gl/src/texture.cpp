@@ -2,6 +2,14 @@
 #include "gl_utils.hpp"
 
 namespace gl {
+  Image ImageManager::createImage(std::string filePath) {
+    if (!loadedImages.contains(filePath))
+      loadedImages.insert({filePath, Image{filePath}});
+    return loadedImages.at(filePath);
+  }
+}
+
+namespace gl {
   Texture::Texture(Image &image) {
     this->createBindAndConfigureTexture();
     this->sendImageToTexture(image);
@@ -31,5 +39,11 @@ namespace gl {
 
   void Texture::releaseTexture() {
     GL_CALL(glDeleteTextures(1, &this->texture));
+  }
+
+  Texture TextureManager::createTexture(Image &image) {
+    if (!textureMap.contains(image.filePath))
+      textureMap.insert({image.filePath, Texture{image}});
+    return textureMap.at(image.filePath);
   }
 }
