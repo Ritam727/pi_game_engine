@@ -5,7 +5,6 @@
 #include "event_manager.hpp"
 #include "materials.hpp"
 #include "mesh.hpp"
-#include "model.hpp"
 #include "registry.hpp"
 #include "gl_events.hpp"
 #include "resource_manager.hpp"
@@ -22,10 +21,11 @@ namespace gl {
       : resourceManager(resourceManager), registry(registry),
         eventManager(eventManager),
         renderState({.width = initialWidth, .height = initialHeight}) {
-    std::vector<Model> backpack{modelLoader.loadModels(
-        ENGINE_PATH "/res/models/backpack/backpack.obj")};
+    this->modelLoader.loadModels(ENGINE_PATH
+                                 "/res/models/backpack/backpack.obj");
     this->registerWindowResizeCallback();
     this->registerFovChangeCallback();
+    this->registerModelLoadCallback();
 
     this->registry.addComponent<DirectionalLight>(
         this->light.getEntityId(), glm::vec3{0.1f}, glm::vec3{0.2f},
@@ -70,6 +70,16 @@ namespace gl {
           FovChangeEvent fovChangeEvent =
               (static_cast<core::Event<FovChangeEvent> *>(event.get()))->data;
           this->renderState.fov = fovChangeEvent.fov;
+        });
+  }
+
+  void Renderer::registerModelLoadCallback() {
+    this->eventManager.subscribe(
+        Constants::MODEL_LOAD_TOPIC, [&](core::IEventPtr &event) {
+          std::string path =
+              static_cast<core::Event<ModelLoadEvent> *>(event.get())
+                  ->data.path;
+          this->modelLoader.loadModels(path);
         });
   }
 

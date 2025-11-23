@@ -63,5 +63,6 @@ namespace gl {
 
     void registerWindowResizeCallback();
     void registerFovChangeCallback();
+    void registerModelLoadCallback();
   };
 }

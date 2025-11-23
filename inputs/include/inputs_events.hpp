@@ -7,7 +7,7 @@ namespace inputs {
     FovChangeEvent(float fov) : fov(fov) {}
 
     bool operator==(const FovChangeEvent &event) const {
-      return this->fov == fov;
+      return this->fov == event.fov;
     }
   };
 }

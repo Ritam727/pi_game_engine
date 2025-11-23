@@ -21,14 +21,13 @@ App::App() {
 }
 
 void App::run() {
-  int         backend = glfwGetPlatform();
-  float       previousFrame = glfwGetTime();
   std::thread eventThread([&]() {
     while (this->running) {
       this->eventManager.executeEvents(nonMainThreadTopics);
     }
   });
 
+  float previousFrame = glfwGetTime();
   while (this->running) {
     window.pollEvents();
     this->eventManager.executeEvents(mainThreadTopics);

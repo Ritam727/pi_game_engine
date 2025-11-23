@@ -6,6 +6,7 @@
 #include "registry.hpp"
 #include "resource_manager.hpp"
 #include "window.hpp"
+#include "gl_constants.hpp"
 #include "constants.hpp"
 #include "inputs_constants.hpp"
 #include "app_config.hpp"
@@ -33,12 +34,13 @@ private:
       inputs::Constants::FOV_CHANGE_TOPIC,
       inputs::Constants::MOUSE_VISIBLE_TOPIC};
   static const inline std::vector<std::string> mainThreadTopics{
-      core::Constants::WINDOW_CLOSE_TOPIC,
+      gl::Constants::MODEL_LOAD_TOPIC,
       core::Constants::WINDOW_RESIZE_TOPIC,
       core::Constants::KEY_STATE_TOPIC,
       core::Constants::MOUSE_BUTTON_TOPIC,
       core::Constants::MOUSE_MOVEMENT_TOPIC,
-      core::Constants::MOUSE_SCROLL_TOPIC};
+      core::Constants::MOUSE_SCROLL_TOPIC,
+      core::Constants::WINDOW_CLOSE_TOPIC};
 
 public:
   App();
