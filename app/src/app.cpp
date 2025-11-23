@@ -8,7 +8,8 @@
 
 App::App() {
   layers.emplace_back(std::make_unique<gl::Renderer>(
-      this->registry, this->eventManager, this->resourceManager));
+      this->registry, this->eventManager, this->resourceManager,
+      this->screenSize.width, this->screenSize.height));
 
   this->eventManager.subscribe(
       core::Constants::WINDOW_CLOSE_TOPIC, [&](core::IEventPtr &event) {
@@ -17,11 +18,6 @@ App::App() {
       });
 
   this->registry.getPool<core::CameraTransform>().get(0).setCameraActive(true);
-}
-
-ScreenSize &App::getScreenSize() {
-  static ScreenSize screenSize{800, 600};
-  return screenSize;
 }
 
 void App::run() {

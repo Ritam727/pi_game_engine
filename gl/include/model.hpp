@@ -6,7 +6,6 @@
 #include "resource_manager.hpp"
 #include "vertex.hpp"
 
-#include <optional>
 #include <vector>
 
 namespace gl {
@@ -20,18 +19,27 @@ namespace gl {
 
   class ModelLoader {
   private:
-    static void processNode(aiNode *node, const aiScene *scene,
-                            std::vector<Model> &models, std::string &directory,
-                            core::Registry        &registryRef,
-                            core::ResourceManager &resourceManager);
-    static void processMesh(aiMesh *mesh, const aiScene *scene,
-                            std::vector<Model> &models, std::string &directory,
-                            core::Registry        &registryRef,
-                            core::ResourceManager &resourceManager);
+    core::ResourceManager &resourceManager;
+    core::Registry        &registry;
+
+    void processNode(aiNode *node, const aiScene *scene,
+                     std::vector<Model> &models, std::string &directory);
+    void processMesh(aiMesh *mesh, const aiScene *scene,
+                     std::vector<Model> &models, std::string &directory);
+    void processVertices(std::vector<core::Vertex> &vertices, aiMesh *mesh);
+    void processIndices(std::vector<unsigned int> &indices, aiMesh *mesh);
+    void processMaterials(MaterialGroup &ambient, MaterialGroup &diffuse,
+                          MaterialGroup &specular, aiMaterial *material,
+                          std::string &directory);
+    void initializeTexture(aiTextureType type, aiMaterial *material,
+                           std::string &directory, unsigned int index,
+                           std::vector<std::string> &paths, bool &present);
+    void emplaceTexture(bool &present, std::string &path, MaterialGroup &group);
 
   public:
-    static std::vector<Model>
-        loadModels(const std::string &path, core::Registry &registryRef,
-                   core::ResourceManager &resourceManager);
+    ModelLoader(core::ResourceManager &resourceManager,
+                core::Registry        &registry);
+
+    std::vector<Model> loadModels(const std::string &path);
   };
 }

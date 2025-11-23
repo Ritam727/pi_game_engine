@@ -17,23 +17,25 @@
 
 namespace gl {
   Renderer::Renderer(core::Registry &registry, core::EventManager &eventManager,
-                     core::ResourceManager &resourceManager)
-      : registry(registry), eventManager(eventManager) {
-    std::vector<Model> backpack{
-        ModelLoader::loadModels(ENGINE_PATH "/res/models/backpack/backpack.obj",
-                                this->registry, resourceManager)};
+                     core::ResourceManager &resourceManager, int initialWidth,
+                     int initialHeight)
+      : resourceManager(resourceManager), registry(registry),
+        eventManager(eventManager),
+        renderState({.width = initialWidth, .height = initialHeight}) {
+    std::vector<Model> backpack{modelLoader.loadModels(
+        ENGINE_PATH "/res/models/backpack/backpack.obj")};
     this->registerWindowResizeCallback();
     this->registerFovChangeCallback();
 
     this->registry.addComponent<DirectionalLight>(
-        this->light.getEntityId(), glm::vec3{0.05f}, glm::vec3{0.1f},
-        glm::vec3{0.2f});
+        this->light.getEntityId(), glm::vec3{0.1f}, glm::vec3{0.2f},
+        glm::vec3{0.4f});
 
     this->registry.addComponent<PointLights>(
         this->light.getEntityId(),
         std::vector<PointLight>{
             4,
-            {glm::vec3{0.1f}, glm::vec3{0.2f}, glm::vec3{0.4f}}});
+            {glm::vec3{0.1f}, glm::vec3{0.2f}, glm::vec3{0.2f}}});
     for (unsigned int i = 0; i < 4; i++) {
       this->registry.getPool<PointLights>()
           .get(this->light.getEntityId())
@@ -42,7 +44,7 @@ namespace gl {
     }
 
     this->registry.addComponent<SpotLight>(
-        this->light.getEntityId(), glm::vec3{0.2f}, glm::vec3{0.4f},
+        this->light.getEntityId(), glm::vec3{0.4f}, glm::vec3{0.8f},
         glm::vec3{0.8f}, glm::cos(glm::radians(12.0f)),
         glm::cos(glm::radians(17.5f)));
 

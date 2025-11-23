@@ -2,25 +2,8 @@
 
 #include "base_component.hpp"
 #include "glm/glm.hpp"
-#include "resource_manager.hpp"
 #include "texture.hpp"
 #include <optional>
-#include <thread>
-#include <variant>
-
-namespace gl {
-  struct MaterialAttribute {
-    enum class MaterialAttributeType { COLOR, TEXTURE } type;
-
-    std::variant<glm::vec3, std::string> attribute;
-
-    MaterialAttribute(glm::vec3 vec)
-        : type(MaterialAttributeType::COLOR), attribute(vec) {}
-
-    MaterialAttribute(std::string filePath)
-        : type(MaterialAttributeType::TEXTURE), attribute(filePath) {}
-  };
-}
 
 namespace gl {
   struct MaterialGroup {

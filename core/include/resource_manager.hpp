@@ -48,13 +48,15 @@ namespace core {
       }
     }
 
-    template <typename T> T &getResource(const std::string &path) {
+    template <IsSubClassOf<Resource> T>
+    T &getResource(const std::string &path) {
       std::type_index poolIndex = std::type_index(typeid(T));
       return static_cast<ResourcePool<T> *>(this->resources[poolIndex].get())
           ->get(path);
     }
 
-    template <typename T> void deleteResource(const std::string &path) {
+    template <IsSubClassOf<Resource> T>
+    void deleteResource(const std::string &path) {
       std::type_index poolIndex = std::type_index(typeid(T));
       core::logger::info("Removing resource path {}", path);
       if (!this->resources.contains(poolIndex))
