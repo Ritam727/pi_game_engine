@@ -42,11 +42,7 @@ namespace gl {
     }
   }
 
-  VertexArray::~VertexArray() {
-    GL_CALL(glDeleteVertexArrays(1, &this->vertexArrayIndex));
-    GL_CALL(glDeleteBuffers(1, &this->vertexBufferIndex));
-    GL_CALL(glDeleteBuffers(1, &this->elementBufferIndex));
-  }
+  VertexArray::~VertexArray() {}
 
   void VertexArray::bind() {
     GL_CALL(glBindVertexArray(this->vertexArrayIndex));
@@ -54,5 +50,11 @@ namespace gl {
 
   void VertexArray::unbind() {
     GL_CALL(glBindVertexArray(0));
+  }
+
+  void VertexArray::releaseBuffers() {
+    GL_CALL(glDeleteVertexArrays(1, &this->vertexArrayIndex));
+    GL_CALL(glDeleteBuffers(1, &this->vertexBufferIndex));
+    GL_CALL(glDeleteBuffers(1, &this->elementBufferIndex));
   }
 }

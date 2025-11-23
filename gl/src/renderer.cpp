@@ -18,6 +18,8 @@ namespace gl {
     this->registerWindowResizeCallback();
     this->registerFovChangeCallback();
 
+    this->registry.addComponent<Mesh>(this->meshEntity, this->vertices,
+                                      this->indices);
     for (int i = 0; i < 10; i++) {
       core::Entity entity = this->registry.createEntity();
       this->registry.addComponent<core::Transform>(entity);
@@ -112,7 +114,7 @@ namespace gl {
   }
 
   void Renderer::drawObjects(float ts) {
-    this->vertexArray.bind();
+    Mesh &mesh = this->registry.getPool<Mesh>().get(this->meshEntity);
     float angle = ts * Constants::SPEED_SCALAR;
     core::SparseSet<core::Entity, Material> &materialPool =
         registry.getPool<Material>();
@@ -127,7 +129,7 @@ namespace gl {
       Material &material = materialPool.get(entity);
       this->shader.set<Material &>("material", material);
 
-      this->draw();
+      mesh.draw();
     }
   }
 

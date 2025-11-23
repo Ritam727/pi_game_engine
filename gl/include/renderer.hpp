@@ -5,6 +5,7 @@
 #include "lights.hpp"
 #include "logger.hpp"
 #include "materials.hpp"
+#include "mesh.hpp"
 #include "shader.hpp"
 #include "texture.hpp"
 #include "gl_utils.hpp"
@@ -187,8 +188,8 @@ namespace gl {
     core::EventManager &eventManager;
     Light               light{registry};
 
-    VertexArray vertexArray{vertices, indices};
-    Shader      shader{ENGINE_PATH "/res/shaders/multiple_lights.vert",
+    core::Entity meshEntity{registry.createEntity()};
+    Shader       shader{ENGINE_PATH "/res/shaders/multiple_lights.vert",
                   ENGINE_PATH "/res/shaders/multiple_lights.frag"};
 
     unsigned int frameCount{0};

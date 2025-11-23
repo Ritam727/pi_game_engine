@@ -19,5 +19,6 @@ namespace gl {
 
     void bind();
     void unbind();
+    void releaseBuffers();
   };
 }
