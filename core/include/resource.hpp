@@ -44,8 +44,10 @@ namespace core {
     }
 
     void deleteResource(const std::string &path) {
-      if (this->resourceMap.contains(path))
+      if (this->resourceMap.contains(path)) {
+        this->resourceMap[path].clear();
         this->resourceMap.erase(path);
+      }
     }
   };
 }
