@@ -7,8 +7,8 @@
 #include "renderer.hpp"
 
 App::App() {
-  layers.emplace_back(
-      std::make_unique<gl::Renderer>(this->registry, eventManager));
+  layers.emplace_back(std::make_unique<gl::Renderer>(
+      this->registry, this->eventManager, this->resourceManager));
 
   this->eventManager.subscribe(
       core::Constants::WINDOW_CLOSE_TOPIC, [&](core::IEventPtr &event) {

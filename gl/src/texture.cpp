@@ -2,18 +2,8 @@
 #include "gl_utils.hpp"
 
 namespace gl {
-  Image ImageManager::createImage(std::string filePath) {
-    if (!loadedImages.contains(filePath))
-      loadedImages.insert({filePath, Image{filePath}});
-    return loadedImages.at(filePath);
-  }
-}
-
-namespace gl {
-  Texture::Texture(Image &image) {
-    this->createBindAndConfigureTexture();
-    this->sendImageToTexture(image);
-    stbi_image_free(image.data);
+  Texture::Texture(const std::string &path) : image(path) {
+    this->path = path;
   }
 
   void Texture::createBindAndConfigureTexture() {
@@ -37,13 +27,17 @@ namespace gl {
     GL_CALL(glGenerateMipmap(GL_TEXTURE_2D));
   }
 
-  void Texture::releaseTexture() {
-    GL_CALL(glDeleteTextures(1, &this->texture));
+  void Texture::loadResource() {
+    this->image.load();
   }
 
-  Texture TextureManager::createTexture(Image &image) {
-    if (!textureMap.contains(image.filePath))
-      textureMap.insert({image.filePath, Texture{image}});
-    return textureMap.at(image.filePath);
+  void Texture::initialize() {
+    this->createBindAndConfigureTexture();
+    this->sendImageToTexture(this->image);
+    stbi_image_free(this->image.data);
+  }
+
+  void Texture::clear() {
+    GL_CALL(glDeleteTextures(1, &this->texture));
   }
 }

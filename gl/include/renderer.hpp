@@ -4,6 +4,7 @@
 #include "layer.hpp"
 #include "lights.hpp"
 #include "logger.hpp"
+#include "resource_manager.hpp"
 #include "shader.hpp"
 #include "texture.hpp"
 #include "gl_utils.hpp"
@@ -46,7 +47,8 @@ namespace gl {
     void drawObjects(float ts);
 
   public:
-    Renderer(core::Registry &registry, core::EventManager &eventManager);
+    Renderer(core::Registry &registry, core::EventManager &eventManager,
+             core::ResourceManager &resourceManager);
 
     inline void clear() {
       GL_CALL(glClearColor(0.1f, 0.1f, 0.1f, 1.0f));

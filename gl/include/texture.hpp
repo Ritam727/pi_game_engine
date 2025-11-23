@@ -3,10 +3,10 @@
 #include "glad/glad.h"
 
 #include "logger.hpp"
+#include "resource.hpp"
 #include "stb_image.hpp"
 
 #include <string>
-#include <unordered_map>
 
 namespace gl {
   struct Image {
@@ -16,32 +16,26 @@ namespace gl {
     std::string    filePath;
     unsigned char *data{nullptr};
 
-    Image() {}
+    Image(const std::string filePath) : filePath(filePath) {}
 
-    Image(const std::string filePath) : filePath(filePath) {
+    void load() {
       stbi_set_flip_vertically_on_load(true);
       int width, height, channels;
-      this->data = stbi_load(filePath.c_str(), &this->width, &this->height,
-                             &this->channels, 0);
+      this->data = stbi_load(this->filePath.c_str(), &this->width,
+                             &this->height, &this->channels, 0);
       if (data) {
-        core::logger::info("Read image data from file {}", filePath);
+        core::logger::info("Read image data from file {}", this->filePath);
       } else {
-        core::logger::error("Cannot load texture file {}", filePath);
+        core::logger::error("Cannot load texture file {}", this->filePath);
       }
     }
-  };
-
-  class ImageManager {
-  public:
-    static inline std::unordered_map<std::string, Image> loadedImages{};
-
-    static Image createImage(std::string filePath);
   };
 }
 
 namespace gl {
-  class Texture {
+  class Texture : public core::Resource {
   private:
+    Image        image;
     unsigned int texture;
 
     void createBindAndConfigureTexture();
@@ -49,16 +43,11 @@ namespace gl {
     void sendImageToTexture(Image &image);
 
   public:
-    Texture(Image &image);
+    Texture(const std::string &path);
 
     void bind(unsigned int activeTextureIndex);
-    void releaseTexture();
-  };
-
-  class TextureManager {
-  public:
-    static inline std::unordered_map<std::string, Texture> textureMap;
-
-    static Texture createTexture(Image &image);
+    void loadResource() override;
+    void initialize() override;
+    void clear() override;
   };
 }

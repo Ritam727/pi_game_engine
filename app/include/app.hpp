@@ -4,6 +4,7 @@
 #include "inputs.hpp"
 #include "layer.hpp"
 #include "registry.hpp"
+#include "resource_manager.hpp"
 #include "window.hpp"
 #include "constants.hpp"
 #include "inputs_constants.hpp"
@@ -16,8 +17,9 @@ struct ScreenSize {
 
 class App {
 private:
-  core::EventManager eventManager{};
-  core::Registry     registry{};
+  core::ResourceManager resourceManager{};
+  core::EventManager    eventManager{};
+  core::Registry        registry{};
   core::Window   window{App::getScreenSize().width, App::getScreenSize().height,
                       AppConfig::NAME, this->eventManager};
   core::Camera   camera{this->registry, glm::vec3(0.0f, 0.0f, 3.0f),

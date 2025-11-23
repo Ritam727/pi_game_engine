@@ -8,6 +8,7 @@
 #include "model.hpp"
 #include "registry.hpp"
 #include "gl_events.hpp"
+#include "resource_manager.hpp"
 #include "transform.hpp"
 
 #ifndef ENGINE_PATH
@@ -15,10 +16,12 @@
 #endif
 
 namespace gl {
-  Renderer::Renderer(core::Registry &registry, core::EventManager &eventManager)
+  Renderer::Renderer(core::Registry &registry, core::EventManager &eventManager,
+                     core::ResourceManager &resourceManager)
       : registry(registry), eventManager(eventManager) {
-    std::vector<Model> backpack{ModelLoader::loadModels(
-        ENGINE_PATH "/res/models/backpack/backpack.obj", this->registry)};
+    std::vector<Model> backpack{
+        ModelLoader::loadModels(ENGINE_PATH "/res/models/backpack/backpack.obj",
+                                this->registry, resourceManager)};
     this->registerWindowResizeCallback();
     this->registerFovChangeCallback();
 

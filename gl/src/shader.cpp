@@ -130,12 +130,12 @@ namespace gl {
   template <>
   void Shader::set<Material &>(const std::string &name,
                                Material          &material) const {
-    this->set<glm::vec3>(name + ".ambient", material.ambient);
-    this->set<glm::vec3>(name + ".diffuse", material.diffuse);
-    this->set<glm::vec3>(name + ".specular", material.specular);
+    this->set<glm::vec3>(name + ".ambient", material.ambient.vector);
+    this->set<glm::vec3>(name + ".diffuse", material.diffuse.vector);
+    this->set<glm::vec3>(name + ".specular", material.specular.vector);
     this->set<float>(name + ".shininess", material.shininess);
 
-    std::optional<Texture> &ambientTexture = material.ambientTexture;
+    std::optional<Texture> &ambientTexture = material.ambient.texture;
     this->set<bool>(name + ".ambientTexturePresent",
                     ambientTexture.has_value());
     if (ambientTexture.has_value()) {
@@ -143,7 +143,7 @@ namespace gl {
       this->set<int>(name + ".ambientTexture", 0);
     }
 
-    std::optional<Texture> &diffuseTexture = material.diffuseTexture;
+    std::optional<Texture> &diffuseTexture = material.diffuse.texture;
     this->set<bool>(name + ".diffuseTexturePresent",
                     diffuseTexture.has_value());
     if (diffuseTexture.has_value()) {
@@ -151,7 +151,7 @@ namespace gl {
       this->set<int>(name + ".diffuseTexture", 1);
     }
 
-    std::optional<Texture> &specularTexture = material.specularTexture;
+    std::optional<Texture> &specularTexture = material.specular.texture;
     this->set<bool>(name + ".specularTexturePresent",
                     specularTexture.has_value());
     if (specularTexture.has_value()) {
