@@ -141,6 +141,10 @@ namespace core {
                      visibility ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_DISABLED);
   }
 
+  GLFWwindow *Window::getWindow() const {
+    return this->window;
+  }
+
   void Window::buildGlfwKeyMapping() {
     Window::glfwKeyMapping[GLFW_KEY_SPACE] = "SPACE";
     Window::glfwKeyMapping[GLFW_KEY_APOSTROPHE] = "APOSTROPHE";

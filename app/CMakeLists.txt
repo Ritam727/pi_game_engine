@@ -28,6 +28,7 @@ target_link_libraries(app
     core
     gl
     inputs
+    ui
     
     dl
     pthread

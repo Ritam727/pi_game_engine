@@ -14,6 +14,7 @@ add_subdirectory(core)
 add_subdirectory(json)
 add_subdirectory(inputs)
 add_subdirectory(assimp)
+add_subdirectory(ui)
 
 add_executable(pi_game_engine)
 add_subdirectory(src)

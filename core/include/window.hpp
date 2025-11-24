@@ -34,6 +34,8 @@ namespace core {
     void pollEvents();
     void setCursorVisibility(bool visibility);
 
+    GLFWwindow *getWindow() const;
+
     static const std::vector<std::string> &getGlfwToKeyMapping();
   };
 }
