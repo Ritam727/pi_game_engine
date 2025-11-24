@@ -54,7 +54,7 @@ namespace gl {
              core::ResourceManager &resourceManager, int initialWidth,
              int initialHeight);
 
-    inline void clear() {
+    static inline void clear() {
       GL_CALL(glClearColor(0.1f, 0.1f, 0.1f, 1.0f));
       GL_CALL(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
     }

@@ -7,7 +7,6 @@ namespace core {
     virtual void onDetach() {}
 
     virtual void onUpdate(float ts) = 0;
-    virtual void postUpdate() {}
 
     virtual ~Layer() = default;
   };

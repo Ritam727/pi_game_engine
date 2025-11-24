@@ -18,7 +18,7 @@ struct ScreenSize {
 
 class App {
 private:
-  ScreenSize            screenSize{1280, 720};
+  ScreenSize            screenSize{1920, 1080};
   core::ResourceManager resourceManager{};
   core::EventManager    eventManager{};
   core::Registry        registry{};

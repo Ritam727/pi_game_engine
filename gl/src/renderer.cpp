@@ -47,8 +47,6 @@ namespace gl {
         this->light.getEntityId(), glm::vec3{0.4f}, glm::vec3{0.8f},
         glm::vec3{0.8f}, glm::cos(glm::radians(12.0f)),
         glm::cos(glm::radians(17.5f)));
-
-    glEnable(GL_DEPTH_TEST);
   }
 
   void Renderer::registerWindowResizeCallback() {
@@ -124,7 +122,7 @@ namespace gl {
   }
 
   void Renderer::onUpdate(float ts) {
-    this->clear();
+    GL_CALL(glEnable(GL_DEPTH_TEST));
     this->shader.use();
 
     for (core::CameraTransform &cameraTransform :
@@ -147,7 +145,7 @@ namespace gl {
     glm::mat4 projection = glm::perspective(
         glm::radians(this->renderState.fov),
         (float) this->renderState.width / (float) this->renderState.height,
-        0.1f, 100.0f);
+        0.1f, 2000.0f);
     this->shader.set<glm::mat4>("projection", projection);
 
     this->drawObjects(ts);

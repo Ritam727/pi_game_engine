@@ -34,10 +34,10 @@ void App::run() {
     window.pollEvents();
     this->eventManager.executeEvents(mainThreadTopics);
     float currentFrame = glfwGetTime();
+    float deltaTime = (currentFrame - previousFrame) * 1000.0f;
+    gl::Renderer::clear();
     for (std::unique_ptr<core::Layer> &layer : layers)
-      layer->onUpdate((currentFrame - previousFrame) * 1000);
-    for (std::unique_ptr<core::Layer> &layer : layers)
-      layer->postUpdate();
+      layer->onUpdate(deltaTime);
     previousFrame = currentFrame;
     window.processGlfwFrame();
   }
