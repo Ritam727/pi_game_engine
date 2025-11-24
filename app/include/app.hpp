@@ -24,7 +24,7 @@ private:
   core::Registry        registry{};
   core::Window   window{screenSize.width, screenSize.height, AppConfig::NAME,
                       this->eventManager};
-  core::Camera   camera{this->registry, glm::vec3(0.0f, 0.0f, 3.0f),
+  core::Camera   camera{this->registry, glm::vec3(0.0f, 0.0f, 10.0f),
                       glm::vec3(0.0f, 1.0f, 0.0f)};
   inputs::Inputs inputs{this->window, this->registry, this->eventManager};
   std::vector<std::unique_ptr<core::Layer>> layers{};
