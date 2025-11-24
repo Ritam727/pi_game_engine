@@ -24,7 +24,9 @@ namespace ui {
     ImGui::NewFrame();
     this->createDockspace();
     ImGui::ShowDemoWindow();
+  }
 
+  void UI::postUpdate() {
     ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
   }

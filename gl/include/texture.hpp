@@ -46,6 +46,7 @@ namespace gl {
     Texture(const std::string &path);
 
     void bind(unsigned int activeTextureIndex);
+
     void loadResource() override;
     void initialize() override;
     void clear() override;

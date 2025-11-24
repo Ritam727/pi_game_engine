@@ -7,11 +7,14 @@
 #include "renderer.hpp"
 #include "ui.hpp"
 
+#include <memory>
+#include <ranges>
+
 App::App() {
-  layers.emplace_back(std::make_unique<gl::Renderer>(
-      this->registry, this->eventManager, this->resourceManager,
-      this->screenSize.width, this->screenSize.height));
-  layers.emplace_back(std::make_unique<ui::UI>(this->window));
+  this->pushLayer<gl::Renderer>(this->registry, this->eventManager,
+                                this->resourceManager, this->screenSize.width,
+                                this->screenSize.height);
+  this->pushLayer<ui::UI>(this->window);
 
   this->eventManager.subscribe(
       core::Constants::WINDOW_CLOSE_TOPIC, [&](core::IEventPtr &event) {
@@ -36,8 +39,12 @@ void App::run() {
     float currentFrame = glfwGetTime();
     float deltaTime = (currentFrame - previousFrame) * 1000.0f;
     gl::Renderer::clear();
-    for (std::unique_ptr<core::Layer> &layer : layers)
+    for (std::unique_ptr<core::Layer> &layer :
+         std::ranges::reverse_view(layers))
       layer->onUpdate(deltaTime);
+    for (std::unique_ptr<core::Layer> &layer :
+         std::ranges::reverse_view(layers))
+      layer->postUpdate();
     previousFrame = currentFrame;
     window.processGlfwFrame();
   }

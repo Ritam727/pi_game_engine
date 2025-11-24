@@ -13,6 +13,7 @@ namespace ui {
     ~UI();
 
     void onUpdate(float ts) override;
+    void postUpdate() override;
 
     void createDockspace();
   };

@@ -8,6 +8,7 @@
 #include "registry.hpp"
 #include "gl_events.hpp"
 #include "resource_manager.hpp"
+#include "texture.hpp"
 #include "transform.hpp"
 
 #ifndef ENGINE_PATH
@@ -47,6 +48,10 @@ namespace gl {
         this->light.getEntityId(), glm::vec3{0.4f}, glm::vec3{0.8f},
         glm::vec3{0.8f}, glm::cos(glm::radians(12.0f)),
         glm::cos(glm::radians(17.5f)));
+
+    GL_CALL(glEnable(GL_DEPTH_TEST));
+    GL_CALL(glEnable(GL_CULL_FACE));
+    GL_CALL(glCullFace(GL_BACK));
   }
 
   void Renderer::registerWindowResizeCallback() {
@@ -122,7 +127,6 @@ namespace gl {
   }
 
   void Renderer::onUpdate(float ts) {
-    GL_CALL(glEnable(GL_DEPTH_TEST));
     this->shader.use();
 
     for (core::CameraTransform &cameraTransform :
