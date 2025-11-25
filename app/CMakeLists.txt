@@ -1,29 +1,27 @@
-add_library(app STATIC)
+file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS *.c*)
+file(GLOB_RECURSE HEADERS CONFIGURE_DEPENDS *.hpp)
 
-file(GLOB_RECURSE APP_SOURCES CONFIGURE_DEPENDS *.c*)
-file(GLOB_RECURSE APP_HEADERS CONFIGURE_DEPENDS *.hpp)
-
-target_sources(app
+target_sources(pi_game_engine
   PRIVATE
-    ${APP_SOURCES}
+    ${SOURCES}
   PUBLIC
     FILE_SET HEADERS
     FILES
-      ${APP_HEADERS}
+      ${HEADERS}
 )
 
-target_include_directories(app
+target_include_directories(pi_game_engine
   PUBLIC
     include
 )
 
-target_link_directories(app
+target_link_directories(pi_game_engine
   PUBLIC
     src
 )
 
 
-target_link_libraries(app
+target_link_libraries(pi_game_engine
   PUBLIC
     core
     gl
@@ -34,5 +32,4 @@ target_link_libraries(app
     pthread
     GL
     X11
-    Xrandr
 )

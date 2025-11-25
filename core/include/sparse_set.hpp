@@ -9,13 +9,32 @@ namespace core {
   protected:
     std::vector<I>            entities{};
     std::vector<unsigned int> sparse{};
+    unsigned int              u{0};
     unsigned int              n{0};
 
   public:
     virtual ~SparseSet() = default;
 
-    virtual bool contains(I e) {
-      return e < this->n && this->sparse[e] < this->n && this->sparse[e] >= 0 &&
+    unsigned int getNumElements() {
+      return this->n;
+    }
+
+    virtual void addElem(I e) {
+      if (this->contains(e))
+        return;
+      this->n++;
+      if (this->entities.size() < this->n)
+        this->entities.resize(this->n);
+      this->entities[this->n - 1] = e;
+      if (this->sparse.size() <= e) {
+        this->u = e + 1;
+        this->sparse.resize(this->u);
+      }
+      this->sparse[e] = this->n - 1;
+    }
+
+    bool contains(I e) {
+      return e < this->u && this->sparse[e] < this->n && this->sparse[e] >= 0 &&
              e == this->entities[this->sparse[e]];
     }
 
@@ -23,56 +42,57 @@ namespace core {
       if (!this->contains(e))
         return;
       unsigned int entityIndex = this->sparse[e];
-      I            lastEntity = this->entities.back();
+      I            lastEntity = this->entities[this->n - 1];
       unsigned int lastIndex = this->sparse[lastEntity];
 
       this->entities[entityIndex] = lastEntity;
       this->sparse[lastEntity] = entityIndex;
+      this->entities[lastIndex] = this->u;
       this->n--;
     }
-  };
 
+    std::vector<I> &getEntities() {
+      return this->entities;
+    }
+  };
+}
+
+namespace core {
   template <typename I, IsSubClassOf<BaseComponent> T>
   class ExtendedSparseSet : public SparseSet<I> {
   private:
     std::vector<T> components{};
 
   public:
-    ExtendedSparseSet() {}
-
     ~ExtendedSparseSet() {
       for (T &component : components)
         component.clearComponent();
     }
 
-    ExtendedSparseSet(unsigned int size) {
-      this->entities.reserve(size);
-      this->sparse.reserve(size);
-      this->components.reserve(size);
-    }
-
-    template <typename... Args> void addElem(I entity, Args &&...args) {
-      if (this->contains(entity))
-        return;
-      this->entities.emplace_back(entity);
-      this->components.emplace_back(std::forward<Args>(args)...);
-      if (this->sparse.size() <= entity)
-        this->sparse.resize(entity + 1);
-      this->sparse[entity] = this->n++;
+    template <typename... Args> void addComponent(I entity, Args &&...args) {
+      SparseSet<I>::addElem(entity);
+      if (this->components.size() < this->n)
+        this->components.resize(this->n);
+      this->components.emplace(this->components.begin() + this->n - 1,
+                               std::forward<Args>(args)...);
     }
 
     void removeElem(I entity) override {
       if (!this->contains(entity))
         return;
       unsigned int entityIndex = this->sparse[entity];
-      I            lastEntity = this->entities.back();
-      T           &lastComponent = this->components.back();
+      I            lastEntity = this->entities[this->n - 1];
+      T           &lastComponent = this->components[this->n - 1];
       unsigned int lastIndex = this->sparse[lastEntity];
 
       this->entities[entityIndex] = lastEntity;
       this->components[entityIndex] = lastComponent;
       this->sparse[lastEntity] = entityIndex;
+      this->entities[lastIndex] = this->u;
       this->n--;
+
+      this->entities.pop_back();
+      this->components.pop_back();
     }
 
     T &get(I e) {
@@ -81,10 +101,6 @@ namespace core {
 
     std::vector<T> &getComponents() {
       return this->components;
-    }
-
-    std::vector<I> &getEntities() {
-      return this->entities;
     }
   };
 }

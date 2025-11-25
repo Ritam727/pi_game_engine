@@ -9,14 +9,15 @@ namespace core {
     float yaw{-90.0f};
     float pitch{0.0f};
 
-    glm::vec3 position;
-    glm::vec3 front;
-    glm::vec3 up;
-    glm::vec3 right;
+    glm::vec3 position{0.0f};
+    glm::vec3 front{0.0f};
+    glm::vec3 up{0.0f};
+    glm::vec3 right{0.0f};
 
     bool cameraActive{false};
 
   public:
+    CameraTransform();
     CameraTransform(glm::vec3 position, glm::vec3 up);
 
     void setPosition(glm::vec3 position);

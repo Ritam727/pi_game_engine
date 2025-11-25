@@ -7,6 +7,7 @@
 #include "materials.hpp"
 #include "mesh.hpp"
 #include "resource_manager.hpp"
+#include "selectable.hpp"
 #include "texture.hpp"
 #include "transform.hpp"
 #include "vertex.hpp"
@@ -21,6 +22,7 @@ namespace gl {
     registryRef.addComponent<Material>(this->getEntityId(), ambient, diffuse,
                                        specular, 32.0f);
     registryRef.addComponent<core::Transform>(this->getEntityId());
+    registryRef.addComponent<core::Selectable>(this->getEntityId());
   }
 }
 

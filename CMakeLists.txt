@@ -3,7 +3,6 @@ project(engine)
 
 add_compile_definitions(ENGINE_PATH="${CMAKE_BINARY_DIR}")
 
-add_subdirectory(app)
 add_subdirectory(gl)
 add_subdirectory(glfw)
 add_subdirectory(glad)
@@ -17,7 +16,7 @@ add_subdirectory(assimp)
 add_subdirectory(ui)
 
 add_executable(pi_game_engine)
-add_subdirectory(src)
+add_subdirectory(app)
 
 file(COPY "res" DESTINATION "${CMAKE_BINARY_DIR}")
 

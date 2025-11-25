@@ -3,6 +3,8 @@
 #include "glm/gtc/matrix_transform.hpp"
 
 namespace core {
+  CameraTransform::CameraTransform() {}
+
   CameraTransform::CameraTransform(glm::vec3 position, glm::vec3 up)
       : position(position),
         front(glm::normalize(

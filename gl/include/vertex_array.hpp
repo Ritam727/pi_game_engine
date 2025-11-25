@@ -13,9 +13,9 @@ namespace gl {
     void arrangeVertexLayout();
 
   public:
+    VertexArray();
     VertexArray(std::vector<core::Vertex> &vertices,
                 std::vector<unsigned int> &indices);
-    ~VertexArray();
 
     void bind();
     void unbind();

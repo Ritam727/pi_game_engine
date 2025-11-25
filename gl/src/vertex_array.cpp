@@ -3,6 +3,8 @@
 #include "vertex.hpp"
 
 namespace gl {
+  VertexArray::VertexArray() {}
+
   VertexArray::VertexArray(std::vector<core::Vertex> &vertices,
                            std::vector<unsigned int> &indices) {
     GL_CALL(glGenVertexArrays(1, &this->vertexArrayIndex));
@@ -41,8 +43,6 @@ namespace gl {
                 vertexAttributeElements[i].getSizeOfElement();
     }
   }
-
-  VertexArray::~VertexArray() {}
 
   void VertexArray::bind() {
     GL_CALL(glBindVertexArray(this->vertexArrayIndex));

@@ -2,6 +2,8 @@
 #include "gl_utils.hpp"
 
 namespace gl {
+  Mesh::Mesh() {}
+
   Mesh::Mesh(std::vector<core::Vertex> &vertices,
              std::vector<unsigned int> &indices)
       : vertexArray(vertices, indices), vertexCount(vertices.size()),

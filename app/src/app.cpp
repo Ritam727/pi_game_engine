@@ -14,7 +14,7 @@ App::App() {
   this->pushLayer<gl::Renderer>(this->registry, this->eventManager,
                                 this->resourceManager, this->screenSize.width,
                                 this->screenSize.height);
-  this->pushLayer<ui::UI>(this->window);
+  this->pushLayer<ui::UI>(this->window, this->registry);
 
   this->eventManager.subscribe(
       core::Constants::WINDOW_CLOSE_TOPIC, [&](core::IEventPtr &event) {

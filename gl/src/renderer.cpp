@@ -3,11 +3,13 @@
 #include "camera_transform.hpp"
 #include "gl_constants.hpp"
 #include "event_manager.hpp"
+#include "lights.hpp"
 #include "materials.hpp"
 #include "mesh.hpp"
 #include "registry.hpp"
 #include "gl_events.hpp"
 #include "resource_manager.hpp"
+#include "sparse_set.hpp"
 #include "texture.hpp"
 #include "transform.hpp"
 
@@ -106,6 +108,7 @@ namespace gl {
   void Renderer::drawObjects(float ts) {
     std::vector<core::Entity> &entities =
         this->registry.getPool<Mesh>().getEntities();
+
     core::ExtendedSparseSet<core::Entity, Mesh> &meshes =
         this->registry.getPool<Mesh>();
     core::ExtendedSparseSet<core::Entity, core::Transform> &transforms =
@@ -119,8 +122,7 @@ namespace gl {
       this->shader.set<glm::mat4>("model", transform.getModelMatrix());
 
       Material &material = materials.get(entity);
-      this->shader.set<Material &, core::ResourceManager &>(
-          "material", material, this->resourceManager);
+      this->shader.set<Material &>("material", material, this->resourceManager);
 
       Mesh &mesh = meshes.get(entity);
       mesh.draw();
