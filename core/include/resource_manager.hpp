@@ -7,20 +7,30 @@
 #include <string>
 #include <typeindex>
 #include <unordered_map>
-#include <unordered_set>
 
 namespace core {
   class ResourceManager {
   private:
-    std::unordered_set<std::string> registeredTypes;
     std::unordered_map<std::type_index, std::unique_ptr<IResourcePool>>
-        resources;
+        resources{};
 
   public:
-    ResourceManager() {}
+    template <IsSubClassOf<Resource> T>
+    T &getResourceByIndex(unsigned int index) {
+      std::type_index poolIndex = std::type_index(typeid(T));
+      return static_cast<ResourcePool<T> *>(this->resources[poolIndex].get())
+          ->getResourceByIndex(index);
+    }
 
     template <IsSubClassOf<Resource> T>
-    void createResources(std::vector<std::string> &paths) {
+    unsigned int getIndexOf(std::string &path) {
+      std::type_index poolIndex = std::type_index(typeid(T));
+      return static_cast<ResourcePool<T> *>(this->resources[poolIndex].get())
+          ->getIndexOf(path);
+    }
+
+    template <IsSubClassOf<Resource> T>
+    void createResourcesBulk(std::vector<std::string> &paths) {
       std::type_index           poolIndex = std::type_index(typeid(T));
       std::vector<std::thread>  threadJobs;
       std::vector<unsigned int> indices;

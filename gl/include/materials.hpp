@@ -2,13 +2,11 @@
 
 #include "base_component.hpp"
 #include "glm/glm.hpp"
-#include "texture.hpp"
-#include <optional>
 
 namespace gl {
   struct MaterialGroup {
-    glm::vec3              vector;
-    std::optional<Texture> texture;
+    glm::vec3 vector;
+    int       texture{-1};
   };
 
   struct Material : public core::BaseComponent {

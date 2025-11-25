@@ -104,7 +104,7 @@ namespace gl {
     initializeTexture(aiTextureType_SPECULAR, material, directory, 2, paths,
                       specularPresent);
 
-    this->resourceManager.createResources<Texture>(paths);
+    this->resourceManager.createResourcesBulk<Texture>(paths);
     this->emplaceTexture(ambientPresent, paths[0], ambient);
     this->emplaceTexture(diffusePresent, paths[1], diffuse);
     this->emplaceTexture(specularPresent, paths[2], specular);
@@ -127,7 +127,7 @@ namespace gl {
   void ModelLoader::emplaceTexture(bool &present, std::string &path,
                                    MaterialGroup &group) {
     if (present)
-      group.texture.emplace(this->resourceManager.getResource<Texture>(path));
+      group.texture = this->resourceManager.getIndexOf<Texture>(path);
   }
 
   std::vector<Model> ModelLoader::loadModels(const std::string &path) {

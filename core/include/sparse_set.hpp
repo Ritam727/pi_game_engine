@@ -5,29 +5,47 @@
 #include <vector>
 
 namespace core {
-  class ISparseSet {
+  template <typename I> class SparseSet {
+  protected:
+    std::vector<I>            entities{};
+    std::vector<unsigned int> sparse{};
+    unsigned int              n{0};
+
   public:
-    virtual ~ISparseSet() = default;
+    virtual ~SparseSet() = default;
+
+    virtual bool contains(I e) {
+      return e < this->n && this->sparse[e] < this->n && this->sparse[e] >= 0 &&
+             e == this->entities[this->sparse[e]];
+    }
+
+    virtual void removeElem(I e) {
+      if (!this->contains(e))
+        return;
+      unsigned int entityIndex = this->sparse[e];
+      I            lastEntity = this->entities.back();
+      unsigned int lastIndex = this->sparse[lastEntity];
+
+      this->entities[entityIndex] = lastEntity;
+      this->sparse[lastEntity] = entityIndex;
+      this->n--;
+    }
   };
 
   template <typename I, IsSubClassOf<BaseComponent> T>
-  class SparseSet : public ISparseSet {
+  class ExtendedSparseSet : public SparseSet<I> {
   private:
-    std::vector<I>            entities{};
-    std::vector<unsigned int> sparse{};
-    std::vector<T>            components{};
-
-    unsigned int n = 0;
+    std::vector<T> components{};
 
   public:
-    SparseSet() {}
+    ExtendedSparseSet() {}
 
-    ~SparseSet() {
+    ~ExtendedSparseSet() {
       for (T &component : components)
         component.clearComponent();
     }
 
-    SparseSet(unsigned int size) {
+    ExtendedSparseSet(unsigned int size) {
       this->entities.reserve(size);
       this->sparse.reserve(size);
       this->components.reserve(size);
@@ -43,7 +61,7 @@ namespace core {
       this->sparse[entity] = this->n++;
     }
 
-    void removeElem(I entity) {
+    void removeElem(I entity) override {
       if (!this->contains(entity))
         return;
       unsigned int entityIndex = this->sparse[entity];
@@ -55,11 +73,6 @@ namespace core {
       this->components[entityIndex] = lastComponent;
       this->sparse[lastEntity] = entityIndex;
       this->n--;
-    }
-
-    bool contains(I e) {
-      return e < this->n && this->sparse[e] < this->n && this->sparse[e] >= 0 &&
-             e == this->entities[this->sparse[e]];
     }
 
     T &get(I e) {

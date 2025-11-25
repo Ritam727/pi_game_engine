@@ -106,11 +106,11 @@ namespace gl {
   void Renderer::drawObjects(float ts) {
     std::vector<core::Entity> &entities =
         this->registry.getPool<Mesh>().getEntities();
-    core::SparseSet<core::Entity, Mesh> &meshes =
+    core::ExtendedSparseSet<core::Entity, Mesh> &meshes =
         this->registry.getPool<Mesh>();
-    core::SparseSet<core::Entity, core::Transform> &transforms =
+    core::ExtendedSparseSet<core::Entity, core::Transform> &transforms =
         this->registry.getPool<core::Transform>();
-    core::SparseSet<core::Entity, Material> &materials =
+    core::ExtendedSparseSet<core::Entity, Material> &materials =
         this->registry.getPool<Material>();
 
     unsigned int i = 0;
@@ -119,7 +119,8 @@ namespace gl {
       this->shader.set<glm::mat4>("model", transform.getModelMatrix());
 
       Material &material = materials.get(entity);
-      this->shader.set<Material &>("material", material);
+      this->shader.set<Material &, core::ResourceManager &>(
+          "material", material, this->resourceManager);
 
       Mesh &mesh = meshes.get(entity);
       mesh.draw();

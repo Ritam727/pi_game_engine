@@ -19,6 +19,7 @@ namespace gl {
 
     void use();
 
-    template <typename T> void set(const std::string &name, T value) const;
+    template <typename T, typename... Args>
+    void set(const std::string &name, T value, Args &&...args) const;
   };
 }

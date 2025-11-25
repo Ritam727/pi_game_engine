@@ -3,6 +3,8 @@
 #include "gl_utils.hpp"
 #include "lights.hpp"
 #include "materials.hpp"
+#include "resource_manager.hpp"
+#include "texture.hpp"
 #include "utils.hpp"
 
 namespace gl {
@@ -128,34 +130,32 @@ namespace gl {
   }
 
   template <>
-  void Shader::set<Material &>(const std::string &name,
-                               Material          &material) const {
+  void Shader::set<Material &, core::ResourceManager &>(
+      const std::string &name, Material &material,
+      core::ResourceManager &resourceManager) const {
     this->set<glm::vec3>(name + ".ambient", material.ambient.vector);
     this->set<glm::vec3>(name + ".diffuse", material.diffuse.vector);
     this->set<glm::vec3>(name + ".specular", material.specular.vector);
     this->set<float>(name + ".shininess", material.shininess);
 
-    std::optional<Texture> &ambientTexture = material.ambient.texture;
-    this->set<bool>(name + ".ambientTexturePresent",
-                    ambientTexture.has_value());
-    if (ambientTexture.has_value()) {
-      ambientTexture->bind(0);
+    int ambientTexture = material.ambient.texture;
+    this->set<bool>(name + ".ambientTexturePresent", (ambientTexture >= 0));
+    if (ambientTexture >= 0) {
+      resourceManager.getResourceByIndex<Texture>(ambientTexture).bind(0);
       this->set<int>(name + ".ambientTexture", 0);
     }
 
-    std::optional<Texture> &diffuseTexture = material.diffuse.texture;
-    this->set<bool>(name + ".diffuseTexturePresent",
-                    diffuseTexture.has_value());
-    if (diffuseTexture.has_value()) {
-      diffuseTexture->bind(1);
+    int diffuseTexture = material.diffuse.texture;
+    this->set<bool>(name + ".diffuseTexturePresent", (diffuseTexture >= 0));
+    if (diffuseTexture >= 0) {
+      resourceManager.getResourceByIndex<Texture>(diffuseTexture).bind(1);
       this->set<int>(name + ".diffuseTexture", 1);
     }
 
-    std::optional<Texture> &specularTexture = material.specular.texture;
-    this->set<bool>(name + ".specularTexturePresent",
-                    specularTexture.has_value());
-    if (specularTexture.has_value()) {
-      specularTexture->bind(2);
+    int specularTexture = material.specular.texture;
+    this->set<bool>(name + ".specularTexturePresent", (specularTexture >= 0));
+    if (specularTexture >= 0) {
+      resourceManager.getResourceByIndex<Texture>(specularTexture).bind(2);
       this->set<int>(name + ".specularTexture", 2);
     }
   }

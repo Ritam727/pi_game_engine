@@ -1,8 +1,5 @@
 #pragma once
 
-#include "glad/glad.h"
-
-#include "logger.hpp"
 #include "resource.hpp"
 #include "stb_image.hpp"
 
