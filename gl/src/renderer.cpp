@@ -10,7 +10,6 @@
 #include "gl_events.hpp"
 #include "resource_manager.hpp"
 #include "sparse_set.hpp"
-#include "texture.hpp"
 #include "transform.hpp"
 
 #ifndef ENGINE_PATH
@@ -30,26 +29,8 @@ namespace gl {
     this->registerFovChangeCallback();
     this->registerModelLoadCallback();
 
-    this->registry.addComponent<DirectionalLight>(
-        this->light.getEntityId(), glm::vec3{0.1f}, glm::vec3{0.2f},
-        glm::vec3{0.4f});
-
-    this->registry.addComponent<PointLights>(
-        this->light.getEntityId(),
-        std::vector<PointLight>{
-            4,
-            {glm::vec3{0.1f}, glm::vec3{0.2f}, glm::vec3{0.2f}}});
-    for (unsigned int i = 0; i < 4; i++) {
-      this->registry.getPool<PointLights>()
-          .get(this->light.getEntityId())
-          .lights[i]
-          .position = this->pointLightPositions[i];
-    }
-
-    this->registry.addComponent<SpotLight>(
-        this->light.getEntityId(), glm::vec3{0.4f}, glm::vec3{0.8f},
-        glm::vec3{0.8f}, glm::cos(glm::radians(12.0f)),
-        glm::cos(glm::radians(17.5f)));
+    this->registry.addComponent<LightComponent>(this->light.getEntityId(),
+                                                LightType::SPOT_LIGHT);
 
     GL_CALL(glEnable(GL_DEPTH_TEST));
     GL_CALL(glEnable(GL_CULL_FACE));
@@ -89,23 +70,15 @@ namespace gl {
   }
 
   void Renderer::bindLights() {
-    PointLights &pointLights =
-        this->registry.getPool<PointLights>().get(this->light.getEntityId());
-    this->shader.set<int>("pointLightCount", pointLights.lights.size());
-    for (unsigned int i = 0; i < pointLights.lights.size(); i++)
-      this->shader.set<PointLight &>("pointLights[" + std::to_string(i) + "]",
-                                     pointLights.lights[i]);
-
-    this->shader.set<DirectionalLight &>(
-        "directionalLight", this->registry.getPool<DirectionalLight>().get(
-                                this->light.getEntityId()));
-
-    this->shader.set<SpotLight &>(
-        "spotLight",
-        this->registry.getPool<SpotLight>().get(this->light.getEntityId()));
+    LightComponent &component =
+        this->registry.getPool<LightComponent>().get(this->light.getEntityId());
+    this->shader.set<LightComponent &>(
+        "light", this->registry.getPool<LightComponent>().get(
+                     this->light.getEntityId()));
   }
 
   void Renderer::drawObjects(float ts) {
+    unsigned int numEntities = this->registry.getPool<Mesh>().getNumElements();
     std::vector<core::Entity> &entities =
         this->registry.getPool<Mesh>().getEntities();
 
@@ -116,8 +89,9 @@ namespace gl {
     core::ExtendedSparseSet<core::Entity, Material> &materials =
         this->registry.getPool<Material>();
 
-    unsigned int i = 0;
-    for (core::Entity &entity : entities) {
+    for (unsigned int i = 0; i < numEntities; i++) {
+      core::Entity &entity = entities[i];
+
       core::Transform &transform = transforms.get(entity);
       this->shader.set<glm::mat4>("model", transform.getModelMatrix());
 
@@ -138,12 +112,6 @@ namespace gl {
         glm::mat4 view = cameraTransform.getViewMatrix();
         this->shader.set<glm::mat4>("view", view);
         this->shader.set<glm::vec3>("viewerPos", cameraTransform.getPosition());
-        this->registry.getPool<SpotLight>()
-            .get(this->light.getEntityId())
-            .position = cameraTransform.getPosition();
-        this->registry.getPool<SpotLight>()
-            .get(this->light.getEntityId())
-            .direction = cameraTransform.getForwardDirection();
       }
     }
 

@@ -4,57 +4,31 @@
 #include "base_object.hpp"
 #include "glm/glm.hpp"
 #include "selectable.hpp"
+#include "utils.hpp"
 
 namespace gl {
-  struct PointLight : public core::BaseComponent {
-    glm::vec3 position{0.0f, 3.0f, 3.0f};
+  ITERABLE_ENUM(LightType, DIRECTIONAL_LIGHT, POINT_LIGHT, SPOT_LIGHT);
 
-    glm::vec3 ambient{0.0f};
-    glm::vec3 diffuse{0.0f};
-    glm::vec3 specular{0.0f};
+  struct LightComponent : public core::BaseComponent {
+    LightType type{LightType::DIRECTIONAL_LIGHT};
+
+    glm::vec3 direction{0.0f, -1.0f, -1.0f};
+    glm::vec3 position{0.0f, 10.0f, 0.0f};
+
+    glm::vec3 ambient{0.1f};
+    glm::vec3 diffuse{1.0f};
+    glm::vec3 specular{1.0f};
 
     float constant{1.0f};
     float linear{0.09f};
     float quadratic{0.032f};
 
-    PointLight() {}
+    float innerCutOff{12.5f};
+    float outerCutOff{17.5f};
 
-    PointLight(glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular)
-        : ambient(ambient), diffuse(diffuse), specular(specular) {}
-  };
+    LightComponent() {}
 
-  struct PointLights : public core::BaseComponent {
-    std::vector<PointLight> lights{};
-
-    PointLights() {}
-
-    PointLights(std::vector<PointLight> lights) : lights(lights) {}
-  };
-
-  struct DirectionalLight : public core::BaseComponent {
-    glm::vec3 direction{0.0f, -1.0f, -1.0f};
-
-    glm::vec3 ambient{0.0f};
-    glm::vec3 diffuse{0.0f};
-    glm::vec3 specular{0.0f};
-
-    DirectionalLight() {}
-
-    DirectionalLight(glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular)
-        : ambient(ambient), diffuse(diffuse), specular(specular) {}
-  };
-
-  struct SpotLight : public PointLight {
-    glm::vec3 direction{0.0f, -1.0f, -1.0f};
-    float     innerCutOff{1.0f};
-    float     outerCutOff{1.0f};
-
-    SpotLight() {}
-
-    SpotLight(glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular,
-              float innerCutOff, float outerCutOff)
-        : PointLight(ambient, diffuse, specular), innerCutOff(innerCutOff),
-          outerCutOff(outerCutOff) {}
+    LightComponent(LightType type) : type(type) {}
   };
 
   class Light : public core::BaseObject {
