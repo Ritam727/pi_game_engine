@@ -42,7 +42,7 @@ namespace ui {
   void LightControls::lightComponent(core::Entity       &entity,
                                      gl::LightComponent &light) {
     std::string ID{Constants::LIGHT_COMPONENT + std::to_string(entity)};
-    const std::array<std::string, 3> &items = Constants::LIGHT_TYPES;
+    const std::vector<std::string> &items = Constants::LIGHT_TYPES;
 
     ImGui::PushID(ID.c_str());
     ImGui::Text("%s", Constants::LIGHT_CONTROLS_LABEL.c_str());

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <array>
+#include <vector>
 #include <string>
 
 namespace ui {
@@ -10,25 +10,34 @@ namespace ui {
     static constexpr inline float SPEED_MEDIUM{0.01f};
     static constexpr inline float SPEED_SLOW{0.001f};
     static constexpr inline float ZERO{0.0f};
+    static constexpr inline float ONE{1.0f};
+    static constexpr inline float ANGLE_MIN{-360.0f};
     static constexpr inline float ANGLE_MAX{360.0f};
 
-    static constexpr inline std::string DIRECTION{"Direction"};
-    static constexpr inline std::string POSITION{"Position"};
-    static constexpr inline std::string AMBIENT{"Ambient"};
-    static constexpr inline std::string SPECULAR{"Specular"};
-    static constexpr inline std::string LINEAR{"Linear"};
-    static constexpr inline std::string QUADRATIC{"Quadratic"};
-    static constexpr inline std::string INNER_CUT_OFF{"Inner Cut Off"};
-    static constexpr inline std::string OUTER_CUT_OFF{"Outer Cut Off"};
-    static constexpr inline std::string LIGHT_COMPONENT{"Light"};
-    static constexpr inline std::string LIGHT_CONTROLS_LABEL{"Light Controls"};
-    static constexpr inline std::string TYPE_LABEL{"Type"};
-    static constexpr inline std::string LIGHT_TYPE_DIRECTIONAL{"Directional"};
-    static constexpr inline std::string LIGHT_TYPE_POINT{"Point"};
-    static constexpr inline std::string LIGHT_TYPE_SPOT{"Spot"};
-    static constexpr inline std::string DOCKSPACE{"Dockspace"};
+    static const inline std::string DIRECTION{"Direction"};
+    static const inline std::string POSITION{"Position"};
+    static const inline std::string AMBIENT{"Ambient"};
+    static const inline std::string DIFFUSE{"Diffuse"};
+    static const inline std::string SPECULAR{"Specular"};
+    static const inline std::string LINEAR{"Linear"};
+    static const inline std::string QUADRATIC{"Quadratic"};
+    static const inline std::string INNER_CUT_OFF{"Inner Cut Off"};
+    static const inline std::string OUTER_CUT_OFF{"Outer Cut Off"};
+    static const inline std::string ENTITIES{"Entities"};
+    static const inline std::string ENTITY{"Entity"};
+    static const inline std::string COMPONENTS{"Components"};
+    static const inline std::string TRANSFORM_COMPONENT{"Transform"};
+    static const inline std::string LIGHT_COMPONENT{"Light"};
+    static const inline std::string LIGHT_CONTROLS_LABEL{"Light Controls"};
+    static const inline std::string TYPE_LABEL{"Type"};
+    static const inline std::string LIGHT_TYPE_DIRECTIONAL{"Directional"};
+    static const inline std::string LIGHT_TYPE_POINT{"Point"};
+    static const inline std::string LIGHT_TYPE_SPOT{"Spot"};
+    static const inline std::string DOCKSPACE{"Dockspace"};
+    static const inline std::string CAMERA_TRANSFORM_COMPONENT{
+        "Camera Transform"};
 
-    static constexpr inline std::array<std::string, 3> LIGHT_TYPES{
+    static const inline std::vector<std::string> LIGHT_TYPES{
         LIGHT_TYPE_DIRECTIONAL, LIGHT_TYPE_POINT, LIGHT_TYPE_SPOT};
   };
 }

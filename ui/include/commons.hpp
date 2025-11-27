@@ -1,6 +1,7 @@
 #pragma once
 
 #include "glm/glm.hpp"
+#include "ui_constants.hpp"
 #include "utils.hpp"
 #include "imgui.h"
 
@@ -10,8 +11,8 @@ namespace ui {
   class Commons {
   public:
     template <core::IsIterableEnum E>
-    static void dropDownMenu(const std::string                &label,
-                             const std::array<std::string, 3> &items, E &val) {
+    static void dropDownMenu(const std::string              &label,
+                             const std::vector<std::string> &items, E &val) {
       unsigned int currentIndex = static_cast<unsigned int>(val);
       if (ImGui::BeginCombo(label.c_str(), items[currentIndex].c_str())) {
         for (int i = 0; i < items.size(); i++) {
@@ -27,9 +28,15 @@ namespace ui {
 
     static void colorControls(glm::vec3 &ambient, glm::vec3 &diffuse,
                               glm::vec3 &specular) {
-      ImGui::DragFloat3("Ambient", &ambient.x, 0.01, 0.0f, 1.0f);
-      ImGui::DragFloat3("Diffuse", &diffuse.x, 0.01, 0.0f, 1.0f);
-      ImGui::DragFloat3("Specular", &specular.x, 0.01, 0.0f, 1.0f);
+      ImGui::DragFloat3(Constants::AMBIENT.c_str(), &ambient.x,
+                        Constants::SPEED_MEDIUM, Constants::ZERO,
+                        Constants::ONE);
+      ImGui::DragFloat3(Constants::DIFFUSE.c_str(), &diffuse.x,
+                        Constants::SPEED_MEDIUM, Constants::ZERO,
+                        Constants::ONE);
+      ImGui::DragFloat3(Constants::SPECULAR.c_str(), &specular.x,
+                        Constants::SPEED_MEDIUM, Constants::ZERO,
+                        Constants::ONE);
     }
   };
 }
