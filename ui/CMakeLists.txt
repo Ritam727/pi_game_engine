@@ -1,10 +1,11 @@
 add_library(ui STATIC)
 
-file(GLOB_RECURSE UI_HEADERS CONFIGURE_DEPENDS *.hpp)
+file(GLOB_RECURSE UI_SOURCES CONFIGURE_DEPENDS src/*.cpp)
+file(GLOB_RECURSE UI_HEADERS CONFIGURE_DEPENDS include/*.hpp)
 
 target_sources(ui
   PRIVATE
-    src/ui.cpp
+    ${UI_SOURCES}
     imgui/backends/imgui_impl_glfw.cpp
     imgui/backends/imgui_impl_opengl3.cpp
     imgui/imgui.cpp
@@ -15,6 +16,7 @@ target_sources(ui
   PUBLIC
     FILE_SET HEADERS
     FILES
+      imgui/imgui.h
       ${UI_HEADERS}
 )
 

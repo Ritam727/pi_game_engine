@@ -30,7 +30,9 @@ namespace gl {
 
     LightComponent(LightType type) : type(type) {}
   };
+}
 
+namespace gl {
   class Light : public core::BaseObject {
   public:
     Light(core::Registry &registryRef) : core::BaseObject(registryRef) {
