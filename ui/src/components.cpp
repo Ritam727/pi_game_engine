@@ -8,6 +8,12 @@
 #include "ui_constants.hpp"
 
 namespace ui {
+  void Components::onUpdate(float                          ts,
+                            core::SparseSet<core::Entity> &selectedEntities,
+                            core::Registry                &registry) {
+    Components::componentsWindow(selectedEntities, registry);
+  }
+
   void Components::componentsWindow(
       core::SparseSet<core::Entity> &selectedEntities,
       core::Registry                &registry) {

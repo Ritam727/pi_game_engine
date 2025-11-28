@@ -3,6 +3,7 @@
 #include "camera.hpp"
 #include "inputs.hpp"
 #include "layer.hpp"
+#include "layer_stack.hpp"
 #include "registry.hpp"
 #include "resource_manager.hpp"
 #include "utils.hpp"
@@ -28,13 +29,8 @@ private:
   core::Camera   camera{this->registry, glm::vec3(0.0f, 0.0f, 3.0f),
                       glm::vec3(0.0f, 1.0f, 0.0f)};
   inputs::Inputs inputs{this->window, this->registry, this->eventManager};
-  std::vector<std::unique_ptr<core::Layer>> layers{};
-  bool                                      running{true};
-
-  template <core::IsSubClassOf<core::Layer> T, typename... Args>
-  void pushLayer(Args &&...args) {
-    this->layers.emplace_back(std::make_unique<T>(std::forward<Args>(args)...));
-  }
+  core::LayerStack<core::Layer> layers;
+  bool                          running{true};
 
   static const inline std::vector<std::string> nonMainThreadTopics{
       inputs::Constants::FOV_CHANGE_TOPIC,

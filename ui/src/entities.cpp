@@ -5,6 +5,12 @@
 #include "ui_constants.hpp"
 
 namespace ui {
+  void Entities::onUpdate(float                          ts,
+                          core::SparseSet<core::Entity> &selectedEntities,
+                          core::Registry                &registry) {
+    Entities::entitiesWindow(selectedEntities, registry);
+  }
+
   void Entities::entitiesWindow(core::SparseSet<core::Entity> &selectedEntities,
                                 core::Registry                &registry) {
     std::vector<core::Entity> &selectableEntities =

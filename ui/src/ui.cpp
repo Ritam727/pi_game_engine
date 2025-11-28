@@ -10,6 +10,9 @@
 namespace ui {
   UI::UI(core::Window &window, core::Registry &registry)
       : window(window), registry(registry) {
+    this->uiLayers.pushLayer<Components>();
+    this->uiLayers.pushLayer<Entities>();
+
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO &io = ImGui::GetIO();
@@ -27,8 +30,7 @@ namespace ui {
 
     UI::createDockspace();
 
-    Entities::entitiesWindow(this->selectedEntities, this->registry);
-    Components::componentsWindow(this->selectedEntities, this->registry);
+    this->uiLayers.onUpdate(ts, this->selectedEntities, this->registry);
   }
 
   void UI::postUpdate() {
