@@ -10,7 +10,7 @@
 namespace ui {
   UI::UI(core::Window &window, core::Registry &registry)
       : window(window), registry(registry) {
-    this->uiLayers.pushLayer<Components>();
+    this->uiLayers.pushLayer<Components>(this->uiState);
     this->uiLayers.pushLayer<Entities>();
 
     IMGUI_CHECKVERSION();

@@ -15,7 +15,7 @@ namespace core {
   public:
     virtual ~SparseSet() = default;
 
-    unsigned int getNumElements() {
+    unsigned int getNumElements() const {
       return this->n;
     }
 
@@ -33,7 +33,7 @@ namespace core {
       this->sparse[e] = this->n - 1;
     }
 
-    bool contains(I e) {
+    bool contains(I e) const {
       return e < this->u && this->sparse[e] < this->n && this->sparse[e] >= 0 &&
              e == this->entities[this->sparse[e]];
     }
@@ -51,8 +51,25 @@ namespace core {
       this->n--;
     }
 
-    std::vector<I> &getEntities() {
+    const std::vector<I> &getEntities() const {
       return this->entities;
+    }
+
+    bool intersects(const SparseSet<I> &other) const {
+      if (other.getNumElements() < this->n) {
+        const std::vector<I> &entities = other.getEntities();
+        for (unsigned int i = 0; i < other.getNumElements(); i++) {
+          if (this->contains(entities[i]))
+            return true;
+        }
+        return false;
+      } else {
+        for (unsigned int i = 0; i < this->n; i++) {
+          if (other.contains(this->entities[i]))
+            return true;
+        }
+        return false;
+      }
     }
   };
 }

@@ -13,15 +13,15 @@ namespace ui {
 
   void Entities::entitiesWindow(core::SparseSet<core::Entity> &selectedEntities,
                                 core::Registry                &registry) {
-    std::vector<core::Entity> &selectableEntities =
+    const std::vector<core::Entity> &selectableEntities =
         registry.getPool<core::Selectable>().getEntities();
 
     ImGui::Begin(Constants::ENTITIES.c_str());
 
     for (unsigned int i = 0;
          i < registry.getPool<core::Selectable>().getNumElements(); i++) {
-      core::Entity &entity = selectableEntities[i];
-      std::string   str = Constants::ENTITY + std::to_string(entity);
+      const core::Entity &entity = selectableEntities[i];
+      std::string         str = Constants::ENTITY + std::to_string(entity);
 
       bool &isEntitySelected =
           registry.getPool<core::Selectable>().get(entity).selected;

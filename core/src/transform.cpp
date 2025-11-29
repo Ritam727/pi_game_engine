@@ -29,9 +29,17 @@ namespace core {
     this->scale = scale;
   }
 
+  void Transform::updatePosition(glm::vec3 delta) {
+    this->position += delta;
+  }
+
   void Transform::updateRotation(glm::vec3 delta) {
     glm::quat q = glm::normalize(glm::quat(glm::radians(delta)));
     this->rotation = glm::normalize(q * this->rotation);
+  }
+
+  void Transform::updateScale(glm::vec3 delta) {
+    this->scale += delta;
   }
 
   glm::mat4 Transform::getModelMatrix() const {

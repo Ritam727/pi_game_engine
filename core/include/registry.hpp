@@ -28,7 +28,7 @@ namespace core {
 
     void removeEntity(Entity entity);
 
-    std::vector<Entity> &getAllEntities();
+    const std::vector<Entity> &getAllEntities() const;
 
     template <typename T, typename... Args>
     void addComponent(Entity entity, Args &&...args) {

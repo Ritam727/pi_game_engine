@@ -31,7 +31,7 @@ namespace core {
       p.second->removeElem(entity);
   }
 
-  std::vector<Entity> &Registry::getAllEntities() {
+  const std::vector<Entity> &Registry::getAllEntities() const {
     return this->entities.getEntities();
   }
 }

@@ -4,13 +4,13 @@
 #include "ui_constants.hpp"
 
 namespace ui {
-  void LightControls::directionalLightControls(core::Entity       &entity,
+  void LightControls::directionalLightControls(const core::Entity &entity,
                                                gl::LightComponent &light) {
     ImGui::DragFloat3(Constants::DIRECTION.c_str(), &light.direction.x,
                       Constants::SPEED_MEDIUM);
   }
 
-  void LightControls::pointLightControls(core::Entity       &entity,
+  void LightControls::pointLightControls(const core::Entity &entity,
                                          gl::LightComponent &light) {
     ImGui::DragFloat3(Constants::POSITION.c_str(), &light.position.x,
                       Constants::SPEED_FAST);
@@ -20,7 +20,7 @@ namespace ui {
                      Constants::SPEED_SLOW);
   }
 
-  void LightControls::spotLightControls(core::Entity       &entity,
+  void LightControls::spotLightControls(const core::Entity &entity,
                                         gl::LightComponent &light) {
     ImGui::DragFloat3(Constants::DIRECTION.c_str(), &light.direction.x,
                       Constants::SPEED_MEDIUM);
@@ -39,7 +39,7 @@ namespace ui {
                      Constants::ANGLE_MAX);
   }
 
-  void LightControls::lightComponent(core::Entity       &entity,
+  void LightControls::lightComponent(const core::Entity &entity,
                                      gl::LightComponent &light) {
     std::string ID{Constants::LIGHT_COMPONENT + std::to_string(entity)};
     const std::vector<std::string> &items = Constants::LIGHT_TYPES;

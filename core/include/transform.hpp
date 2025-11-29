@@ -9,9 +9,6 @@ namespace core {
   private:
     glm::vec3 position{0};
     glm::vec3 scale{1};
-    glm::vec3 axisX{1, 0, 0};
-    glm::vec3 axisY{0, 1, 0};
-    glm::vec3 axisZ{0, 0, 1};
     glm::quat rotation{glm::radians(glm::vec3(0.0f))};
 
     glm::mat4 getTranslationMatrix() const;
@@ -25,7 +22,9 @@ namespace core {
     void setRotation(glm::vec3 rotation);
     void setScale(glm::vec3 scale);
 
+    void updatePosition(glm::vec3 delta);
     void updateRotation(glm::vec3 delta);
+    void updateScale(glm::vec3 delta);
 
     glm::mat4 getModelMatrix() const;
     glm::quat getRotation() const;

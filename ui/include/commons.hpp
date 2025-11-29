@@ -8,6 +8,14 @@
 #include <string>
 
 namespace ui {
+  struct UIState {
+    glm::vec3 translation{Constants::ZERO};
+    glm::vec3 rotation{Constants::ZERO};
+    glm::vec3 scale{Constants::ONE};
+  };
+}
+
+namespace ui {
   class Commons {
   public:
     template <core::IsIterableEnum E>

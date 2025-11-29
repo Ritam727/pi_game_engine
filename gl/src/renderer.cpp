@@ -30,7 +30,7 @@ namespace gl {
     this->registerModelLoadCallback();
 
     this->registry.addComponent<LightComponent>(this->light.getEntityId(),
-                                                LightType::SPOT_LIGHT);
+                                                LightType::DIRECTIONAL_LIGHT);
 
     GL_CALL(glEnable(GL_DEPTH_TEST));
     GL_CALL(glEnable(GL_CULL_FACE));
@@ -79,7 +79,7 @@ namespace gl {
 
   void Renderer::drawObjects(float ts) {
     unsigned int numEntities = this->registry.getPool<Mesh>().getNumElements();
-    std::vector<core::Entity> &entities =
+    const std::vector<core::Entity> &entities =
         this->registry.getPool<Mesh>().getEntities();
 
     core::ExtendedSparseSet<core::Entity, Mesh> &meshes =
@@ -90,7 +90,7 @@ namespace gl {
         this->registry.getPool<Material>();
 
     for (unsigned int i = 0; i < numEntities; i++) {
-      core::Entity &entity = entities[i];
+      const core::Entity &entity = entities[i];
 
       core::Transform &transform = transforms.get(entity);
       this->shader.set<glm::mat4>("model", transform.getModelMatrix());
