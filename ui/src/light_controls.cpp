@@ -45,8 +45,6 @@ namespace ui {
     const std::vector<std::string> &items = Constants::LIGHT_TYPES;
 
     ImGui::PushID(ID.c_str());
-    ImGui::Text("%s", Constants::LIGHT_CONTROLS_LABEL.c_str());
-
     Commons::dropDownMenu<gl::LightType>(Constants::TYPE_LABEL, items,
                                          light.type);
     Commons::colorControls(light.ambient, light.diffuse, light.specular);

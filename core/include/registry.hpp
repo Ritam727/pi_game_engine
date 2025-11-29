@@ -42,7 +42,7 @@ namespace core {
           ->addComponent(entity, std::forward<Args>(args)...);
     }
 
-    template <typename T> void removeComponent(Entity entity, T &component) {
+    template <typename T> void removeComponent(Entity entity) {
       std::type_index poolIndex = std::type_index(typeid(T));
       static_cast<core::ExtendedSparseSet<Entity, T> *>(
           this->pools[poolIndex].get())

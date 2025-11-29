@@ -22,7 +22,5 @@ namespace ui {
 
     void onUpdate(float ts) override;
     void postUpdate() override;
-
-    static void createDockspace();
   };
 }

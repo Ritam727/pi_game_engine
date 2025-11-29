@@ -36,7 +36,6 @@ namespace ui {
     static const inline std::string LIGHT_TYPE_DIRECTIONAL{"Directional"};
     static const inline std::string LIGHT_TYPE_POINT{"Point"};
     static const inline std::string LIGHT_TYPE_SPOT{"Spot"};
-    static const inline std::string DOCKSPACE{"Dockspace"};
     static const inline std::string CAMERA_TRANSFORM_COMPONENT{
         "Camera Transform"};
 

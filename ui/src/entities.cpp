@@ -18,20 +18,30 @@ namespace ui {
 
     ImGui::Begin(Constants::ENTITIES.c_str());
 
+    if (ImGui::Button("Add Entity")) {
+      core::Entity newEntity = registry.createEntity();
+      registry.addComponent<core::Selectable>(newEntity);
+    }
     for (unsigned int i = 0;
          i < registry.getPool<core::Selectable>().getNumElements(); i++) {
       const core::Entity &entity = selectableEntities[i];
       std::string         str = Constants::ENTITY + std::to_string(entity);
 
-      bool &isEntitySelected =
-          registry.getPool<core::Selectable>().get(entity).selected;
-
-      ImGui::Checkbox(str.c_str(), &isEntitySelected);
-
-      if (isEntitySelected)
+      if (ImGui::Selectable(str.c_str(), selectedEntities.contains(entity))) {
+        for (core::Entity e : selectedEntities.getEntities()) {
+          selectedEntities.removeElem(e);
+        }
         selectedEntities.addElem(entity);
-      else
-        selectedEntities.removeElem(entity);
+      }
+      if (ImGui::BeginPopupContextItem()) {
+        ImGui::PushID(str.c_str());
+        if (ImGui::Button("Delete")) {
+          registry.removeEntity(entity);
+          ImGui::CloseCurrentPopup();
+        }
+        ImGui::PopID();
+        ImGui::EndPopup();
+      }
     }
     ImGui::End();
   }
