@@ -7,10 +7,10 @@ namespace core {
 
   CameraTransform::CameraTransform(glm::vec3 position, glm::vec3 up)
       : position(position),
-        front(glm::normalize(
-            glm::vec3(cos(glm::radians(yaw)) * cos(glm::radians(pitch)),
-                      sin(glm::radians(pitch)),
-                      sin(glm::radians(yaw)) * cos(glm::radians(pitch))))),
+        front(glm::normalize(glm::vec3(
+            cos(glm::radians(angles.x)) * cos(glm::radians(angles.y)),
+            sin(glm::radians(angles.y)),
+            sin(glm::radians(angles.x)) * cos(glm::radians(angles.y))))),
         up(up), right(glm::normalize(glm::cross(glm::normalize(this->front),
                                                 glm::normalize(this->up)))) {}
 
@@ -27,27 +27,28 @@ namespace core {
   }
 
   void CameraTransform::updateRotation(glm::vec2 delta) {
-    this->yaw += delta.x;
-    this->pitch += delta.y;
-    if (this->pitch > 89.0f)
-      this->pitch = 89.0f;
-    if (this->pitch < -89.0f)
-      this->pitch = -89.0f;
+    this->angles.x += delta.x;
+    this->angles.y += delta.y;
+    if (this->angles.y > 89.0f)
+      this->angles.y = 89.0f;
+    if (this->angles.y < -89.0f)
+      this->angles.y = -89.0f;
 
     this->front = glm::normalize(
-        glm::vec3(cos(glm::radians(yaw)) * cos(glm::radians(pitch)),
-                  sin(glm::radians(pitch)),
-                  sin(glm::radians(yaw)) * cos(glm::radians(pitch))));
+        glm::vec3(cos(glm::radians(angles.x)) * cos(glm::radians(angles.y)),
+                  sin(glm::radians(angles.y)),
+                  sin(glm::radians(angles.x)) * cos(glm::radians(angles.y))));
     this->right = glm::normalize(glm::cross(this->front, this->up));
   }
 
   void CameraTransform::resetCameraTransform() {
-    this->yaw = -90.0f;
-    this->pitch = 0.0f;
+    this->angles.x = -90.0f;
+    this->angles.y = 0.0f;
     this->position = glm::vec3(0.0f, 0.0f, 3.0f);
-    this->front = glm::vec3(cos(glm::radians(yaw)) * cos(glm::radians(pitch)),
-                            sin(glm::radians(pitch)),
-                            sin(glm::radians(yaw)) * cos(glm::radians(pitch)));
+    this->front =
+        glm::vec3(cos(glm::radians(angles.x)) * cos(glm::radians(angles.y)),
+                  sin(glm::radians(angles.y)),
+                  sin(glm::radians(angles.x)) * cos(glm::radians(angles.y)));
     this->up = glm::vec3(0.0f, 1.0f, 0.0f);
     this->right = glm::normalize(
         glm::cross(glm::normalize(this->front), glm::normalize(this->up)));
@@ -69,7 +70,14 @@ namespace core {
     return this->position;
   }
 
-  glm::mat4 CameraTransform::getViewMatrix() const {
+  glm::mat4 CameraTransform::getViewMatrix() {
+    this->front =
+        glm::vec3(cos(glm::radians(angles.x)) * cos(glm::radians(angles.y)),
+                  sin(glm::radians(angles.y)),
+                  sin(glm::radians(angles.x)) * cos(glm::radians(angles.y)));
+    this->up = glm::vec3(0.0f, 1.0f, 0.0f);
+    this->right = glm::normalize(
+        glm::cross(glm::normalize(this->front), glm::normalize(this->up)));
     return glm::lookAt(this->position, this->position + this->front, this->up);
   }
 }

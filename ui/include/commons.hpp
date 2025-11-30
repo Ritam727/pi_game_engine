@@ -14,6 +14,9 @@ namespace ui {
     glm::vec3 rotation{Constants::ZERO};
     glm::vec3 scale{Constants::ONE};
 
+    glm::vec3 cameraPosition{Constants::ZERO};
+    glm::vec2 cameraAngles{Constants::ZERO};
+
     core::Entity selectedEntity{-1};
   };
 }

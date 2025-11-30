@@ -1,5 +1,6 @@
 #include "components.hpp"
 
+#include "camera_controls.hpp"
 #include "imgui.h"
 #include "lights.hpp"
 #include "registry.hpp"
@@ -41,7 +42,13 @@ namespace ui {
 
     Components::componentControls<core::CameraTransform>(
         registry, Constants::CAMERA_TRANSFORM_COMPONENT,
-        this->uiState.selectedEntity, [&]() {});
+        this->uiState.selectedEntity, [&]() {
+          core::CameraTransform &cameraTransform =
+              registry.getPool<core::CameraTransform>().get(
+                  this->uiState.selectedEntity);
+          CameraControls::cameraControls(cameraTransform.position,
+                                         cameraTransform.angles);
+        });
 
     Components::componentControls<gl::LightComponent>(
         registry, Constants::LIGHT_CONTROLS_LABEL, this->uiState.selectedEntity,
