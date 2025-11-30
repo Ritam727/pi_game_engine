@@ -5,14 +5,14 @@
 #include "ui_constants.hpp"
 
 namespace ui {
-  void Entities::onUpdate(float                          ts,
-                          core::SparseSet<core::Entity> &selectedEntities,
-                          core::Registry                &registry) {
-    Entities::entitiesWindow(selectedEntities, registry);
+  Entities::Entities(UIState &uiState) : UILayer(uiState) {}
+
+  void Entities::onUpdate(float ts, core::Registry &registry) {
+    Entities::entitiesWindow(this->uiState.selectedEntity, registry);
   }
 
-  void Entities::entitiesWindow(core::SparseSet<core::Entity> &selectedEntities,
-                                core::Registry                &registry) {
+  void Entities::entitiesWindow(core::Entity   &selectedEntity,
+                                core::Registry &registry) {
     const std::vector<core::Entity> &selectableEntities =
         registry.getPool<core::Selectable>().getEntities();
 
@@ -27,11 +27,8 @@ namespace ui {
       const core::Entity &entity = selectableEntities[i];
       std::string         str = Constants::ENTITY + std::to_string(entity);
 
-      if (ImGui::Selectable(str.c_str(), selectedEntities.contains(entity))) {
-        for (core::Entity e : selectedEntities.getEntities()) {
-          selectedEntities.removeElem(e);
-        }
-        selectedEntities.addElem(entity);
+      if (ImGui::Selectable(str.c_str(), selectedEntity == entity)) {
+        selectedEntity = entity;
       }
       if (ImGui::BeginPopupContextItem()) {
         ImGui::PushID(str.c_str());

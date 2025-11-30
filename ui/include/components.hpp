@@ -10,10 +10,7 @@
 namespace ui {
   class Components : public UILayer {
   private:
-    UIState &uiState;
-
-    void componentsWindow(core::SparseSet<core::Entity> &selectedEntities,
-                          core::Registry                &registry);
+    void componentsWindow(core::Registry &registry);
 
     template <core::IsSubClassOf<core::BaseComponent> T, typename... Args>
     static void componentControls(core::Registry       &registry,
@@ -50,7 +47,6 @@ namespace ui {
   public:
     Components(UIState &uiState);
 
-    void onUpdate(float ts, core::SparseSet<core::Entity> &selectedEntities,
-                  core::Registry &registry) override;
+    void onUpdate(float ts, core::Registry &registry) override;
   };
 }

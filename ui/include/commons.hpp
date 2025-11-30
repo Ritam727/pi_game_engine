@@ -1,6 +1,7 @@
 #pragma once
 
 #include "glm/glm.hpp"
+#include "registry.hpp"
 #include "ui_constants.hpp"
 #include "utils.hpp"
 #include "imgui.h"
@@ -12,6 +13,8 @@ namespace ui {
     glm::vec3 translation{Constants::ZERO};
     glm::vec3 rotation{Constants::ZERO};
     glm::vec3 scale{Constants::ONE};
+
+    core::Entity selectedEntity{-1};
   };
 }
 

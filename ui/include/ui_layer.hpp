@@ -1,15 +1,17 @@
 #pragma once
 
+#include "commons.hpp"
 #include "registry.hpp"
-#include "sparse_set.hpp"
 
 namespace ui {
   class UILayer {
+  protected:
+    UIState &uiState;
+
   public:
+    UILayer(UIState &uiState) : uiState(uiState) {}
     virtual ~UILayer() = default;
 
-    virtual void onUpdate(float                          ts,
-                          core::SparseSet<core::Entity> &selectedEntities,
-                          core::Registry                &registry) = 0;
+    virtual void onUpdate(float ts, core::Registry &registry) = 0;
   };
 }

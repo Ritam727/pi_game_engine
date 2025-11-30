@@ -6,10 +6,11 @@
 namespace ui {
   class Entities : public UILayer {
   public:
-    void onUpdate(float ts, core::SparseSet<core::Entity> &selectedEntities,
-                  core::Registry &registry) override;
+    Entities(UIState &uiState);
 
-    static void entitiesWindow(core::SparseSet<core::Entity> &selectedEntities,
-                               core::Registry                &registry);
+    void onUpdate(float ts, core::Registry &registry) override;
+
+    static void entitiesWindow(core::Entity   &selectedEntity,
+                               core::Registry &registry);
   };
 }

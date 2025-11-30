@@ -10,9 +10,8 @@ namespace ui {
   UI::UI(core::Window &window, core::Registry &registry)
       : window(window), registry(registry) {
     this->uiLayers.pushLayer<Components>(this->uiState);
-    this->uiLayers.pushLayer<Entities>();
+    this->uiLayers.pushLayer<Entities>(this->uiState);
 
-    IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO &io = ImGui::GetIO();
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
@@ -30,7 +29,7 @@ namespace ui {
     ImGui::NewFrame();
     ImGui::DockSpaceOverViewport(0, nullptr,
                                  ImGuiDockNodeFlags_PassthruCentralNode);
-    this->uiLayers.onUpdate(ts, this->selectedEntities, this->registry);
+    this->uiLayers.onUpdate(ts, this->registry);
   }
 
   void UI::postUpdate() {

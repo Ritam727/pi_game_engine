@@ -11,48 +11,47 @@
 #include "ui_constants.hpp"
 
 namespace ui {
-  Components::Components(UIState &uiState) : uiState(uiState) {}
+  Components::Components(UIState &uiState) : UILayer(uiState) {}
 
-  void Components::onUpdate(float                          ts,
-                            core::SparseSet<core::Entity> &selectedEntities,
-                            core::Registry                &registry) {
-    this->componentsWindow(selectedEntities, registry);
+  void Components::onUpdate(float ts, core::Registry &registry) {
+    this->componentsWindow(registry);
   }
 
-  void Components::componentsWindow(
-      core::SparseSet<core::Entity> &selectedEntities,
-      core::Registry                &registry) {
-    const std::vector<core::Entity> &entities = selectedEntities.getEntities();
-
+  void Components::componentsWindow(core::Registry &registry) {
     ImGui::Begin(Constants::COMPONENTS.c_str());
-    for (unsigned int i = 0; i < selectedEntities.getNumElements(); i++) {
-      const core::Entity &entity = entities[i];
-      std::string         str;
-      Components::componentControls<core::Transform>(
-          registry, Constants::TRANSFORM_COMPONENT, entity, [&]() {
-            core::Transform &transform =
-                registry.getPool<core::Transform>().get(entity);
-            glm::vec3 previousTranslation = this->uiState.translation;
-            glm::vec3 previousRotation = this->uiState.rotation;
-            glm::vec3 previousScale = this->uiState.scale;
 
-            TransformControls::transformControls(this->uiState.translation,
-                                                 this->uiState.rotation,
-                                                 this->uiState.scale);
+    Components::componentControls<core::Transform>(
+        registry, Constants::TRANSFORM_COMPONENT, this->uiState.selectedEntity,
+        [&]() {
+          core::Transform &transform = registry.getPool<core::Transform>().get(
+              this->uiState.selectedEntity);
+          glm::vec3 previousTranslation = this->uiState.translation;
+          glm::vec3 previousRotation = this->uiState.rotation;
+          glm::vec3 previousScale = this->uiState.scale;
 
-            transform.updatePosition(this->uiState.translation -
-                                     previousTranslation);
-            transform.updateRotation(this->uiState.rotation - previousRotation);
-            transform.updateScale(this->uiState.scale - previousScale);
-          });
-      Components::componentControls<core::CameraTransform>(
-          registry, Constants::CAMERA_TRANSFORM_COMPONENT, entity, [&]() {});
-      Components::componentControls<gl::LightComponent>(
-          registry, Constants::LIGHT_CONTROLS_LABEL, entity, [&]() {
-            LightControls::lightComponent(
-                entity, registry.getPool<gl::LightComponent>().get(entity));
-          });
-    }
+          TransformControls::transformControls(this->uiState.translation,
+                                               this->uiState.rotation,
+                                               this->uiState.scale);
+
+          transform.updatePosition(this->uiState.translation -
+                                   previousTranslation);
+          transform.updateRotation(this->uiState.rotation - previousRotation);
+          transform.updateScale(this->uiState.scale - previousScale);
+        });
+
+    Components::componentControls<core::CameraTransform>(
+        registry, Constants::CAMERA_TRANSFORM_COMPONENT,
+        this->uiState.selectedEntity, [&]() {});
+
+    Components::componentControls<gl::LightComponent>(
+        registry, Constants::LIGHT_CONTROLS_LABEL, this->uiState.selectedEntity,
+        [&]() {
+          LightControls::lightComponent(
+              this->uiState.selectedEntity,
+              registry.getPool<gl::LightComponent>().get(
+                  this->uiState.selectedEntity));
+        });
+
     ImGui::End();
   }
 }
