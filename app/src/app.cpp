@@ -19,7 +19,7 @@ App::App() {
         this->running = false;
       });
 
-  this->registry.getPool<core::CameraTransform>().get(0).setCameraActive(true);
+  this->registry.getPool<core::CameraTransform>().get(0).cameraActive = true;
 }
 
 void App::run() {

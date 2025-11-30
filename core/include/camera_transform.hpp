@@ -17,18 +17,8 @@ namespace core {
     CameraTransform();
     CameraTransform(glm::vec3 position, glm::vec3 up);
 
-    void setPosition(glm::vec3 position);
-
-    void updatePosition(glm::vec3 delta);
-    void setCameraActive(bool cameraActive);
     void updateRotation(glm::vec2 delta);
     void resetCameraTransform();
-
-    bool isCameraActive() const;
-
-    glm::vec3 getForwardDirection() const;
-    glm::vec3 getRightDirection() const;
-    glm::vec3 getPosition() const;
 
     glm::mat4 getViewMatrix();
   };

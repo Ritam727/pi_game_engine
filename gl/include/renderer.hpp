@@ -35,7 +35,7 @@ namespace gl {
 
     core::Registry     &registry;
     core::EventManager &eventManager;
-    Light               light{registry};
+    core::Light         light{registry};
 
     Shader shader{ENGINE_PATH "/res/shaders/multiple_lights.vert",
                   ENGINE_PATH "/res/shaders/multiple_lights.frag"};

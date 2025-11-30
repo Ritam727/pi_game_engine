@@ -30,7 +30,7 @@ namespace ui {
 
         ImGui::TableSetColumnIndex(1);
         ImGui::PushID(typeid(T).name());
-        if (ImGui::Button("Delete")) {
+        if (ImGui::Button(Constants::DELETE.c_str())) {
           registry.removeComponent<T>(entity);
           isDeleted = true;
         }

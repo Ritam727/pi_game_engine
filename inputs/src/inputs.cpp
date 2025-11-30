@@ -134,13 +134,13 @@ namespace inputs {
   void Inputs::cameraMoveAround(float xOffset, float yOffset) {
     for (core::CameraTransform &cameraTransform :
          this->registry.getPool<core::CameraTransform>().getComponents()) {
-      if (cameraTransform.isCameraActive()) {
-        glm::vec3 front = glm::normalize(cameraTransform.getForwardDirection());
-        glm::vec3 right = glm::normalize(cameraTransform.getRightDirection());
+      if (cameraTransform.cameraActive) {
+        glm::vec3 front = glm::normalize(cameraTransform.front);
+        glm::vec3 right = glm::normalize(cameraTransform.right);
         glm::vec3 up = glm::normalize(glm::cross(right, front));
         glm::vec3 direction = xOffset * right + yOffset * up;
         float     speed = core::Constants::SPEED_SCALAR * 0.1;
-        cameraTransform.updatePosition(direction * speed);
+        cameraTransform.position += direction * speed;
       }
     }
   }
@@ -156,11 +156,11 @@ namespace inputs {
   void Inputs::cameraFly(float delta) {
     for (core::CameraTransform &cameraTransform :
          this->registry.getPool<core::CameraTransform>().getComponents()) {
-      glm::vec3 front = cameraTransform.getForwardDirection();
+      glm::vec3 front = cameraTransform.front;
       glm::vec3 direction = -1.0f * delta * front;
 
       float speed = core::Constants::SPEED_SCALAR;
-      cameraTransform.updatePosition(direction * speed);
+      cameraTransform.position += direction * speed;
     }
   }
 }

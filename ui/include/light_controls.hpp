@@ -6,15 +6,15 @@
 namespace ui {
   class LightControls {
   private:
-    static void directionalLightControls(const core::Entity &entity,
-                                         gl::LightComponent &lightComponent);
-    static void pointLightControls(const core::Entity &entity,
-                                   gl::LightComponent &lightComponent);
-    static void spotLightControls(const core::Entity &entity,
-                                  gl::LightComponent &lightComponent);
+    static void directionalLightControls(const core::Entity   &entity,
+                                         core::LightComponent &lightComponent);
+    static void pointLightControls(const core::Entity   &entity,
+                                   core::LightComponent &lightComponent);
+    static void spotLightControls(const core::Entity   &entity,
+                                  core::LightComponent &lightComponent);
 
   public:
-    static void lightComponent(const core::Entity &entity,
-                               gl::LightComponent &lightComponent);
+    static void lightComponent(const core::Entity   &entity,
+                               core::LightComponent &lightComponent);
   };
 }

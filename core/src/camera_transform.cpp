@@ -14,18 +14,6 @@ namespace core {
         up(up), right(glm::normalize(glm::cross(glm::normalize(this->front),
                                                 glm::normalize(this->up)))) {}
 
-  void CameraTransform::setPosition(glm::vec3 position) {
-    this->position = position;
-  }
-
-  void CameraTransform::updatePosition(glm::vec3 delta) {
-    this->position += delta;
-  }
-
-  void CameraTransform::setCameraActive(bool cameraActive) {
-    this->cameraActive = cameraActive;
-  }
-
   void CameraTransform::updateRotation(glm::vec2 delta) {
     this->angles.x += delta.x;
     this->angles.y += delta.y;
@@ -52,22 +40,6 @@ namespace core {
     this->up = glm::vec3(0.0f, 1.0f, 0.0f);
     this->right = glm::normalize(
         glm::cross(glm::normalize(this->front), glm::normalize(this->up)));
-  }
-
-  bool CameraTransform::isCameraActive() const {
-    return this->cameraActive;
-  }
-
-  glm::vec3 CameraTransform::getForwardDirection() const {
-    return this->front;
-  }
-
-  glm::vec3 CameraTransform::getRightDirection() const {
-    return this->right;
-  }
-
-  glm::vec3 CameraTransform::getPosition() const {
-    return this->position;
   }
 
   glm::mat4 CameraTransform::getViewMatrix() {

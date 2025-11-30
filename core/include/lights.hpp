@@ -6,7 +6,7 @@
 #include "selectable.hpp"
 #include "utils.hpp"
 
-namespace gl {
+namespace core {
   ITERABLE_ENUM(LightType, DIRECTIONAL_LIGHT, POINT_LIGHT, SPOT_LIGHT);
 
   struct LightComponent : public core::BaseComponent {
@@ -32,7 +32,7 @@ namespace gl {
   };
 }
 
-namespace gl {
+namespace core {
   class Light : public core::BaseObject {
   public:
     Light(core::Registry &registryRef) : core::BaseObject(registryRef) {

@@ -18,7 +18,7 @@ namespace ui {
 
     ImGui::Begin(Constants::ENTITIES.c_str());
 
-    if (ImGui::Button("Add Entity")) {
+    if (ImGui::Button(Constants::ADD_ENTITY.c_str())) {
       core::Entity newEntity = registry.createEntity();
       registry.addComponent<core::Selectable>(newEntity);
     }
@@ -32,7 +32,7 @@ namespace ui {
       }
       if (ImGui::BeginPopupContextItem()) {
         ImGui::PushID(str.c_str());
-        if (ImGui::Button("Delete")) {
+        if (ImGui::Button(Constants::DELETE.c_str())) {
           registry.removeEntity(entity);
           ImGui::CloseCurrentPopup();
         }

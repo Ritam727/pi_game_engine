@@ -34,5 +34,4 @@ target_link_directories(ui
 target_link_libraries(ui
   PUBLIC
     core
-    gl
 )

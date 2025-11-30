@@ -3,8 +3,6 @@
 #include "glm/gtc/matrix_transform.hpp"
 
 namespace core {
-  Transform::Transform() {}
-
   glm::mat4 Transform::getTranslationMatrix() const {
     return glm::translate(glm::mat4(1.0f), this->position);
   }

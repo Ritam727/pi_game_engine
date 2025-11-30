@@ -25,11 +25,14 @@ namespace ui {
     static const inline std::string OUTER_CUT_OFF{"Outer Cut Off"};
     static const inline std::string ENTITIES{"Entities"};
     static const inline std::string ENTITY{"Entity"};
+    static const inline std::string ADD_ENTITY{"Add Entity"};
+    static const inline std::string DELETE{"Delete"};
     static const inline std::string COMPONENTS{"Components"};
     static const inline std::string TRANSFORM_COMPONENT{"Transform"};
     static const inline std::string TRANSLATION{"Translation"};
     static const inline std::string ROTATION{"Rotation"};
     static const inline std::string SCALE{"Scale"};
+    static const inline std::string ACTIVE{"Active"};
     static const inline std::string LIGHT_COMPONENT{"Light"};
     static const inline std::string LIGHT_CONTROLS_LABEL{"Light Controls"};
     static const inline std::string TYPE_LABEL{"Type"};

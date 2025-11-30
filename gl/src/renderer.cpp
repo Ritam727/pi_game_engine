@@ -29,8 +29,8 @@ namespace gl {
     this->registerFovChangeCallback();
     this->registerModelLoadCallback();
 
-    this->registry.addComponent<LightComponent>(this->light.getEntityId(),
-                                                LightType::DIRECTIONAL_LIGHT);
+    this->registry.addComponent<core::LightComponent>(
+        this->light.getEntityId(), core::LightType::DIRECTIONAL_LIGHT);
 
     GL_CALL(glEnable(GL_DEPTH_TEST));
     GL_CALL(glEnable(GL_CULL_FACE));
@@ -70,10 +70,11 @@ namespace gl {
   }
 
   void Renderer::bindLights() {
-    LightComponent &component =
-        this->registry.getPool<LightComponent>().get(this->light.getEntityId());
-    this->shader.set<LightComponent &>(
-        "light", this->registry.getPool<LightComponent>().get(
+    core::LightComponent &component =
+        this->registry.getPool<core::LightComponent>().get(
+            this->light.getEntityId());
+    this->shader.set<core::LightComponent &>(
+        "light", this->registry.getPool<core::LightComponent>().get(
                      this->light.getEntityId()));
   }
 
@@ -86,8 +87,8 @@ namespace gl {
         this->registry.getPool<Mesh>();
     core::ExtendedSparseSet<core::Entity, core::Transform> &transforms =
         this->registry.getPool<core::Transform>();
-    core::ExtendedSparseSet<core::Entity, Material> &materials =
-        this->registry.getPool<Material>();
+    core::ExtendedSparseSet<core::Entity, core::Material> &materials =
+        this->registry.getPool<core::Material>();
 
     for (unsigned int i = 0; i < numEntities; i++) {
       const core::Entity &entity = entities[i];
@@ -95,8 +96,9 @@ namespace gl {
       core::Transform &transform = transforms.get(entity);
       this->shader.set<glm::mat4>("model", transform.getModelMatrix());
 
-      Material &material = materials.get(entity);
-      this->shader.set<Material &>("material", material, this->resourceManager);
+      core::Material &material = materials.get(entity);
+      this->shader.set<core::Material &>("material", material,
+                                         this->resourceManager);
 
       Mesh &mesh = meshes.get(entity);
       mesh.draw();
@@ -108,10 +110,10 @@ namespace gl {
 
     for (core::CameraTransform &cameraTransform :
          registry.getPool<core::CameraTransform>().getComponents()) {
-      if (cameraTransform.isCameraActive()) {
+      if (cameraTransform.cameraActive) {
         glm::mat4 view = cameraTransform.getViewMatrix();
         this->shader.set<glm::mat4>("view", view);
-        this->shader.set<glm::vec3>("viewerPos", cameraTransform.getPosition());
+        this->shader.set<glm::vec3>("viewerPos", cameraTransform.position);
       }
     }
 

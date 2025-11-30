@@ -4,14 +4,14 @@
 #include "ui_constants.hpp"
 
 namespace ui {
-  void LightControls::directionalLightControls(const core::Entity &entity,
-                                               gl::LightComponent &light) {
+  void LightControls::directionalLightControls(const core::Entity   &entity,
+                                               core::LightComponent &light) {
     ImGui::DragFloat3(Constants::DIRECTION.c_str(), &light.direction.x,
                       Constants::SPEED_MEDIUM);
   }
 
-  void LightControls::pointLightControls(const core::Entity &entity,
-                                         gl::LightComponent &light) {
+  void LightControls::pointLightControls(const core::Entity   &entity,
+                                         core::LightComponent &light) {
     ImGui::DragFloat3(Constants::POSITION.c_str(), &light.position.x,
                       Constants::SPEED_FAST);
     ImGui::DragFloat(Constants::LINEAR.c_str(), &light.linear,
@@ -20,8 +20,8 @@ namespace ui {
                      Constants::SPEED_SLOW);
   }
 
-  void LightControls::spotLightControls(const core::Entity &entity,
-                                        gl::LightComponent &light) {
+  void LightControls::spotLightControls(const core::Entity   &entity,
+                                        core::LightComponent &light) {
     ImGui::DragFloat3(Constants::DIRECTION.c_str(), &light.direction.x,
                       Constants::SPEED_MEDIUM);
     ImGui::DragFloat3(Constants::POSITION.c_str(), &light.position.x,
@@ -39,24 +39,24 @@ namespace ui {
                      Constants::ANGLE_MAX);
   }
 
-  void LightControls::lightComponent(const core::Entity &entity,
-                                     gl::LightComponent &light) {
+  void LightControls::lightComponent(const core::Entity   &entity,
+                                     core::LightComponent &light) {
     std::string ID{Constants::LIGHT_COMPONENT + std::to_string(entity)};
     const std::vector<std::string> &items = Constants::LIGHT_TYPES;
 
     ImGui::PushID(ID.c_str());
-    Commons::dropDownMenu<gl::LightType>(Constants::TYPE_LABEL, items,
-                                         light.type);
+    Commons::dropDownMenu<core::LightType>(Constants::TYPE_LABEL, items,
+                                           light.type);
     Commons::colorControls(light.ambient, light.diffuse, light.specular);
 
     switch (light.type) {
-    case gl::LightType::DIRECTIONAL_LIGHT:
+    case core::LightType::DIRECTIONAL_LIGHT:
       LightControls::directionalLightControls(entity, light);
       break;
-    case gl::LightType::POINT_LIGHT:
+    case core::LightType::POINT_LIGHT:
       LightControls::pointLightControls(entity, light);
       break;
-    case gl::LightType::SPOT_LIGHT:
+    case core::LightType::SPOT_LIGHT:
       LightControls::spotLightControls(entity, light);
       break;
     default:

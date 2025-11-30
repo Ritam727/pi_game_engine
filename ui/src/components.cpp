@@ -26,18 +26,12 @@ namespace ui {
         [&]() {
           core::Transform &transform = registry.getPool<core::Transform>().get(
               this->uiState.selectedEntity);
-          glm::vec3 previousTranslation = this->uiState.translation;
           glm::vec3 previousRotation = this->uiState.rotation;
-          glm::vec3 previousScale = this->uiState.scale;
 
-          TransformControls::transformControls(this->uiState.translation,
-                                               this->uiState.rotation,
-                                               this->uiState.scale);
+          TransformControls::transformControls(
+              transform.position, this->uiState.rotation, transform.scale);
 
-          transform.updatePosition(this->uiState.translation -
-                                   previousTranslation);
           transform.updateRotation(this->uiState.rotation - previousRotation);
-          transform.updateScale(this->uiState.scale - previousScale);
         });
 
     Components::componentControls<core::CameraTransform>(
@@ -47,15 +41,16 @@ namespace ui {
               registry.getPool<core::CameraTransform>().get(
                   this->uiState.selectedEntity);
           CameraControls::cameraControls(cameraTransform.position,
-                                         cameraTransform.angles);
+                                         cameraTransform.angles,
+                                         cameraTransform.cameraActive);
         });
 
-    Components::componentControls<gl::LightComponent>(
+    Components::componentControls<core::LightComponent>(
         registry, Constants::LIGHT_CONTROLS_LABEL, this->uiState.selectedEntity,
         [&]() {
           LightControls::lightComponent(
               this->uiState.selectedEntity,
-              registry.getPool<gl::LightComponent>().get(
+              registry.getPool<core::LightComponent>().get(
                   this->uiState.selectedEntity));
         });
 

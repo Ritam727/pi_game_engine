@@ -94,24 +94,24 @@ namespace gl {
   }
 
   template <>
-  void Shader::set<LightComponent &>(const std::string &name,
-                                     LightComponent    &light) const {
+  void Shader::set<core::LightComponent &>(const std::string    &name,
+                                           core::LightComponent &light) const {
     this->set<int>(name + ".type", static_cast<int>(light.type));
     this->set<glm::vec3>(name + ".ambient", light.ambient);
     this->set<glm::vec3>(name + ".diffuse", light.diffuse);
     this->set<glm::vec3>(name + ".specular", light.specular);
 
     switch (light.type) {
-    case LightType::DIRECTIONAL_LIGHT:
+    case core::LightType::DIRECTIONAL_LIGHT:
       this->set<glm::vec3>(name + ".direction", light.direction);
       break;
-    case LightType::POINT_LIGHT:
+    case core::LightType::POINT_LIGHT:
       this->set<glm::vec3>(name + ".position", light.position);
       this->set<float>(name + ".constant", light.constant);
       this->set<float>(name + ".linear", light.linear);
       this->set<float>(name + ".quadratic", light.quadratic);
       break;
-    case LightType::SPOT_LIGHT:
+    case core::LightType::SPOT_LIGHT:
       this->set<glm::vec3>(name + ".position", light.position);
       this->set<glm::vec3>(name + ".direction", light.direction);
       this->set<float>(name + ".constant", light.constant);
@@ -128,8 +128,8 @@ namespace gl {
   }
 
   template <>
-  void Shader::set<Material &, core::ResourceManager &>(
-      const std::string &name, Material &material,
+  void Shader::set<core::Material &, core::ResourceManager &>(
+      const std::string &name, core::Material &material,
       core::ResourceManager &resourceManager) const {
     this->set<glm::vec3>(name + ".ambient", material.ambient.vector);
     this->set<glm::vec3>(name + ".diffuse", material.diffuse.vector);

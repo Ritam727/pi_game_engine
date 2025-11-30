@@ -14,13 +14,13 @@
 
 namespace gl {
   Model::Model(std::vector<core::Vertex> &vertices,
-               std::vector<unsigned int> &indices, MaterialGroup ambient,
-               MaterialGroup diffuse, MaterialGroup specular,
+               std::vector<unsigned int> &indices, core::MaterialGroup ambient,
+               core::MaterialGroup diffuse, core::MaterialGroup specular,
                core::Registry &registryRef)
       : core::BaseObject(registryRef) {
     registryRef.addComponent<Mesh>(this->getEntityId(), vertices, indices);
-    registryRef.addComponent<Material>(this->getEntityId(), ambient, diffuse,
-                                       specular, 32.0f);
+    registryRef.addComponent<core::Material>(this->getEntityId(), ambient,
+                                             diffuse, specular, 32.0f);
     registryRef.addComponent<core::Transform>(this->getEntityId());
     registryRef.addComponent<core::Selectable>(this->getEntityId());
   }
@@ -51,9 +51,9 @@ namespace gl {
     std::vector<unsigned int> indices;
     this->processIndices(indices, mesh);
 
-    MaterialGroup ambient{.vector = glm::vec3{0.2f}};
-    MaterialGroup diffuse{.vector = glm::vec3{0.4f}};
-    MaterialGroup specular{.vector = glm::vec3{0.0f}};
+    core::MaterialGroup ambient{.vector = glm::vec3{0.2f}};
+    core::MaterialGroup diffuse{.vector = glm::vec3{0.4f}};
+    core::MaterialGroup specular{.vector = glm::vec3{0.0f}};
     if (mesh->mMaterialIndex >= 0)
       this->processMaterials(ambient, diffuse, specular,
                              scene->mMaterials[mesh->mMaterialIndex],
@@ -89,11 +89,11 @@ namespace gl {
     }
   }
 
-  void ModelLoader::processMaterials(MaterialGroup &ambient,
-                                     MaterialGroup &diffuse,
-                                     MaterialGroup &specular,
-                                     aiMaterial    *material,
-                                     std::string   &directory) {
+  void ModelLoader::processMaterials(core::MaterialGroup &ambient,
+                                     core::MaterialGroup &diffuse,
+                                     core::MaterialGroup &specular,
+                                     aiMaterial          *material,
+                                     std::string         &directory) {
     bool                     ambientPresent{false};
     bool                     diffusePresent{false};
     bool                     specularPresent{false};
@@ -127,7 +127,7 @@ namespace gl {
   }
 
   void ModelLoader::emplaceTexture(bool &present, std::string &path,
-                                   MaterialGroup &group) {
+                                   core::MaterialGroup &group) {
     if (present)
       group.texture = this->resourceManager.getIndexOf<Texture>(path);
   }

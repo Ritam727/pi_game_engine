@@ -5,8 +5,7 @@
 #include "glm/gtc/quaternion.hpp"
 
 namespace core {
-  class Transform : public BaseComponent {
-  private:
+  struct Transform : public BaseComponent {
     glm::vec3 position{0};
     glm::vec3 scale{1};
     glm::quat rotation{glm::radians(glm::vec3(0.0f))};
@@ -14,9 +13,6 @@ namespace core {
     glm::mat4 getTranslationMatrix() const;
     glm::mat4 getRotationMatrix() const;
     glm::mat4 getScaleMatrix() const;
-
-  public:
-    Transform();
 
     void setPosition(glm::vec3 position);
     void setRotation(glm::vec3 rotation);

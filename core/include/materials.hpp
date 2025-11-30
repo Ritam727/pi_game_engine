@@ -3,7 +3,7 @@
 #include "base_component.hpp"
 #include "glm/glm.hpp"
 
-namespace gl {
+namespace core {
   struct MaterialGroup {
     glm::vec3 vector{0.0f};
     int       texture{-1};
